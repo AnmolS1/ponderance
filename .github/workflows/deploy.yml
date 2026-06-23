@@ -2,7 +2,7 @@ name: Deploy to Cloudflare
 
 on:
   push:
-    branches: [prod]
+    branches: [prod, dev]
 
 concurrency:
   group: deploy-${{ github.ref }}
@@ -23,11 +23,29 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Generate worker-configuration.d.ts so astro check has KVNamespace types.
+      # wrangler types reads the local config — no API auth needed.
+      - name: Generate Worker types
+        run: npx wrangler types --config wrangler.jsonc
+
       - name: Type check
         run: npx astro check
 
       - name: Build
         run: npm run build
+
+      # Assert the adapter-generated deploy config carries real values (not placeholders).
+      # A stale or wrongly-merged config would bind a nonexistent KV namespace.
+      - name: Gate — deploy config has real values
+        run: |
+          CFG=dist/server/wrangler.json
+          grep -q '2b67b00d20de4e1b84db2dcb48a48980' "$CFG" \
+            || { echo "FAIL: real RATE_LIMIT KV id missing in $CFG"; exit 1; }
+          grep -q '"ponderance-dev"' "$CFG" \
+            || { echo "FAIL: worker name mismatch in $CFG"; exit 1; }
+          grep -q '__RATE_LIMIT_KV_ID__' "$CFG" \
+            && { echo "FAIL: placeholder KV id still present in $CFG"; exit 1; }
+          echo "PASS: deploy config has real KV id and correct worker name"
 
       - name: Gate — design system
         run: bash scripts/validate/design-system.sh
@@ -71,24 +89,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
       - name: Download dist artifact
         uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist/
 
-      - name: Deploy to Cloudflare Workers
+      # Preview deploys (dev branch): strip custom-domain routes and use a separate
+      # worker name so they never interfere with production traffic.
+      # The preview worker is accessible at:
+      #   https://ponderance-preview.<account>.workers.dev
+      # Note: secrets (RESEND_API_KEY, INQUIRY_DEST_EMAIL, TURNSTILE_SECRET_KEY) must
+      # be set on ponderance-preview separately before /api/inquiry will work there:
+      #   wrangler secret put <SECRET> --name ponderance-preview
+      - name: Prepare preview config
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          jq '.name = "ponderance-preview" | del(.routes)' \
+            dist/server/wrangler.json > dist/server/wrangler-preview.json
+          echo "Preview config — worker: $(jq -r '.name' dist/server/wrangler-preview.json), routes: none"
+
+      - name: Deploy to Cloudflare Workers (production)
+        if: github.ref == 'refs/heads/prod'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: '4.104.0'
-          command: deploy --config wrangler.jsonc
+          command: deploy --config dist/server/wrangler.json
+
+      - name: Deploy to Cloudflare Workers (preview)
+        if: github.ref == 'refs/heads/dev'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '4.104.0'
+          command: deploy --config dist/server/wrangler-preview.json

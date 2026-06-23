@@ -1,12 +1,13 @@
-// wrangler.jsonc
+// wrangler.jsonc — root config read by @astrojs/cloudflare at build time.
+// The adapter merges this with its own build output and emits the final
+// deploy-ready config at dist/server/wrangler.json (main: "entry.mjs",
+// no_bundle: true, assets binding, etc.). CI always deploys that generated
+// file — this file is never passed directly to `wrangler deploy`.
 {
   "name": "ponderance-dev",
   "compatibility_date": "2026-06-23",
   "compatibility_flags": ["nodejs_compat"],
-  // SSR entrypoint required for Node 8's /api/inquiry on-demand route.
-  // @astrojs/cloudflare v13: main is the adapter's unified entrypoint (NOT a built file).
-  "main": "@astrojs/cloudflare/entrypoints/server",
-  // adapter puts static assets in dist/client/ — override spec's ./dist accordingly
+  // Adapter sets main, directory, and the ASSETS binding. We own not_found_handling.
   "assets": {
     "directory": "./dist/client",
     "not_found_handling": "404-page"
