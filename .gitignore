@@ -32,3 +32,4 @@ pnpm-debug.log*
 design_handoff_ponderance_dev/
 .vscode
 TASKS.md
+design/
