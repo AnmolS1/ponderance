@@ -95,34 +95,29 @@ jobs:
           name: dist
           path: dist/
 
-      # Preview deploys (dev branch): strip custom-domain routes and use a separate
-      # worker name so they never interfere with production traffic.
-      # The preview worker is accessible at:
-      #   https://ponderance-preview.<account>.workers.dev
-      # Note: secrets (RESEND_API_KEY, INQUIRY_DEST_EMAIL, TURNSTILE_SECRET_KEY) must
-      # be set on ponderance-preview separately before /api/inquiry will work there:
-      #   wrangler secret put <SECRET> --name ponderance-preview
-      - name: Prepare preview config
-        if: github.ref == 'refs/heads/dev'
+      # Routes (custom_domain) are configured once in the Cloudflare dashboard and
+      # persist between deploys — CI only needs to upload new worker code+assets.
+      # Stripping routes also avoids requiring zone-level API token permissions.
+      #
+      # dev branch  → deploy to ponderance-preview (workers.dev URL, no custom domains)
+      #               Note: secrets must be set on that worker once before /api/inquiry works:
+      #               wrangler secret put <SECRET_NAME> --name ponderance-preview
+      # prod branch → deploy to ponderance-dev (custom domains managed via dashboard)
+      - name: Prepare deploy config
         run: |
-          jq '.name = "ponderance-preview" | del(.routes)' \
-            dist/server/wrangler.json > dist/server/wrangler-preview.json
-          echo "Preview config — worker: $(jq -r '.name' dist/server/wrangler-preview.json), routes: none"
+          if [ "${{ github.ref }}" = "refs/heads/prod" ]; then
+            jq 'del(.routes)' dist/server/wrangler.json > dist/server/wrangler-deploy.json
+            echo "Production deploy — worker: $(jq -r '.name' dist/server/wrangler-deploy.json)"
+          else
+            jq '.name = "ponderance-preview" | del(.routes)' \
+              dist/server/wrangler.json > dist/server/wrangler-deploy.json
+            echo "Preview deploy — worker: $(jq -r '.name' dist/server/wrangler-deploy.json)"
+          fi
 
-      - name: Deploy to Cloudflare Workers (production)
-        if: github.ref == 'refs/heads/prod'
+      - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: '4.104.0'
-          command: deploy --config dist/server/wrangler.json
-
-      - name: Deploy to Cloudflare Workers (preview)
-        if: github.ref == 'refs/heads/dev'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: '4.104.0'
-          command: deploy --config dist/server/wrangler-preview.json
+          command: deploy --config dist/server/wrangler-deploy.json
