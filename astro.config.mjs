@@ -9,9 +9,13 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   site: "https://ponderance.dev",
   output: "static",
+  // Disable auto-injected SESSION KV binding (portfolio doesn't use sessions)
+  session: { driver: { entrypoint: "unstorage/drivers/null" } },
   adapter: cloudflare({
     // katex/rehype-katex use CommonJS; workerd (default) doesn't support require()
     prerenderEnvironment: "node",
+    // passthrough: no Cloudflare Images binding needed (we serve pre-built static images)
+    imageService: "passthrough",
   }),
   integrations: [mdx()],
   markdown: {

@@ -1,0 +1,20 @@
+// wrangler.jsonc
+{
+  "name": "ponderance-portfolio",
+  "compatibility_date": "2026-06-23",
+  "compatibility_flags": ["nodejs_compat"],
+  // SSR entrypoint required for Node 8's /api/inquiry on-demand route.
+  // @astrojs/cloudflare v13: main is the adapter's unified entrypoint (NOT a built file).
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  // adapter puts static assets in dist/client/ — override spec's ./dist accordingly
+  "assets": {
+    "directory": "./dist/client",
+    "not_found_handling": "404-page"
+  },
+  "observability": { "enabled": true },
+  // CRITICAL: exactly two entries, no wildcards, no *.ponderance.dev
+  "routes": [
+    { "pattern": "ponderance.dev", "custom_domain": true },
+    { "pattern": "www.ponderance.dev", "custom_domain": true }
+  ]
+}
