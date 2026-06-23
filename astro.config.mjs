@@ -2,6 +2,7 @@
 import { defineConfig } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
 import mdx from "@astrojs/mdx";
+import { unified } from "@astrojs/markdown-remark";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import tailwindcss from "@tailwindcss/vite";
@@ -19,8 +20,11 @@ export default defineConfig({
   }),
   integrations: [mdx()],
   markdown: {
-    remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex],
+    // unified() processor; MDX inherits via the processor reference
+    processor: unified({
+      remarkPlugins: [remarkMath],
+      rehypePlugins: [rehypeKatex],
+    }),
     shikiConfig: { theme: "github-dark", wrap: false },
   },
   vite: {
