@@ -1,0 +1,85 @@
+name: Deploy to Cloudflare
+
+on:
+  push:
+    branches: [prod]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: Gate checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx astro check
+
+      - name: Build
+        run: npm run build
+
+      - name: Gate — design system
+        run: bash scripts/validate/design-system.sh
+
+      - name: Gate — security headers
+        run: bash scripts/validate/headers.sh
+
+      - name: Gate — no third-party origins
+        run: bash scripts/validate/no-thirdparty.sh
+
+      - name: Gate — self-hosted fonts
+        run: bash scripts/validate/fonts.sh
+
+      - name: Gate — wrangler route safety
+        run: bash scripts/validate/wrangler-routes.sh
+
+      - name: Gate — no inline scripts in HTML
+        run: |
+          HITS=$(grep -rE '<script(?![^>]*src=)[^>]*>[^<]{3,}' dist/client --include='*.html' -l 2>/dev/null || true)
+          if [ -n "$HITS" ]; then
+            echo "FAIL: Inline scripts found (violates script-src 'self' CSP):"
+            echo "$HITS"
+            exit 1
+          fi
+          echo "PASS: No inline script bodies in built HTML"
+
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
+  deploy:
+    name: Deploy
+    needs: gate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config wrangler.jsonc
