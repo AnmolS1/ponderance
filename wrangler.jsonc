@@ -12,6 +12,11 @@
     "not_found_handling": "404-page"
   },
   "observability": { "enabled": true },
+  // Human-provisioned: fill the KV namespace ID from the Cloudflare dashboard
+  // after running: wrangler kv namespace create RATE_LIMIT
+  "kv_namespaces": [
+    { "binding": "RATE_LIMIT", "id": "__RATE_LIMIT_KV_ID__" }
+  ],
   // CRITICAL: exactly two entries, no wildcards, no *.ponderance.dev
   "routes": [
     { "pattern": "ponderance.dev", "custom_domain": true },

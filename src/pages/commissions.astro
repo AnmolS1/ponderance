@@ -115,6 +115,11 @@ import Base from '../layouts/Base.astro';
             <input id="f-company" name="company" type="text" tabindex="-1" autocomplete="off" />
           </div>
 
+          <!-- Turnstile bot-defense widget (invisible challenge) -->
+          <!-- Replace data-sitekey with your real site key from the Cloudflare dashboard -->
+          <!-- Test key 1x00000000000000000000AA always passes; use only in dev -->
+          <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="dark" style="margin: 14px 0 4px;"></div>
+
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; flex-wrap: wrap;">
             <div id="console-status" aria-live="polite" role="status" style="min-height: 22px; flex: 1; min-width: 240px; font-family: var(--font-mono); font-size: 13.5px; color: #9fd1a0;"></div>
             <button type="submit" style="font-family: var(--font-mono); font-weight: 600; font-size: 14px; letter-spacing: .08em; background: #E84A27; color: #fff; border: none; border-radius: 3px; padding: 11px 26px; cursor: pointer; flex: none;">RUN →</button>
@@ -125,4 +130,12 @@ import Base from '../layouts/Base.astro';
     </section>
 
   </div>
+
+  <!-- Turnstile SDK — allowed by script-src 'self' https://challenges.cloudflare.com.
+       SRI hash intentionally omitted: api.js is a dynamic Cloudflare endpoint that
+       updates continuously; pinning a hash would break the widget on each rollout.
+       Origin is already locked in CSP to https://challenges.cloudflare.com exactly. -->
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <!-- Inquiry console client island — external JS, CSP-clean -->
+  <script is:inline type="module" src="/scripts/inquiry-console.js"></script>
 </Base>
