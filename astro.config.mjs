@@ -26,4 +26,9 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+  build: {
+    // KaTeX and Shiki emit inline style= attributes; prevent Astro from also
+    // inlining its own small stylesheets as <style> blocks (an additional CSP hit)
+    inlineStylesheets: "never",
+  },
 });

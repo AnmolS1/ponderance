@@ -26,12 +26,14 @@ check_header() {
   fi
 }
 
-check_header "CSP default-src"          "default-src 'none'"
-check_header "CSP script-src self"      "script-src 'self'"
-check_header "CSP Turnstile script-src" "https://challenges.cloudflare.com"
-check_header "CSP frame-ancestors"      "frame-ancestors 'none'"
-check_header "CSP frame-src Turnstile"  "frame-src https://challenges.cloudflare.com"
-check_header "CSP upgrade-insecure"     "upgrade-insecure-requests"
+check_header "CSP default-src"           "default-src 'none'"
+check_header "CSP script-src self"       "script-src 'self'"
+check_header "CSP Turnstile script-src"  "https://challenges.cloudflare.com"
+# unsafe-inline required: KaTeX (HTML mode) and Shiki emit inline style= attributes
+check_header "CSP style-src unsafe-inline" "style-src 'self' 'unsafe-inline'"
+check_header "CSP frame-ancestors"       "frame-ancestors 'none'"
+check_header "CSP frame-src Turnstile"   "frame-src https://challenges.cloudflare.com"
+check_header "CSP upgrade-insecure"      "upgrade-insecure-requests"
 check_header "HSTS"                     "Strict-Transport-Security: max-age=31536000; includeSubDomains"
 check_header "X-Frame-Options"          "X-Frame-Options: DENY"
 check_header "X-Content-Type-Options"   "X-Content-Type-Options: nosniff"
