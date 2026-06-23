@@ -3,20 +3,21 @@
 set -e
 
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
-CSS_FILE=$(find "$REPO/dist/client/_astro" -name "*.css" | head -1)
+CSS_DIR="$REPO/dist/client/_astro"
+CSS_COUNT=$(find "$CSS_DIR" -name "*.css" | wc -l | tr -d ' ')
 
-if [ -z "$CSS_FILE" ]; then
-  echo "FAIL: No CSS file found in dist/client/_astro/"
+if [ "$CSS_COUNT" -eq 0 ]; then
+  echo "FAIL: No CSS files found in dist/client/_astro/"
   exit 1
 fi
 
-echo "Checking $CSS_FILE..."
+echo "Checking $CSS_COUNT CSS file(s) in $CSS_DIR ..."
 FAIL=0
 
 check() {
   local name="$1"; local needle="$2"
-  # -i: case-insensitive (minifier lowercases hex values)
-  if grep -qiF "$needle" "$CSS_FILE"; then
+  # Search ALL css files, case-insensitive (minifier lowercases hex values)
+  if find "$CSS_DIR" -name "*.css" -exec grep -qiF "$needle" {} \; -print -quit | grep -q .; then
     echo "  ✓ $name"
   else
     echo "  ✗ MISSING: $name"

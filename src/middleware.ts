@@ -5,7 +5,7 @@ const ALLOWED_ORIGINS = new Set([
   "https://www.ponderance.dev",
 ]);
 
-export const onRequest = defineMiddleware((context, next) => {
+export const onRequest = defineMiddleware(async (context, next) => {
   // CORS only for the API endpoint
   if (!context.url.pathname.startsWith("/api/")) {
     return next();
@@ -25,11 +25,9 @@ export const onRequest = defineMiddleware((context, next) => {
     return new Response(null, { status: 204, headers });
   }
 
-  return next().then((response) => {
-    if (origin && ALLOWED_ORIGINS.has(origin)) {
-      response.headers.set("Access-Control-Allow-Origin", origin);
-    }
-    // Never set Domain= on any cookie
-    return response;
-  });
+  const response = await next();
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    response.headers.set("Access-Control-Allow-Origin", origin);
+  }
+  return response;
 });

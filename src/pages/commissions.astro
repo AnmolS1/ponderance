@@ -1,0 +1,128 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Commissions — ponderance"
+  description="An ML & security engineer who ships real production frontends — with the CI/CD and edge infra to back them."
+  footerLink={{ href: '/colophon', label: 'how this was built →' }}
+>
+  <style>
+    @keyframes signal{0%,70%,100%{transform:translateY(0);box-shadow:0 0 0 0 rgba(232,74,39,0);}10%{transform:translateY(-3px);box-shadow:0 5px 16px -5px rgba(232,74,39,.55);}}
+    .pipe{display:inline-block;animation:signal 3.6s ease-in-out infinite;}
+    @media (prefers-reduced-motion:reduce){.pipe{animation:none!important;}}
+    .hp-field{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden;}
+    .console-input{width:100%;background:transparent;border:none;outline:none;color:#eef0ec;font-family:var(--font-mono);font-size:15px;caret-color:#E84A27;padding:2px 0;}
+    .console-input::placeholder{color:#6d6fa8;}
+    .console-row{border-bottom:1px solid #3a3a78;padding:6px 4px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+    .console-row:focus-within{background:rgba(255,255,255,.04);}
+  </style>
+
+  <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
+
+    <!-- POSITIONING -->
+    <header style="padding: 54px 0 42px; border-bottom: 1px solid rgba(46,94,140,.28); display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap;">
+      <div style="max-width: 40ch;">
+        <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 16px;">commissions</p>
+        <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(34px,4.3vw,52px); line-height: 1.06; letter-spacing: -.025em; color: #1B2A33; margin: 0;">An ML and security engineer who also ships real production frontends — with the CI/CD and edge infra to back them.</h1>
+      </div>
+      <span style="display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 13px; color: #1B2A33; background: rgba(217,165,33,.16); border: 1px solid rgba(217,165,33,.5); border-radius: 999px; padding: 8px 16px; white-space: nowrap;">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: #D9A521;"></span>
+        now booking · Q3 2026
+      </span>
+    </header>
+
+    <!-- SERVICES / HOW I WORK -->
+    <section aria-label="Services" style="display: grid; grid-template-columns: .9fr 1.1fr; gap: 24px; padding: 50px 0; border-bottom: 1px solid rgba(46,94,140,.28);">
+      <div>
+        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 23px; letter-spacing: -.015em; color: #1B2A33; margin: 0 0 18px;">What I build</h2>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 18px 20px;">
+            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 18px; color: #1B2A33; margin: 0 0 4px;">Production sites &amp; storefronts</h3>
+            <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0;">Astro, custom Shopify/Liquid, edge-deployed. Fast, accessible, owner-editable.</p>
+          </div>
+          <div style="background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 18px 20px;">
+            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 18px; color: #1B2A33; margin: 0 0 4px;">Security &amp; abuse hardening</h3>
+            <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0;">Threat modeling, rate-limiting, bot defense that doesn't break your CSP.</p>
+          </div>
+          <div style="background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 18px 20px;">
+            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 18px; color: #1B2A33; margin: 0 0 4px;">ML features &amp; agents</h3>
+            <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0;">Model integration and automation that's actually evaluated, not vibes.</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 23px; letter-spacing: -.015em; color: #1B2A33; margin: 0 0 18px;">How I work</h2>
+        <div style="background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 24px 26px;">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 22px;">
+            <span class="pipe" style="font-family: var(--font-mono); font-size: 13px; color: #1B2A33; background: #fff; border: 1px solid rgba(46,94,140,.28); border-radius: 3px; padding: 6px 12px; animation-delay: 0s;">branch</span>
+            <span style="color: #E84A27;">→</span>
+            <span class="pipe" style="font-family: var(--font-mono); font-size: 13px; color: #1B2A33; background: #fff; border: 1px solid rgba(46,94,140,.28); border-radius: 3px; padding: 6px 12px; animation-delay: .45s;">PR</span>
+            <span style="color: #E84A27;">→</span>
+            <span class="pipe" style="font-family: var(--font-mono); font-size: 13px; color: #1B2A33; background: #fff; border: 1px solid rgba(46,94,140,.28); border-radius: 3px; padding: 6px 12px; animation-delay: .9s;">preview</span>
+            <span style="color: #E84A27;">→</span>
+            <span class="pipe" style="font-family: var(--font-mono); font-size: 13px; color: #fff; background: #2E5E8C; border-radius: 3px; padding: 6px 12px; animation-delay: 1.35s;">merge</span>
+          </div>
+          <p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.6; color: #1B2A33; margin: 0 0 14px;">Every change rides a branch to a live preview URL you can click before anything ships. CI gates the merge — types, accessibility, and a Semgrep scan all pass or it doesn't go in.</p>
+          <p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.6; color: rgba(27,42,51,.6); margin: 0;">When it's done, hand-off is built for non-technical owners: edit your content without touching code, and without calling me at 11pm.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROOF -->
+    <section aria-label="Proof" style="padding: 40px 0; border-bottom: 1px solid rgba(46,94,140,.28); display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
+      <p style="font-family: var(--font-body); font-size: 18px; color: #1B2A33; margin: 0; max-width: 42rem;">Don't take my word for it — <strong>shreyachanth.com</strong> is the whole argument, taken apart fold by fold in the workshop.</p>
+      <a href="/workshop" style="font-family: var(--font-body); font-weight: 600; font-size: 15px; color: #1B2A33; padding: 12px 22px; border-radius: 3px; border: 1px solid rgba(46,94,140,.28); white-space: nowrap; text-decoration: none;">See the case studies →</a>
+    </section>
+
+    <!-- INQUIRY CONSOLE (UI shell — backend wired in Node 8) -->
+    <section aria-label="Inquiry console" style="padding: 54px 0 60px;">
+      <div style="margin-bottom: 24px;">
+        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 30px; letter-spacing: -.02em; color: #1B2A33; margin: 0;">Tell me what you're building</h2>
+      </div>
+
+      <div style="border: 1px solid rgba(46,94,140,.28); border-radius: 7px; overflow: hidden; max-width: 720px; box-shadow: 0 14px 40px -22px rgba(27,42,51,.5);">
+        <div style="display: flex; align-items: center; gap: 8px; background: #202050; padding: 11px 16px;">
+          <span style="width: 11px; height: 11px; border-radius: 50%; background: #E84A27;"></span>
+          <span style="width: 11px; height: 11px; border-radius: 50%; background: #D9A521;"></span>
+          <span style="width: 11px; height: 11px; border-radius: 50%; background: #5a8db8;"></span>
+          <span style="font-family: var(--font-mono); font-size: 12px; color: #9b9dcf; margin-left: 8px;">inquiry — /api/inquiry · same-origin</span>
+        </div>
+
+        <form id="inquiry-form" action="/api/inquiry" method="POST" style="background: #22224f; padding: 22px 24px 26px;">
+          <p style="font-family: var(--font-mono); font-size: 12.5px; color: #7fae7f; margin: 0 0 18px;"># fill the prompts, then RUN. no third-party scripts here — that's the point.</p>
+
+          <div class="console-row">
+            <label for="f-name" style="font-family: var(--font-mono); font-size: 15px; color: #E84A27; flex: none; width: 78px;">name&gt;</label>
+            <input id="f-name" name="name" type="text" class="console-input" placeholder="Ada Lovelace" autocomplete="name" required />
+          </div>
+          <div class="console-row">
+            <label for="f-email" style="font-family: var(--font-mono); font-size: 15px; color: #E84A27; flex: none; width: 78px;">email&gt;</label>
+            <input id="f-email" name="email" type="email" class="console-input" placeholder="ada@analytical.engine" autocomplete="email" required />
+          </div>
+          <div class="console-row">
+            <label for="f-project" style="font-family: var(--font-mono); font-size: 15px; color: #E84A27; flex: none; width: 78px;">project&gt;</label>
+            <input id="f-project" name="project" type="text" class="console-input" placeholder="storefront / ml feature / security review" />
+          </div>
+          <div class="console-row" style="align-items: flex-start;">
+            <label for="f-message" style="font-family: var(--font-mono); font-size: 15px; color: #E84A27; flex: none; width: 78px; padding-top: 2px;">message&gt;</label>
+            <textarea id="f-message" name="message" rows="3" class="console-input" placeholder="What it is, when you need it, what 'done' looks like." style="resize: vertical; line-height: 1.55;"></textarea>
+          </div>
+
+          <!-- Honeypot: off-screen, aria-hidden, tabindex=-1 -->
+          <div class="hp-field" aria-hidden="true">
+            <label for="f-company">Company (leave blank)</label>
+            <input id="f-company" name="company" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; flex-wrap: wrap;">
+            <div id="console-status" aria-live="polite" role="status" style="min-height: 22px; flex: 1; min-width: 240px; font-family: var(--font-mono); font-size: 13.5px; color: #9fd1a0;"></div>
+            <button type="submit" style="font-family: var(--font-mono); font-weight: 600; font-size: 14px; letter-spacing: .08em; background: #E84A27; color: #fff; border: none; border-radius: 3px; padding: 11px 26px; cursor: pointer; flex: none;">RUN →</button>
+          </div>
+        </form>
+      </div>
+      <p style="font-family: var(--font-mono); font-size: 13px; color: rgba(27,42,51,.6); margin: 16px 0 0;">Prefer plain email? <a href="mailto:hello@ponderance.dev" style="color: #E84A27; border-bottom: 1px solid #E84A27; padding-bottom: 1px; text-decoration: none;">hello@ponderance.dev</a> — the mailto fallback, always available.</p>
+    </section>
+
+  </div>
+</Base>

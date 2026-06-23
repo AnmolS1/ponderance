@@ -1,0 +1,123 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+
+<Base
+  title="Workshop — ponderance"
+  description="Production work, taken apart so you can see the folds."
+  footerLink={{ href: '/commissions', label: 'commission a build →' }}
+>
+  <style>
+    @keyframes snapIn{0%{opacity:0;transform:translateY(-24px);}70%{opacity:1;transform:translateY(4px);}100%{opacity:1;transform:translateY(0);}}
+    .stud{opacity:1;}
+    @supports (animation-timeline:view()){
+      .stud{opacity:0;animation:snapIn 1s cubic-bezier(.34,1.56,.64,1) both;animation-timeline:view();animation-range:entry 2% cover 26%;}
+    }
+    @media (prefers-reduced-motion:reduce){.stud{opacity:1!important;transform:none!important;animation:none!important;}}
+  </style>
+
+  <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
+
+    <header style="padding: 52px 0 40px;">
+      <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 16px;">the workshop · selected builds</p>
+      <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(38px,4.6vw,58px); line-height: 1.04; letter-spacing: -.025em; color: #1B2A33; margin: 0; max-width: 20ch;">Production work, taken apart so you can see the folds.</h1>
+    </header>
+
+    <!-- LEAD CASE STUDY -->
+    <section aria-label="Lead case study" style="border: 1px solid rgba(46,94,140,.28); border-radius: 6px; overflow: hidden; background: #F6F7F4; margin-bottom: 24px;">
+      <div style="display: grid; grid-template-columns: 1.05fr .95fr;">
+        <div style="padding: 34px 36px 36px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #fff; background: #E84A27; border-radius: 2px; padding: 4px 10px;">lead case study</span>
+            <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">2025 · production</span>
+          </div>
+          <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 36px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 10px;">shreyachanth.com</h2>
+          <p style="font-family: var(--font-body); font-size: 17px; line-height: 1.6; color: rgba(27,42,51,.6); margin: 0 0 24px; max-width: 34rem;">A portfolio for a working artist that had to do three things at once: load instantly, survive a hostile internet, and let a non-technical owner edit it without ever calling me. So I built it like infrastructure, not a brochure.</p>
+          <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 26px;">
+            <div style="display: flex; gap: 14px;"><span style="font-family: var(--font-mono); font-size: 13px; color: #E84A27; font-weight: 600; flex: none; width: 18px;">↳</span><p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.5; color: #1B2A33; margin: 0;"><strong>Edge-first on Cloudflare Workers.</strong> Rate-limited functions guard the inquiry path; Turnstile stops bots without a third-party captcha widget breaking the CSP.</p></div>
+            <div style="display: flex; gap: 14px;"><span style="font-family: var(--font-mono); font-size: 13px; color: #E84A27; font-weight: 600; flex: none; width: 18px;">↳</span><p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.5; color: #1B2A33; margin: 0;"><strong>R2 for media,</strong> so a gallery of large images stays fast and cheap, served from the edge.</p></div>
+            <div style="display: flex; gap: 14px;"><span style="font-family: var(--font-mono); font-size: 13px; color: #E84A27; font-weight: 600; flex: none; width: 18px;">↳</span><p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.5; color: #1B2A33; margin: 0;"><strong>CI-gated.</strong> Nothing merges until lint, types, a11y checks, and a Semgrep scan all pass.</p></div>
+            <div style="display: flex; gap: 14px;"><span style="font-family: var(--font-mono); font-size: 13px; color: #E84A27; font-weight: 600; flex: none; width: 18px;">↳</span><p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.5; color: #1B2A33; margin: 0;"><strong>WCAG AA throughout,</strong> and an editing flow the owner uses happily on her own.</p></div>
+          </div>
+          <div style="display: flex; gap: 28px; border-top: 1px solid rgba(46,94,140,.28); padding-top: 20px; margin-bottom: 22px;">
+            <div><p style="font-family: var(--font-display); font-weight: 700; font-size: 26px; color: #1B2A33; margin: 0;">100</p><p style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(27,42,51,.6); margin: 2px 0 0;">Lighthouse a11y</p></div>
+            <div><p style="font-family: var(--font-display); font-weight: 700; font-size: 26px; color: #1B2A33; margin: 0;">~40ms</p><p style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(27,42,51,.6); margin: 2px 0 0;">edge TTFB</p></div>
+            <div><p style="font-family: var(--font-display); font-weight: 700; font-size: 26px; color: #1B2A33; margin: 0;">0</p><p style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(27,42,51,.6); margin: 2px 0 0;">support calls</p></div>
+          </div>
+          <a href="/workshop/shreyachanth" style="font-family: var(--font-body); font-weight: 600; font-size: 15px; color: #E84A27; border-bottom: 1px solid #E84A27; padding-bottom: 2px; text-decoration: none;">Read the case study →</a>
+        </div>
+        <!-- Striped placeholder -->
+        <div style="position: relative; background: repeating-linear-gradient(135deg,#e3e6e0,#e3e6e0 11px,#dde1da 11px,#dde1da 22px); border-left: 1px solid rgba(46,94,140,.28); display: flex; align-items: center; justify-content: center; min-height: 360px;">
+          <div aria-hidden="true" style="position: absolute; top: 0; right: 0; width: 46px; height: 46px; background: linear-gradient(135deg,transparent 50%,rgba(46,94,140,.18) 50%); border-left: 1px solid rgba(46,94,140,.28); border-bottom: 1px solid rgba(46,94,140,.28);"></div>
+          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 3px; padding: 8px 14px;">[ shreyachanth.com — screenshot ]</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECONDARY BUILD -->
+    <section aria-label="Secondary build" style="border: 1px solid rgba(46,94,140,.28); border-radius: 6px; overflow: hidden; background: #F6F7F4; margin-bottom: 50px; display: grid; grid-template-columns: .42fr .58fr;">
+      <div style="position: relative; background: repeating-linear-gradient(135deg,#e3e6e0,#e3e6e0 11px,#dde1da 11px,#dde1da 22px); display: flex; align-items: center; justify-content: center; min-height: 220px; border-right: 1px solid rgba(46,94,140,.28);">
+        <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 3px; padding: 8px 14px;">[ storefront — screenshot ]</span>
+      </div>
+      <div style="padding: 30px 34px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #2E5E8C; border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 10px;">secondary</span>
+          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">commerce</span>
+        </div>
+        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 10px;">honey-i-drank-the-lassi</h2>
+        <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.58; color: rgba(27,42,51,.6); margin: 0 0 18px; max-width: 36rem;">A custom Shopify storefront hand-built in Liquid — no page-builder, no theme bloat. Proof that "ML engineer" and "ships a real commerce frontend" live comfortably in the same person.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 9px;">Shopify</span>
+          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 9px;">Liquid</span>
+          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 9px;">custom theme</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS SET — Lego studs, CSS scroll-driven -->
+    <section aria-label="Skills" style="padding-bottom: 50px; border-bottom: 1px solid rgba(46,94,140,.28);">
+      <div style="margin-bottom: 26px;">
+        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 30px; letter-spacing: -.02em; color: #1B2A33; margin: 0; max-width: 20ch;">The skills set, modular by nature — they actually snap together</h2>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(5,1fr); gap: 14px;">
+        {[
+          { title: 'ML / AI', desc: 'Granite, evals, pipelines, agents you can trust.' },
+          { title: 'Security', desc: 'Abuse detection, Android, threat modeling.' },
+          { title: 'Full-stack', desc: 'Astro, Liquid, real production frontends.' },
+          { title: 'Infra / Cloud', desc: 'Cloudflare edge, R2, CI/CD, homelab.' },
+          { title: 'Automation', desc: 'Agents, glue, the boring parts made boring.' },
+        ].map(s => (
+          <div class="stud" style="position: relative; background: #2A2A6E; border-radius: 4px; padding: 30px 18px 22px; margin-top: 9px;">
+            <div aria-hidden="true" style="position: absolute; top: -9px; left: 14px; display: flex; gap: 8px;">
+              <span style="width: 16px; height: 9px; border-radius: 9px 9px 4px 4px; background: #3a3a85;"></span>
+              <span style="width: 16px; height: 9px; border-radius: 9px 9px 4px 4px; background: #3a3a85;"></span>
+            </div>
+            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 17px; color: #fff; margin: 0 0 8px;">{s.title}</h3>
+            <p style="font-family: var(--font-mono); font-size: 11.5px; line-height: 1.55; color: #b9bbe4; margin: 0;">{s.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- OTHER BUILDS -->
+    <section aria-label="Other builds" style="padding: 46px 0 56px;">
+      <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 24px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 20px;">Other builds</h2>
+      <div style="display: grid; grid-template-columns: repeat(5,1fr); gap: 14px;">
+        {[
+          { cat: '/ ml', title: 'Pluto', desc: 'A small model, a big question.' },
+          { cat: '/ security', title: 'IronShell', desc: 'A hardened shell, on purpose.' },
+          { cat: '/ research', title: 'SpamStudy', desc: 'What spam taught me about systems.' },
+          { cat: '/ security', title: 'AndroidSec', desc: 'Assume the device is hostile.' },
+          { cat: '/ tools', title: 'Sortle', desc: 'A daily puzzle, quietly addictive.' },
+        ].map(b => (
+          <div style="display: block; background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 18px 18px 20px;">
+            <p style="font-family: var(--font-mono); font-size: 11px; color: #D9A521; margin: 0 0 8px;">{b.cat}</p>
+            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 17px; color: #1B2A33; margin: 0 0 4px;">{b.title}</h3>
+            <p style="font-family: var(--font-body); font-size: 13px; line-height: 1.45; color: rgba(27,42,51,.6); margin: 0;">{b.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+  </div>
+</Base>

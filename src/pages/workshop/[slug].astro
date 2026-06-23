@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('work');
+  return entries.map(entry => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, summary, role, stack, liveUrl, repo } = entry.data;
+---
+
+<Base
+  title={`${title} — Workshop — ponderance`}
+  description={summary}
+  footerLink={{ href: '/workshop', label: '← all work' }}
+>
+  <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
+
+    <a href="/workshop" style="display: inline-block; margin: 26px 0 0; font-family: var(--font-body); font-weight: 600; font-size: 14px; color: #2E5E8C; text-decoration: none;">← Workshop</a>
+
+    <!-- Article head -->
+    <header style="padding: 20px 0 30px; border-bottom: 1px solid rgba(46,94,140,.28); max-width: 72ch;">
+      <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #fff; background: #E84A27; border-radius: 2px; padding: 4px 10px; display: inline-block; margin: 0 0 16px;">case study</p>
+      <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(32px,4vw,48px); line-height: 1.06; letter-spacing: -.025em; color: #1B2A33; margin: 0 0 12px;">{title}</h1>
+      <p style="font-family: var(--font-body); font-style: italic; font-size: 18px; line-height: 1.55; color: rgba(27,42,51,.6); margin: 0 0 16px;">{summary}</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px;">
+        <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6);">{role}</span>
+        <span aria-hidden="true" style="color: rgba(46,94,140,.28);">·</span>
+        {stack.map((s: string) => (
+          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 3px 8px;">{s}</span>
+        ))}
+      </div>
+      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+        {liveUrl && <a href={liveUrl} style="font-family: var(--font-body); font-weight: 600; font-size: 14px; color: #E84A27; border-bottom: 1px solid #E84A27; padding-bottom: 1px; text-decoration: none;">View live ↗</a>}
+        {repo && <a href={repo} style="font-family: var(--font-body); font-weight: 600; font-size: 14px; color: #2E5E8C; border-bottom: 1px solid rgba(46,94,140,.28); padding-bottom: 1px; text-decoration: none;">GitHub →</a>}
+      </div>
+    </header>
+
+    <!-- MDX body -->
+    <div style="max-width: 65ch; padding: 30px 0 60px; font-family: var(--font-body); font-size: 18px; line-height: 1.72; color: #1B2A33;">
+      <Content />
+    </div>
+
+  </div>
+</Base>
+
+<style is:global>
+  .max-w-65ch h2{font-family:var(--font-display);font-weight:600;font-size:24px;letter-spacing:-.015em;color:#1B2A33;margin:36px 0 14px;}
+  .max-w-65ch p{margin:0 0 20px;}
+  .max-w-65ch ul,.max-w-65ch ol{margin:0 0 20px;padding-left:1.4em;}
+  .max-w-65ch li{margin-bottom:8px;}
+  .max-w-65ch strong{font-weight:700;}
+  .max-w-65ch a{color:#2E5E8C;border-bottom:1px solid rgba(46,94,140,.28);}
+</style>
