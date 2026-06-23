@@ -1,17 +1,18 @@
 ---
-import '../styles/global.css';
+import Base from '../layouts/Base.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base
+  title="ponderance — Anmol"
+  description="Rigorous systems, folded into things that feel alive. ML, security, and frontend work by Anmol."
+>
+  <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px; padding-top: 64px; padding-bottom: 64px;">
+    <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 18px;">crease pattern → crane</p>
+    <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(44px, 5.6vw, 76px); line-height: 1.04; letter-spacing: -0.025em; color: #1B2A33; margin: 0 0 24px; max-width: 14ch;">
+      Rigorous systems, folded into things that <em style="font-style: normal; color: #E84A27;">feel alive.</em>
+    </h1>
+    <p style="font-family: var(--font-body); font-size: 20px; line-height: 1.55; color: rgba(27, 42, 51, 0.6); max-width: 48ch; margin: 0;">
+      ML and security engineering, production frontends, and the occasional paper crane.
+    </p>
+  </div>
+</Base>

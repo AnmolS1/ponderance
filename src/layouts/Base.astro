@@ -1,0 +1,131 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  /** Optional right-side content for the footer (e.g. contextual link) */
+  footerLink?: { href: string; label: string };
+}
+
+const {
+  title,
+  description = 'Rigorous systems, folded into things that feel alive.',
+  ogImage = '/og-image.png',
+  footerLink,
+} = Astro.props;
+
+const site = Astro.site!;
+const ogImageURL = new URL(ogImage, site).href;
+const faviconSVG = new URL('/favicon.svg', site).href;
+const faviconICO = new URL('/favicon.ico', site).href;
+const appleTouchIcon = new URL('/apple-touch-icon.png', site).href;
+
+const path = Astro.url.pathname;
+
+const navLinks = [
+  { href: '/',            label: 'Ponderance' },
+  { href: '/whoami',      label: 'Whoami'     },
+  { href: '/workshop',    label: 'Workshop'   },
+  { href: '/commissions', label: 'Commissions'},
+  { href: '/marginalia',  label: 'Marginalia' },
+];
+
+function isActive(href: string) {
+  return href === '/' ? path === '/' : path.startsWith(href);
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href={faviconSVG} />
+    <link rel="icon" href={faviconICO} />
+    <link rel="apple-touch-icon" href={appleTouchIcon} />
+    <meta name="theme-color" content="#0d1525" />
+
+    <!-- Title & description -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Open Graph -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:site_name"   content="ponderance.dev" />
+    <meta property="og:title"       content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image"       content={ogImageURL} />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image"       content={ogImageURL} />
+  </head>
+
+  <body>
+    <!-- Skip navigation link (visually hidden until focused) -->
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <!-- ── Header / nav ─────────────────────────────────── -->
+    <header style="border-bottom: 1px solid rgba(46, 94, 140, 0.28); position: sticky; top: 0; z-index: 50; background-color: #EEF0EC; background-image: linear-gradient(rgba(46, 94, 140, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(46, 94, 140, 0.07) 1px, transparent 1px); background-size: 32px 32px; background-position: -1px -1px;">
+      <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; padding-top: 26px; padding-bottom: 22px;">
+
+        <!-- Brand -->
+        <a href="/" aria-label="ponderance — home" style="display: flex; align-items: center; gap: 11px; text-decoration: none;">
+          <img
+            src="/logo-amber.svg"
+            width="30"
+            height="30"
+            alt=""
+            aria-hidden="true"
+            style="display: block; border-radius: 50%; flex: none;"
+          />
+          <span style="font-family: var(--font-display); font-weight: 700; font-size: 24px; letter-spacing: -0.02em; color: #1B2A33;">ponderance</span>
+          <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em; color: #2E5E8C; text-transform: uppercase;">/ anmol</span>
+        </a>
+
+        <!-- Nav links -->
+        <nav aria-label="Primary">
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 30px;">
+            {navLinks.map(({ href, label }) => (
+              <li>
+                <a
+                  href={href}
+                  class="nav-link"
+                  aria-current={isActive(href) ? 'page' : undefined}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ── Main content ──────────────────────────────────── -->
+    <main id="main">
+      <slot />
+    </main>
+
+    <!-- ── Footer ───────────────────────────────────────── -->
+    <footer style="border-top: 1px solid rgba(46, 94, 140, 0.28); padding: 22px 0 44px;">
+      <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 11.5px; color: rgba(27, 42, 51, 0.4);">
+        <span>© 2026 Anmol · ponderance.dev</span>
+        {footerLink && (
+          <a href={footerLink.href} style="color: #2E5E8C; transition: color 0.15s;">
+            {footerLink.label}
+          </a>
+        )}
+      </div>
+    </footer>
+  </body>
+</html>
