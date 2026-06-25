@@ -1,5 +1,55 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+
+const lead = work.find(w => w.data.featured) ?? work[0];
+const secondary = work.find(w => w.data.order === 2 && w.id !== lead?.id);
+const rest = work.filter(w => w.id !== lead?.id && w.id !== secondary?.id);
+
+const CATEGORY_LABELS: Record<string, string> = {
+  ml: 'ML / AI',
+  security: 'Security',
+  frontend: 'Frontend',
+  infra: 'Infra',
+  automation: 'Automation',
+  games: 'Games',
+  devtools: 'Dev tools',
+};
+// Lead with the newer/distinctive groups, then the rest.
+const CATEGORY_ORDER = ['games', 'devtools', 'frontend', 'ml', 'infra', 'security', 'automation'];
+const categoryGroups = CATEGORY_ORDER
+  .map(cat => ({ cat, label: CATEGORY_LABELS[cat], items: rest.filter(w => w.data.category === cat) }))
+  .filter(g => g.items.length > 0);
+
+// Skills set (page copy, not a work entry) — maps the five skill groups to the
+// evidence above. The professional ML/AI line keeps the third-party IDP
+// platform unnamed and the federal context general, per the brief.
+const skills = [
+  {
+    title: 'ML / AI',
+    desc: 'IBM intelligent document processing — OCR/NLP model dev & evaluation, LLM work on Granite, automation frameworks non-technical teammates can build on. Plus Calendar OCR, SpamStudy, spoti_data.',
+  },
+  {
+    title: 'Security',
+    desc: 'The discofin homelab series: VPN namespacing, the Docker firewall footgun, supply-chain-gated updates, threat-modeled auth. And the Android app-privacy study.',
+  },
+  {
+    title: 'Full-stack',
+    desc: 'shreyachanth, Golu Molu (Shopify/Liquid), Haven’s Artistry, BigStorage, Sister Isles, Resumable, weeboweebo — real production frontends.',
+  },
+  {
+    title: 'Infra / Cloud',
+    desc: 'Cloudflare Workers, Durable Objects, D1, Pages, R2; the discofin homelab; homelab-glance; IronShell on Kubernetes.',
+  },
+  {
+    title: 'Automation',
+    desc: 'Spotify2MP3, the homelab’s automation, and agent-authored build plans behind IronShell and Resumable.',
+  },
+];
+
+const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, '') : null);
 ---
 
 <Base
@@ -14,6 +64,13 @@ import Base from '../../layouts/Base.astro';
       .stud{opacity:0;animation:snapIn 1s cubic-bezier(.34,1.56,.64,1) both;animation-timeline:view();animation-range:entry 2% cover 26%;}
     }
     @media (prefers-reduced-motion:reduce){.stud{opacity:1!important;transform:none!important;animation:none!important;}}
+    .build-card{display:flex;flex-direction:column;background:#F6F7F4;border:1px solid rgba(46,94,140,.28);border-radius:5px;overflow:hidden;transition:transform .18s ease,box-shadow .18s ease;text-decoration:none;}
+    .build-card:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(27,42,51,.10);}
+    .build-card:hover h3{color:#E84A27;}
+    .build-cover{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;border-bottom:1px solid rgba(46,94,140,.18);background:#eef0ea;}
+    .meta-link{font-family:var(--font-mono);font-size:11px;color:#2E5E8C;text-decoration:none;border-bottom:1px solid rgba(46,94,140,.3);}
+    @media (prefers-reduced-motion:reduce){.build-card{transition:none!important;}}
+    @media (max-width:720px){.grid-builds{grid-template-columns:1fr 1fr!important;}.skills-grid{grid-template-columns:1fr 1fr!important;}.lead-grid,.secondary-grid{grid-template-columns:1fr!important;}}
   </style>
 
   <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
@@ -24,69 +81,74 @@ import Base from '../../layouts/Base.astro';
     </header>
 
     <!-- LEAD CASE STUDY -->
-    <section aria-label="Lead case study" style="border: 1px solid rgba(46,94,140,.28); border-radius: 6px; overflow: hidden; background: #F6F7F4; margin-bottom: 24px;">
-      <div style="display: grid; grid-template-columns: 1.05fr .95fr;">
-        <div style="padding: 34px 36px 36px;">
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
-            <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #fff; background: #E84A27; border-radius: 2px; padding: 4px 10px;">lead case study</span>
-            <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">2025 · production</span>
+    {lead && (
+      <section aria-label="Lead case study" style="border: 1px solid rgba(46,94,140,.28); border-radius: 6px; overflow: hidden; background: #F6F7F4; margin-bottom: 24px;">
+        <div class="lead-grid" style="display: grid; grid-template-columns: 1.05fr .95fr;">
+          <div style="padding: 34px 36px 36px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+              <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #fff; background: #E84A27; border-radius: 2px; padding: 4px 10px;">lead case study</span>
+              <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">{lead.data.role}</span>
+            </div>
+            <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 36px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 12px;">{lead.data.title}</h2>
+            <p style="font-family: var(--font-body); font-size: 17px; line-height: 1.6; color: rgba(27,42,51,.6); margin: 0 0 22px; max-width: 34rem;">{lead.data.summary}</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;">
+              {lead.data.stack.map(s => (
+                <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 9px;">{s}</span>
+              ))}
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+              <a href={`/workshop/${lead.id}`} style="font-family: var(--font-body); font-weight: 600; font-size: 15px; color: #E84A27; border-bottom: 1px solid #E84A27; padding-bottom: 2px; text-decoration: none;">Read the case study →</a>
+              {lead.data.liveUrl && <a class="meta-link" href={lead.data.liveUrl} target="_blank" rel="noopener">{tokenLink(lead.data.liveUrl)} ↗</a>}
+              {lead.data.repo && <a class="meta-link" href={lead.data.repo} target="_blank" rel="noopener">source ↗</a>}
+            </div>
           </div>
-          <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 36px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 10px;">shreyachanth.com</h2>
-          <p style="font-family: var(--font-body); font-size: 17px; line-height: 1.6; color: rgba(27,42,51,.6); margin: 0 0 24px; max-width: 34rem;">A portfolio for a working artist that had to do three things at once: load instantly, survive a hostile internet, and let a non-technical owner edit it without ever calling me. So I built it like infrastructure, not a brochure.</p>
-          <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 26px;">
-            <div style="display: flex; gap: 14px;"><span style="font-family: var(--font-mono); font-size: 13px; color: #E84A27; font-weight: 600; flex: none; width: 18px;">↳</span><p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.5; color: #1B2A33; margin: 0;"><strong>Edge-first on Cloudflare Workers.</strong> Rate-limited functions guard the inquiry path; Turnstile stops bots without a third-party captcha widget breaking the CSP.</p></div>
-            <div style="display: flex; gap: 14px;"><span style="font-family: var(--font-mono); font-size: 13px; color: #E84A27; font-weight: 600; flex: none; width: 18px;">↳</span><p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.5; color: #1B2A33; margin: 0;"><strong>R2 for media,</strong> so a gallery of large images stays fast and cheap, served from the edge.</p></div>
-            <div style="display: flex; gap: 14px;"><span style="font-family: var(--font-mono); font-size: 13px; color: #E84A27; font-weight: 600; flex: none; width: 18px;">↳</span><p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.5; color: #1B2A33; margin: 0;"><strong>CI-gated.</strong> Nothing merges until lint, types, a11y checks, and a Semgrep scan all pass.</p></div>
-            <div style="display: flex; gap: 14px;"><span style="font-family: var(--font-mono); font-size: 13px; color: #E84A27; font-weight: 600; flex: none; width: 18px;">↳</span><p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.5; color: #1B2A33; margin: 0;"><strong>WCAG AA throughout,</strong> and an editing flow the owner uses happily on her own.</p></div>
+          <div style="position: relative; border-left: 1px solid rgba(46,94,140,.28); min-height: 360px; background: #eef0ea;">
+            {lead.data.cover
+              ? <img src={lead.data.cover} alt={`${lead.data.title} cover`} style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+              : <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#e3e6e0,#e3e6e0 11px,#dde1da 11px,#dde1da 22px);"></div>}
           </div>
-          <div style="display: flex; gap: 28px; border-top: 1px solid rgba(46,94,140,.28); padding-top: 20px; margin-bottom: 22px;">
-            <div><p style="font-family: var(--font-display); font-weight: 700; font-size: 26px; color: #1B2A33; margin: 0;">100</p><p style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(27,42,51,.6); margin: 2px 0 0;">Lighthouse a11y</p></div>
-            <div><p style="font-family: var(--font-display); font-weight: 700; font-size: 26px; color: #1B2A33; margin: 0;">~40ms</p><p style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(27,42,51,.6); margin: 2px 0 0;">edge TTFB</p></div>
-            <div><p style="font-family: var(--font-display); font-weight: 700; font-size: 26px; color: #1B2A33; margin: 0;">0</p><p style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(27,42,51,.6); margin: 2px 0 0;">support calls</p></div>
-          </div>
-          <a href="/workshop/shreyachanth" style="font-family: var(--font-body); font-weight: 600; font-size: 15px; color: #E84A27; border-bottom: 1px solid #E84A27; padding-bottom: 2px; text-decoration: none;">Read the case study →</a>
         </div>
-        <!-- Striped placeholder -->
-        <div style="position: relative; background: repeating-linear-gradient(135deg,#e3e6e0,#e3e6e0 11px,#dde1da 11px,#dde1da 22px); border-left: 1px solid rgba(46,94,140,.28); display: flex; align-items: center; justify-content: center; min-height: 360px;">
-          <div aria-hidden="true" style="position: absolute; top: 0; right: 0; width: 46px; height: 46px; background: linear-gradient(135deg,transparent 50%,rgba(46,94,140,.18) 50%); border-left: 1px solid rgba(46,94,140,.28); border-bottom: 1px solid rgba(46,94,140,.28);"></div>
-          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 3px; padding: 8px 14px;">[ shreyachanth.com — screenshot ]</span>
-        </div>
-      </div>
-    </section>
+      </section>
+    )}
 
     <!-- SECONDARY BUILD -->
-    <section aria-label="Secondary build" style="border: 1px solid rgba(46,94,140,.28); border-radius: 6px; overflow: hidden; background: #F6F7F4; margin-bottom: 50px; display: grid; grid-template-columns: .42fr .58fr;">
-      <div style="position: relative; background: repeating-linear-gradient(135deg,#e3e6e0,#e3e6e0 11px,#dde1da 11px,#dde1da 22px); display: flex; align-items: center; justify-content: center; min-height: 220px; border-right: 1px solid rgba(46,94,140,.28);">
-        <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 3px; padding: 8px 14px;">[ storefront — screenshot ]</span>
-      </div>
-      <div style="padding: 30px 34px;">
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-          <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #2E5E8C; border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 10px;">secondary</span>
-          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">commerce</span>
+    {secondary && (
+      <section aria-label="Secondary build" style="border: 1px solid rgba(46,94,140,.28); border-radius: 6px; overflow: hidden; background: #F6F7F4; margin-bottom: 50px;">
+        <div class="secondary-grid" style="display: grid; grid-template-columns: .42fr .58fr;">
+          <div style="position: relative; min-height: 220px; border-right: 1px solid rgba(46,94,140,.28); background: #eef0ea;">
+            {secondary.data.cover
+              ? <img src={secondary.data.cover} alt={`${secondary.data.title} cover`} style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+              : <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#e3e6e0,#e3e6e0 11px,#dde1da 11px,#dde1da 22px);"></div>}
+          </div>
+          <div style="padding: 30px 34px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #2E5E8C; border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 10px;">secondary</span>
+              <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">{CATEGORY_LABELS[secondary.data.category]}</span>
+            </div>
+            <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 10px;">{secondary.data.title}</h2>
+            <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.58; color: rgba(27,42,51,.6); margin: 0 0 18px; max-width: 36rem;">{secondary.data.summary}</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+              {secondary.data.stack.map(s => (
+                <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 9px;">{s}</span>
+              ))}
+            </div>
+            <div style="display: flex; align-items: center; gap: 18px;">
+              <a href={`/workshop/${secondary.id}`} style="font-family: var(--font-body); font-weight: 600; font-size: 14px; color: #E84A27; border-bottom: 1px solid #E84A27; padding-bottom: 1px; text-decoration: none;">Open build →</a>
+              {secondary.data.liveUrl && <a class="meta-link" href={secondary.data.liveUrl} target="_blank" rel="noopener">{tokenLink(secondary.data.liveUrl)} ↗</a>}
+              {secondary.data.repo && <a class="meta-link" href={secondary.data.repo} target="_blank" rel="noopener">source ↗</a>}
+            </div>
+          </div>
         </div>
-        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 10px;">honey-i-drank-the-lassi</h2>
-        <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.58; color: rgba(27,42,51,.6); margin: 0 0 18px; max-width: 36rem;">A custom Shopify storefront hand-built in Liquid — no page-builder, no theme bloat. Proof that "ML engineer" and "ships a real commerce frontend" live comfortably in the same person.</p>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 9px;">Shopify</span>
-          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 9px;">Liquid</span>
-          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 9px;">custom theme</span>
-        </div>
-      </div>
-    </section>
+      </section>
+    )}
 
     <!-- SKILLS SET — Lego studs, CSS scroll-driven -->
     <section aria-label="Skills" style="padding-bottom: 50px; border-bottom: 1px solid rgba(46,94,140,.28);">
       <div style="margin-bottom: 26px;">
         <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 30px; letter-spacing: -.02em; color: #1B2A33; margin: 0; max-width: 20ch;">The skills set, modular by nature — they actually snap together</h2>
       </div>
-      <div style="display: grid; grid-template-columns: repeat(5,1fr); gap: 14px;">
-        {[
-          { title: 'ML / AI', desc: 'Granite, evals, pipelines, agents you can trust.' },
-          { title: 'Security', desc: 'Abuse detection, Android, threat modeling.' },
-          { title: 'Full-stack', desc: 'Astro, Liquid, real production frontends.' },
-          { title: 'Infra / Cloud', desc: 'Cloudflare edge, R2, CI/CD, homelab.' },
-          { title: 'Automation', desc: 'Agents, glue, the boring parts made boring.' },
-        ].map(s => (
+      <div class="skills-grid" style="display: grid; grid-template-columns: repeat(5,1fr); gap: 14px;">
+        {skills.map(s => (
           <div class="stud" style="position: relative; background: #2A2A6E; border-radius: 4px; padding: 30px 18px 22px; margin-top: 9px;">
             <div aria-hidden="true" style="position: absolute; top: -9px; left: 14px; display: flex; gap: 8px;">
               <span style="width: 16px; height: 9px; border-radius: 9px 9px 4px 4px; background: #3a3a85;"></span>
@@ -99,24 +161,35 @@ import Base from '../../layouts/Base.astro';
       </div>
     </section>
 
-    <!-- OTHER BUILDS -->
+    <!-- OTHER BUILDS — grouped by category -->
     <section aria-label="Other builds" style="padding: 46px 0 56px;">
-      <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 24px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 20px;">Other builds</h2>
-      <div style="display: grid; grid-template-columns: repeat(5,1fr); gap: 14px;">
-        {[
-          { cat: '/ ml', title: 'Pluto', desc: 'A small model, a big question.' },
-          { cat: '/ security', title: 'IronShell', desc: 'A hardened shell, on purpose.' },
-          { cat: '/ research', title: 'SpamStudy', desc: 'What spam taught me about systems.' },
-          { cat: '/ security', title: 'AndroidSec', desc: 'Assume the device is hostile.' },
-          { cat: '/ tools', title: 'Sortle', desc: 'A daily puzzle, quietly addictive.' },
-        ].map(b => (
-          <div style="display: block; background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 18px 18px 20px;">
-            <p style="font-family: var(--font-mono); font-size: 11px; color: #D9A521; margin: 0 0 8px;">{b.cat}</p>
-            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 17px; color: #1B2A33; margin: 0 0 4px;">{b.title}</h3>
-            <p style="font-family: var(--font-body); font-size: 13px; line-height: 1.45; color: rgba(27,42,51,.6); margin: 0;">{b.desc}</p>
+      <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 24px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 6px;">Other builds</h2>
+      <p style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4); margin: 0 0 28px;">grouped by what they are</p>
+
+      {categoryGroups.map(group => (
+        <div style="margin-bottom: 38px;">
+          <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid rgba(46,94,140,.13); padding-bottom: 8px;">
+            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 18px; color: #1B2A33; margin: 0;">{group.label}</h3>
+            <span style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(27,42,51,.4);">{group.items.length} {group.items.length === 1 ? 'build' : 'builds'}</span>
           </div>
-        ))}
-      </div>
+          <div class="grid-builds" style="display: grid; grid-template-columns: repeat(3,1fr); gap: 16px;">
+            {group.items.map(w => (
+              <a class="build-card" href={`/workshop/${w.id}`}>
+                {w.data.cover && <img class="build-cover" src={w.data.cover} alt={`${w.data.title} cover`} loading="lazy" />}
+                <div style="padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1;">
+                  <p style="font-family: var(--font-mono); font-size: 11px; color: #D9A521; margin: 0 0 8px;">/ {group.label.toLowerCase()}</p>
+                  <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 17px; color: #1B2A33; margin: 0 0 6px; transition: color .18s ease;">{w.data.title}</h3>
+                  <p style="font-family: var(--font-body); font-size: 13px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0 0 12px;">{w.data.summary}</p>
+                  <div style="margin-top: auto; display: flex; gap: 14px;">
+                    {w.data.liveUrl && <span class="meta-link" style="border:0;">{tokenLink(w.data.liveUrl)} ↗</span>}
+                    {w.data.repo && <span class="meta-link" style="border:0;">source ↗</span>}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
     </section>
 
   </div>

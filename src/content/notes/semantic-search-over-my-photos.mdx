@@ -12,6 +12,11 @@ I can type *red bicycle in the snow* into my self-hosted photo library and it pu
 
 Here's the machine. The photo server runs a small machine-learning container. When a photo comes in, it runs the image through a CLIP-style model[^clip] that turns the picture into an embedding, a few hundred numbers, trained so that an image and a sentence describing it land in nearly the same place. Those vectors go into Postgres next to the usual rows, using a vector extension (pgvecto-rs), so a photo isn't only EXIF and a file path anymore. It has a column that's a point in space.
 
+<figure>
+  <img src="/marginalia/embedding-space.svg" alt="A text query and a photo are each encoded into the same vector space; search returns the photo whose vector has the smallest angle (cosine distance) to the query." />
+  <figcaption>Words and photos land in one space; search is just the smallest angle.</figcaption>
+</figure>
+
 At search time, the words I typed run through the same model into the same space. So "find me matching photos" becomes, literally, "find the stored vectors nearest this query vector." Nearness is cosine similarity, the cosine of the angle between two vectors:
 
 $$

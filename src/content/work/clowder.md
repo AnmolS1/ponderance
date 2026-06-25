@@ -6,7 +6,6 @@ summary: "A co-op survival game about a clowder of cats holding a low-poly city,
 role: "Solo developer"
 stack: ["Godot 4", "GDScript"]
 category: "games"
-repo: "https://github.com/AnmolS1/clowder"
 featured: false
 order: 17
 ---

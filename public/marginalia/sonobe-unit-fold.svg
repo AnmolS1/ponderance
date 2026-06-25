@@ -1,0 +1,36 @@
+<svg viewBox="0 0 570 600" xmlns="http://www.w3.org/2000/svg" role="img" width="100%" style="max-width:570px;height:auto">
+<polygon points="75,75 225,75 225,225 75,225" fill="#EEF0EC" fill-opacity="1" stroke="#1B2A33" stroke-width="2.2" stroke-linejoin="round"/>
+<line x1="75" y1="150" x2="225" y2="150" stroke="#2E5E8C" stroke-width="1.8" stroke-opacity="1" stroke-linecap="round" stroke-dasharray="7 5"/>
+<line x1="207" y1="211" x2="207" y2="164" stroke="#2E5E8C" stroke-width="1.6" stroke-opacity="1" stroke-linecap="round"/>
+<line x1="207" y1="164" x2="210.91" y2="172.1" stroke="#2E5E8C" stroke-width="1.6" stroke-opacity="1" stroke-linecap="round"/>
+<line x1="207" y1="164" x2="203.09" y2="172.1" stroke="#2E5E8C" stroke-width="1.6" stroke-opacity="1" stroke-linecap="round"/>
+<text x="195" y="63" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="11" font-weight="400" fill="#2E5E8C" fill-opacity="0.9" text-anchor="middle">valley, then unfold</text>
+<text x="75" y="259" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" font-weight="400" fill="#1B2A33" fill-opacity="1" text-anchor="start">1 · crease the midline</text>
+<polygon points="345,75 495,75 495,225 345,225" fill="#EEF0EC" fill-opacity="1" stroke="#1B2A33" stroke-width="2.2" stroke-linejoin="round"/>
+<line x1="345" y1="112.5" x2="495" y2="112.5" stroke="#2E5E8C" stroke-width="1.6" stroke-opacity="1" stroke-linecap="round" stroke-dasharray="7 5"/>
+<line x1="345" y1="187.5" x2="495" y2="187.5" stroke="#2E5E8C" stroke-width="1.6" stroke-opacity="1" stroke-linecap="round" stroke-dasharray="7 5"/>
+<line x1="420" y1="87" x2="420" y2="144" stroke="#2E5E8C" stroke-width="1.6" stroke-opacity="1" stroke-linecap="round"/>
+<line x1="420" y1="144" x2="416.09" y2="135.9" stroke="#2E5E8C" stroke-width="1.6" stroke-opacity="1" stroke-linecap="round"/>
+<line x1="420" y1="144" x2="423.91" y2="135.9" stroke="#2E5E8C" stroke-width="1.6" stroke-opacity="1" stroke-linecap="round"/>
+<line x1="420" y1="213" x2="420" y2="156" stroke="#2E5E8C" stroke-width="1.6" stroke-opacity="1" stroke-linecap="round"/>
+<line x1="420" y1="156" x2="423.91" y2="164.1" stroke="#2E5E8C" stroke-width="1.6" stroke-opacity="1" stroke-linecap="round"/>
+<line x1="420" y1="156" x2="416.09" y2="164.1" stroke="#2E5E8C" stroke-width="1.6" stroke-opacity="1" stroke-linecap="round"/>
+<text x="420" y="259" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" font-weight="400" fill="#1B2A33" fill-opacity="1" text-anchor="middle">2 · fold edges to center</text>
+<rect x="75" y="382.5" width="150" height="75" rx="0" fill="none" fill-opacity="0.5" stroke="#1B2A33" stroke-width="1.4"/>
+<polygon points="150,382.5 225,382.5 150,457.5 75,457.5" fill="#D9A521" fill-opacity="0.12" stroke="#E84A27" stroke-width="2.4" stroke-linejoin="round"/>
+<line x1="75" y1="382.5" x2="150" y2="457.5" stroke="#2E5E8C" stroke-width="1.5" stroke-opacity="1" stroke-linecap="round" stroke-dasharray="6 4"/>
+<line x1="225" y1="457.5" x2="150" y2="382.5" stroke="#2E5E8C" stroke-width="1.5" stroke-opacity="1" stroke-linecap="round" stroke-dasharray="6 4"/>
+<line x1="102.5" y1="465.5" x2="118.5" y2="449.5" stroke="#2E5E8C" stroke-width="1.5" stroke-opacity="1" stroke-linecap="round"/>
+<line x1="118.5" y1="449.5" x2="115.54" y2="458" stroke="#2E5E8C" stroke-width="1.5" stroke-opacity="1" stroke-linecap="round"/>
+<line x1="118.5" y1="449.5" x2="110" y2="452.46" stroke="#2E5E8C" stroke-width="1.5" stroke-opacity="1" stroke-linecap="round"/>
+<text x="150" y="529" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" font-weight="400" fill="#1B2A33" fill-opacity="1" text-anchor="middle">3 · fold opposite corners</text>
+<polygon points="420,382.5 495,382.5 420,457.5 345,457.5" fill="#D9A521" fill-opacity="0.1" stroke="#1B2A33" stroke-width="2.2" stroke-linejoin="round"/>
+<polygon points="420,382.5 444,382.5 420,406.5" fill="#1B2A33" fill-opacity="0.16"/>
+<polygon points="420,457.5 396,457.5 420,433.5" fill="#1B2A33" fill-opacity="0.16"/>
+<polygon points="495,382.5 515,394.5 495,406.5" fill="#E84A27" fill-opacity="0.18" stroke="#E84A27" stroke-width="2" stroke-linejoin="round"/>
+<text x="519" y="398.5" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="12" font-weight="400" fill="#E84A27" fill-opacity="1" text-anchor="start">tab</text>
+<path d="M 343.0 435.5 l -16 11 l 16 11" fill="none" fill-opacity="1" stroke="#2A2A6E" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323" y="441.5" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="12" font-weight="400" fill="#2A2A6E" fill-opacity="1" text-anchor="end">pocket</text>
+<text x="420" y="529" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" font-weight="400" fill="#1B2A33" fill-opacity="1" text-anchor="middle">4 · the finished unit</text>
+<text x="285" y="576" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="12" font-weight="400" fill="#1B2A33" fill-opacity="0.85" text-anchor="middle">one Sonobe unit = one edge of the ball; a tab tucks into the next unit's pocket</text>
+</svg>
