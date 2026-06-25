@@ -6,7 +6,6 @@ summary: "A resume-improvement app: drop in a PDF, OCR the text out, and get it 
 role: "Solo developer"
 stack: ["Next.js", "React", "Tailwind CSS", "PDF OCR (pdf-parse / pdfjs)"]
 category: "automation"
-repo: "https://github.com/AnmolS1/resumable"
 featured: false
 order: 15
 ---

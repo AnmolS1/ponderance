@@ -7,7 +7,6 @@ role: "Theme designer & developer"
 stack: ["Shopify", "Liquid", "JavaScript", "CSS"]
 category: "frontend"
 repo: "https://github.com/AnmolS1/honey-i-drank-the-lassi"
-liveUrl: "https://drinkgolumolu.com"
 featured: false
 order: 2
 ---
