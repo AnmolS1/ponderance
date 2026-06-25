@@ -1,0 +1,37 @@
+---
+title: "A Durable Object per island"
+date: 2026-06-19
+tags: ["engineering"]
+summary: "Each island in my little co-op game is its own tiny computer that falls asleep when nobody's around and wakes up still remembering who was in the room. That sentence is doing a lot of work, and most of it is the word 'each'."
+draft: true
+---
+
+Each island in my little co-op game is its own server. I mean that almost literally: an addressable object with its own private storage, one per island, that the platform guarantees there's exactly one of. When you open an island, the platform routes you to that object, by name, wherever it happens to be living. The obvious way to build live multiplayer is one server holding every room's state in a big map in memory, and then it's your job to keep that map correct, and it's a single thing that falls over and takes every room down with it. This is a different shape, and the different shape turned out to be easier.
+
+The mechanism is Cloudflare's Durable Objects. You write a class, every instance is reachable by a name you choose, and the platform promises a given name maps to a single instance with consistent storage. So an island is an `IslandDurableObject`, addressed by its id. There's no room-to-state map I maintain, because the name does the routing. That alone would have sold me.
+
+The part that made me actually grin is hibernation. An idle object with open WebSocket connections can be evicted from memory entirely, put to sleep to save you money, while the platform holds the sockets open on your behalf. When a message finally arrives, it wakes back up. But waking up means its in-memory state is gone, including the map of who's connected. So you persist what you need onto the connection itself, and rebuild on wake:
+
+```ts
+export class IslandDurableObject extends DurableObject<Env> {
+  private sessions = new Map<WebSocket, { id: string }>();
+
+  constructor(ctx: DurableObjectState, env: Env) {
+    super(ctx, env);
+    // After a hibernation wake, memory is wiped. Rebuild the session map
+    // from whatever we stapled to each socket that survived the sleep.
+    for (const ws of this.ctx.getWebSockets()) {
+      const attached = ws.deserializeAttachment() as { id: string } | null;
+      if (attached) this.sessions.set(ws, attached);
+    }
+  }
+}
+```
+
+The object forgets everything except what it deliberately stapled to each socket before dozing off. I find that a weirdly lovely way to think about state. You don't keep everything in memory forever. You decide what's worth surviving sleep, and pin exactly that.
+
+One thing that isn't cute, just necessary: because these objects are conjured on demand by name and they cost money, I validate that an island id is a real UUID before I route to it.[^uuid] Skip that and an authenticated user can name-spin arbitrary objects into existence and run up a bill. It's a one-line regex that's quietly a security control, sitting in the request path before any object gets created.
+
+The thing I came away with is that "a server per island" sounds absurdly expensive and is in fact the cheap option. Each island is a few kilobytes of object that costs nothing while it sleeps and wakes up remembering precisely enough. It rewired what "stateful backend" means to me. Now I picture a swarm of tiny processes that mostly don't exist until you say their name out loud, instead of one big always-on thing I have to babysit.
+
+[^uuid]: `idFromName(islandId)` will happily mint an object for any string you give it. The UUID check upstream is the difference between "one object per real island" and "one object per anything a caller felt like typing."

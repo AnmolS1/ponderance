@@ -1,0 +1,31 @@
+---
+title: "I wrote a debugger for Brainfuck, and the protocol was the point"
+date: 2026-03-23
+tags: ["engineering"]
+summary: "The same Brainfuck project has breakpoints, stepping, a live view of the memory tape, plus red squiggles and formatting as you type. I wrote none of it for a specific editor. I wrote it once, behind two protocols, and the editors showed up for free."
+draft: true
+---
+
+The same ridiculous Brainfuck project has a full debugger: breakpoints, single-stepping, a live look at the memory tape and the current cell. It also has proper editor support, the red squiggles under your errors and the formatter and all of it. Here's the thing I most want to say about it. I didn't write any of that for an editor. I wrote it once, on the far side of two protocols, and the editor support arrived without my asking.
+
+The tempting way to build language tooling is straight into the editor: a VS Code extension that parses, lints, formats, and debugs, all in TypeScript, all living inside VS Code's API. It works. It also means that the day you open the language in a different editor, none of it exists, and you start over. You've welded your language's brain to one particular skull.
+
+The Language Server Protocol is the way out, and once it clicks you see it everywhere. The actual smarts (parse the file, produce diagnostics, format it) live in a separate server process. The editor is a thin client that speaks LSP to it over JSON-RPC.[^jsonrpc] My server is Rust. The VS Code extension is a shell that forwards messages. Any editor that speaks LSP can talk to the very same server and get the very same squiggles.
+
+```rust
+// The whole "editor integration" is: hold the open documents,
+// and when one changes, parse + lint it and publish the results.
+struct Backend { client: Client, documents: DashMap<Url, String> }
+
+async fn publish_diagnostics(&self, uri: Url) {
+    let src = self.documents.get(&uri).map(|r| r.clone())?;
+    let diags = diagnostics::to_lsp_diagnostics(&src);  // all the real work, in Rust
+    self.client.publish_diagnostics(uri, diags, None).await;
+}
+```
+
+The debugger is the same trick wearing a different hat. The Debug Adapter Protocol is LSP's cousin for debugging. My debugger is a Rust adapter that speaks DAP (set a breakpoint, step, here are the scopes: the memory tape, the current cell), and any DAP-speaking editor drives it with the exact same debugging UI it already uses for Python or C. I didn't build a debugger interface. I built a thing that answers DAP, and the interface was already in the editor, waiting.
+
+The reframe that stuck with me: a language's intelligence belongs in a server, and the editor is just a client of it. The protocols are the real product boundary, and if you build your language's smarts on the correct side of that boundary, you've built them for every editor at once. I learned that properly by building it for a language with no ecosystem to lean on, no existing server to fork, no tooling to borrow, so I had to lay the whole spine myself and watch exactly where the protocol seam falls. It transfers directly to any language anyone actually uses. Brainfuck just made the architecture impossible to fake my way through.
+
+[^jsonrpc]: JSON-RPC over stdio, mostly. The editor launches the server as a subprocess and they trade JSON messages back and forth. Unglamorous, and exactly why it works across editors that otherwise share nothing.

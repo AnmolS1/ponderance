@@ -1,0 +1,33 @@
+---
+title: "Stale, not blank"
+date: 2026-06-23
+tags: ["homelab", "engineering"]
+summary: "My homelab dashboard has one rule that outranks every metric on it: when a source goes down, the card goes stale, not blank. A monitor that wipes itself the moment something breaks is worse than no monitor, because it fails exactly when you need it."
+draft: true
+---
+
+My homelab dashboard has one rule that matters more than any number on it: when a source goes down, its card goes stale, not blank. That sounds like a small UI preference. It's actually the whole design, and it's the thing I'd keep if I had to throw the rest away.
+
+The setup is a little aggregator that polls a dozen services every few seconds, merges everything into one snapshot, and hands it to a desktop widget and a phone widget. The failure you have to design around is boring and constant: at any given moment one of those dozen things is down, slow, or mid-restart, and rarely the same one twice. The naive aggregator awaits all of them and returns the merged result, and the instant one hangs or throws, you're choosing between blanking the entire dashboard or blanking that one card. Both are the wrong choice, and you usually don't find out which until something's actually on fire.
+
+So the rule: a dead source keeps its last-good values and earns a `stale` flag, and its neighbors don't even notice. The dashboard degrades one card at a time, never all at once, or in the code's own words, it "never lets one dead source blank the others." Two smaller things hold that up. The snapshot is written by the poll loop and read by the widget under a single lock, so the widget can never catch a half-merged, torn read:
+
+```python
+_lock = asyncio.Lock()
+_snapshot = None
+
+async def get_snapshot():        # the widget reads here
+    async with _lock:
+        return _snapshot
+
+async def set_snapshot(snap):    # the poll loop writes here
+    global _snapshot
+    async with _lock:
+        _snapshot = snap
+```
+
+And the pollers run concurrently, so the slowest service doesn't get to set the pace for all the healthy ones.
+
+The deeper thing underneath it is an obligation that monitoring tools carry and ordinary apps don't. A monitor has to be more reliable than the things it watches, because its entire job is to be trustworthy at the exact moment everything else isn't. "Blank on error" quietly breaks that promise, going dark right when you're leaning on it hardest. "Stale plus a flag" keeps it, by telling the truth in two parts: here's the last thing I knew for certain, and here's an honest marker that I'm not certain anymore.
+
+It's a tiny rule and it changed how I build anything that reports a status, well past this dashboard. Don't let the messenger die with the message. Show the last good thing you knew, and be honest that it's old.

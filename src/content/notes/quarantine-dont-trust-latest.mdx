@@ -1,0 +1,32 @@
+---
+title: "Quarantine, don't trust :latest"
+date: 2026-06-15
+series: "discofin-server"
+seriesOrder: 5
+tags: ["security", "homelab"]
+summary: "Auto-pulling :latest quietly hands an unattended supply chain the decision of what runs on your box tonight. I pulled that out and put a scan in its place: pull the candidate, scan it twice, and only promote it if it isn't a known-bad."
+draft: true
+---
+
+For a while a watcher auto-pulled `:latest` for every container the second a newer image showed up. It's the convenient thing. It's the thing every homelab guide hands you on day one. It also means that whoever pushed that image, and whatever rode along inside it, gets to decide, with nobody watching, what executes on my machine tonight. Said plainly like that, I didn't love it. So I took it out.
+
+What replaced it keeps the updates and puts a gate between the pull and the run:
+
+1. **Pull the candidate** image, but don't run it yet.
+2. **Scan it with two independent scanners.** Two of them, because they draw from different vulnerability databases and disagree at the edges. The union catches more than either alone, and "both of them think it's clean enough" is a much stronger sentence than one tool's opinion.
+3. **Decide.** If the candidate brings in a *fixable* HIGH or CRITICAL, a vulnerability with a patched version already sitting upstream, throw it out and keep the running container. There's no reason to promote into a known hole when the fix exists and I'll just get it on the next pull. Otherwise, promote.
+
+It runs weekly, in the small hours, and it reports what moved to a notification topic so updates are something I watch go by instead of something that happens to me in my sleep.
+
+The piece I'd actually defend to a stranger is the discipline around *accepted* risk. You need an ignore list, because some findings are unfixable, or live in a code path you never touch, and you can't let one of them wedge every future update. But every entry carries an **expiry date**:
+
+```
+# ignore file: a CVE, and a date it has to be looked at again
+# CVE-YYYY-NNNNN  exp:YYYY-MM-DD
+```
+
+Never open-ended. An ignore with no expiry is precisely how a "just for now" exception turns into a permanent hole nobody remembers agreeing to. The date drags the decision back onto my desk on a schedule instead of letting silence quietly ratify it forever.
+
+Here's the trade I made, honestly. I update less often, and a few days behind, where `:latest` would have been instant. In return, nothing on this box runs with a known, fixable, critical hole in it, every update leaves a paper trail, and the act of updating stopped being an act of blind trust. For a machine reachable from the internet, that's not a hard call.
+
+I didn't change this after a breach or a scare. I changed it the day I finally said the thing out loud: "automatic updates" means "automatic execution of whatever the registry decided to serve me." You don't fix that by refusing to update. You fix it by putting a scan between the download and the run, and by making every exception you grant wear a date it has to answer for.

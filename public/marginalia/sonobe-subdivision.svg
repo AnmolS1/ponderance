@@ -1,0 +1,21 @@
+<svg viewBox="0 0 420 408" xmlns="http://www.w3.org/2000/svg" role="img" width="100%" style="max-width:420px;height:auto">
+<polygon points="210,40 40,330 380,330" fill="#EEF0EC" stroke="#1B2A33" stroke-width="2.5" stroke-linejoin="round"/>
+<line x1="96.67" y1="233.33" x2="323.33" y2="233.33" stroke="#2E5E8C" stroke-width="1.2" stroke-linecap="round"/>
+<line x1="153.33" y1="136.67" x2="266.67" y2="330" stroke="#2E5E8C" stroke-width="1.2" stroke-linecap="round"/>
+<line x1="266.67" y1="136.67" x2="153.33" y2="330" stroke="#2E5E8C" stroke-width="1.2" stroke-linecap="round"/>
+<line x1="153.33" y1="136.67" x2="266.67" y2="136.67" stroke="#2E5E8C" stroke-width="1.2" stroke-linecap="round"/>
+<line x1="96.67" y1="233.33" x2="153.33" y2="330" stroke="#2E5E8C" stroke-width="1.2" stroke-linecap="round"/>
+<line x1="323.33" y1="233.33" x2="266.67" y2="330" stroke="#2E5E8C" stroke-width="1.2" stroke-linecap="round"/>
+<circle cx="380" cy="330" r="6" fill="#E84A27"/>
+<circle cx="266.67" cy="330" r="4" fill="#2E5E8C"/>
+<circle cx="153.33" cy="330" r="4" fill="#2E5E8C"/>
+<circle cx="40" cy="330" r="6" fill="#E84A27"/>
+<circle cx="323.33" cy="233.33" r="4" fill="#2E5E8C"/>
+<circle cx="210" cy="233.33" r="4" fill="#2E5E8C"/>
+<circle cx="96.67" cy="233.33" r="4" fill="#2E5E8C"/>
+<circle cx="266.67" cy="136.67" r="4" fill="#2E5E8C"/>
+<circle cx="153.33" cy="136.67" r="4" fill="#2E5E8C"/>
+<circle cx="210" cy="40" r="6" fill="#E84A27"/>
+<text x="210" y="372" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" font-weight="400" fill="#1B2A33" text-anchor="middle">one icosahedron face, subdivided</text>
+<text x="210" y="392" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="13" font-weight="400" fill="#2E5E8C" text-anchor="middle">here T = 9  →  9 small triangles</text>
+</svg>

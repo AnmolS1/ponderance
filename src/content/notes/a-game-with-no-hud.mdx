@@ -1,0 +1,19 @@
+---
+title: "A survival game with no HUD"
+date: 2026-05-29
+tags: ["engineering"]
+summary: "I'm building a co-op game about cats surviving a city, and the design rule I'm most attached to is that there's no HUD. If a cat is starving, you find out the way you'd find out about a real cat: it tells you with its body."
+draft: true
+---
+
+I'm building a co-op game about a clowder of cats trying to survive a city, and the design decision I'm most stubborn about is that there's no HUD. No health bar, no hunger meter, no little icons ticking down in the corner. If one of your cats is starving, you find out the way you'd find out about a real cat: it tells you with its body, and you have to be paying attention to catch it.
+
+The default way games communicate state is the meter. Hunger 34%. Warmth 60%. It's legible and instant and I understand completely why it's everywhere. It also sits outside the world, a little spreadsheet bolted to the glass between you and the thing. You stop watching the cat and start watching the gauge. The gauge does the noticing for you.
+
+So the rule for this game is that needs come through behavior. A hungry cat moves differently, vocalizes, hangs around where food used to be. A cold one seeks warmth and huddles. You read the animal, and there's no bar to read instead. It is unquestionably harder to build, and harder to read, and that difficulty is the design rather than a cost I'm tolerating. The game is about attending to creatures that depend on you, and a meter is a machine for not having to attend.
+
+That's the bet, really. Every meter you add is the game noticing on the player's behalf, and every meter you take away hands the noticing back. I want the noticing back. The slow pressure I'm after, keep these small things fed and warm and safe, only exists if you're the one who has to catch the early signs, before the bar that doesn't exist would have turned red.
+
+I'll be honest that this is the hardest possible way to convey state, and it can absolutely fail. The player misses the cue, the cat dies, and it lands as unfair instead of sad. It's a concept-stage conviction that I still have to prove by shipping it, and "communicate everything through animation" is a promissory note I haven't made good on yet.
+
+A HUD is a perfectly good answer to "how does the player know?" I just want to find out what the game becomes when the answer is, instead, "the same way you know anything you're actually looking at."

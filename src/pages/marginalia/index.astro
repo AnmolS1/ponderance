@@ -5,12 +5,49 @@ import { getCollection } from 'astro:content';
 const allNotes = (await getCollection('notes', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
-const lead = allNotes[0];
-const rest = allNotes.slice(1);
+// Series notes group + order by seriesOrder; standalone notes feed the lead +
+// theme buckets. Pulling the lead from standalone keeps each series intact.
+const withSeries = allNotes.filter(n => n.data.series);
+const standalone = allNotes.filter(n => !n.data.series);
 
-const physicsNotes = rest.filter(n => n.data.tags.some(t => t === 'physics' || t === 'math'));
-const securityNotes = rest.filter(n => n.data.tags.some(t => t === 'security' || t === 'homelab'));
-const mlNotes = rest.filter(n => n.data.tags.some(t => t === 'ml' || t === 'evals'));
+const lead = standalone[0];
+const standaloneRest = standalone.slice(1);
+
+// One section per series, ordered by seriesOrder. Series are listed in the
+// order their most-recent note appears (allNotes is already date-desc).
+const seriesNames = [...new Set(withSeries.map(n => n.data.series))];
+const seriesGroups = seriesNames.map(name => ({
+  label: name,
+  kind: 'series',
+  notes: withSeries
+    .filter(n => n.data.series === name)
+    .sort((a, b) => (a.data.seriesOrder ?? 0) - (b.data.seriesOrder ?? 0)),
+}));
+
+// Standalone notes bucketed by theme — each note lands in exactly one bucket
+// (first match wins), with a catch-all so nothing is ever orphaned.
+const buckets = [
+  { label: 'Physics & math', test: (t: string) => t === 'physics' || t === 'math' },
+  { label: 'Security & homelab', test: (t: string) => t === 'security' || t === 'homelab' },
+  { label: 'ML & evals', test: (t: string) => t === 'ml' || t === 'evals' },
+  { label: 'Engineering & origami', test: (t: string) => t === 'engineering' || t === 'origami' },
+];
+const assigned = new Set();
+const themeGroups = buckets
+  .map(b => {
+    const notes = standaloneRest.filter(
+      n => !assigned.has(n.id) && n.data.tags.some(b.test)
+    );
+    notes.forEach(n => assigned.add(n.id));
+    return { label: b.label, kind: 'theme', notes };
+  })
+  .filter(g => g.notes.length > 0);
+const leftover = standaloneRest.filter(n => !assigned.has(n.id));
+if (leftover.length) themeGroups.push({ label: 'More notes', kind: 'theme', notes: leftover });
+
+// Series first (they read as deliberate sequences), then the theme buckets.
+const groups = [...seriesGroups, ...themeGroups];
+const iso = (d: Date) => d.toISOString().slice(0, 10);
 ---
 
 <Base
@@ -23,6 +60,8 @@ const mlNotes = rest.filter(n => n.data.tags.some(t => t === 'ml' || t === 'eval
     .note-row:first-child{border-top:0;}
     .note-row:hover{padding-left:10px;}
     .note-row:hover h4{color:#2E5E8C;}
+    .ser-num{font-family:var(--font-mono);font-size:11.5px;color:#E84A27;font-weight:600;margin-right:8px;}
+    .grp-eyebrow{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#E84A27;display:block;margin-bottom:6px;}
     .feat-fold{position:absolute;top:0;right:0;width:40px;height:40px;background:linear-gradient(225deg,#cfd3cc 0%,#e6e8e2 42%,#ffffff 74%);clip-path:polygon(0 0,100% 0,100% 100%);border-bottom-left-radius:7px;filter:drop-shadow(-3px 3px 2.5px rgba(27,42,51,.22));transition:width .32s cubic-bezier(.4,0,.2,1),height .32s cubic-bezier(.4,0,.2,1),filter .32s ease;}
     .feat:hover .feat-fold{width:62px;height:62px;filter:drop-shadow(-7px 7px 6px rgba(27,42,51,.3));}
     @media (prefers-reduced-motion:reduce){.feat-fold{transition:none!important;}.note-row{transition:none!important;}}
@@ -52,7 +91,7 @@ const mlNotes = rest.filter(n => n.data.tags.some(t => t === 'ml' || t === 'eval
           <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: rgba(27,42,51,.6); margin: 0 0 18px; max-width: 46ch;">{lead.data.summary}</p>
           <div style="display: flex; align-items: center; gap: 14px; font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">
             <span style="font-family: var(--font-body); font-weight: 600; font-size: 14.5px; color: #E84A27; border-bottom: 1px solid #E84A27; padding-bottom: 1px;">Read the note →</span>
-            <span>{lead.data.date.toISOString().slice(0,10)}</span>
+            <span>{iso(lead.data.date)}</span>
             <span style="color: #D9A521;">{lead.data.tags.join(' · ')}</span>
           </div>
         </a>
@@ -63,60 +102,30 @@ const mlNotes = rest.filter(n => n.data.tags.some(t => t === 'ml' || t === 'eval
       </section>
     )}
 
-    <!-- THEME GROUPS -->
-    {physicsNotes.length > 0 && (
-      <section aria-label="Physics and math notes" style="display: grid; grid-template-columns: repeat(12,1fr); gap: 18px; align-items: start; padding: 30px 0; border-bottom: 1px solid rgba(46,94,140,.13);">
-        <div style="grid-column: 1 / 3;">
-          <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.15; letter-spacing: -.01em; color: #1B2A33; margin: 0;">Physics &amp; math</h3>
-          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4); display: block; margin-top: 4px;">{physicsNotes.length} {physicsNotes.length === 1 ? 'note' : 'notes'}</span>
-        </div>
-        <div style="grid-column: 3 / 11;">
-          {physicsNotes.map(n => (
-            <a class="note-row" href={`/marginalia/${n.id}`}>
-              <h4 style="font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 1.2; letter-spacing: -.01em; color: #1B2A33; margin: 0 0 5px;">{n.data.title}</h4>
-              <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0 0 7px; max-width: 54ch;">{n.data.summary}</p>
-              <span style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(27,42,51,.4);">{n.data.date.toISOString().slice(0,10)} · <span style="color: #D9A521;">{n.data.tags.join(' · ')}</span></span>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
-
-    {securityNotes.length > 0 && (
-      <section aria-label="Security and homelab notes" style="display: grid; grid-template-columns: repeat(12,1fr); gap: 18px; align-items: start; padding: 30px 0; border-bottom: 1px solid rgba(46,94,140,.13);">
-        <div style="grid-column: 11 / 13; text-align: right; order: 2;">
-          <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.15; letter-spacing: -.01em; color: #1B2A33; margin: 0;">Security &amp; homelab</h3>
-          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4); display: block; margin-top: 4px;">{securityNotes.length} {securityNotes.length === 1 ? 'note' : 'notes'}</span>
-        </div>
-        <div style="grid-column: 2 / 11; order: 1;">
-          {securityNotes.map(n => (
-            <a class="note-row" href={`/marginalia/${n.id}`}>
-              <h4 style="font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 1.2; letter-spacing: -.01em; color: #1B2A33; margin: 0 0 5px;">{n.data.title}</h4>
-              <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0 0 7px; max-width: 54ch;">{n.data.summary}</p>
-              <span style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(27,42,51,.4);">{n.data.date.toISOString().slice(0,10)} · <span style="color: #D9A521;">{n.data.tags.join(' · ')}</span></span>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
-
-    {mlNotes.length > 0 && (
-      <section aria-label="Machine learning notes" style="display: grid; grid-template-columns: repeat(12,1fr); gap: 18px; align-items: start; padding: 30px 0; border-bottom: 1px solid rgba(46,94,140,.13);">
-        <div style="grid-column: 1 / 3;">
-          <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.15; letter-spacing: -.01em; color: #1B2A33; margin: 0;">ML &amp; evals</h3>
-          <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4); display: block; margin-top: 4px;">{mlNotes.length} {mlNotes.length === 1 ? 'note' : 'notes'}</span>
-        </div>
-        <div style="grid-column: 3 / 11;">
-          {mlNotes.map(n => (
-            <a class="note-row" href={`/marginalia/${n.id}`}>
-              <h4 style="font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 1.2; letter-spacing: -.01em; color: #1B2A33; margin: 0 0 5px;">{n.data.title}</h4>
-              <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0 0 7px; max-width: 54ch;">{n.data.summary}</p>
-              <span style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(27,42,51,.4);">{n.data.date.toISOString().slice(0,10)} · <span style="color: #D9A521;">{n.data.tags.join(' · ')}</span></span>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
+    <!-- GROUPS: series (ordered sequences) first, then theme buckets -->
+    {groups.map((g, i) => {
+      const right = i % 2 === 1; // alternate header side for rhythm
+      return (
+        <section aria-label={g.label} style="display: grid; grid-template-columns: repeat(12,1fr); gap: 18px; align-items: start; padding: 30px 0; border-bottom: 1px solid rgba(46,94,140,.13);">
+          <div style={`grid-column: ${right ? '11 / 13' : '1 / 3'}; text-align: ${right ? 'right' : 'left'}; order: ${right ? 2 : 0};`}>
+            {g.kind === 'series' && <span class="grp-eyebrow">series · {g.notes.length} parts</span>}
+            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.15; letter-spacing: -.01em; color: #1B2A33; margin: 0;">{g.label}</h3>
+            <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4); display: block; margin-top: 4px;">{g.notes.length} {g.notes.length === 1 ? 'note' : 'notes'}</span>
+          </div>
+          <div style={`grid-column: ${right ? '2 / 11' : '3 / 11'}; order: 1;`}>
+            {g.notes.map(n => (
+              <a class="note-row" href={`/marginalia/${n.id}`}>
+                <h4 style="font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 1.2; letter-spacing: -.01em; color: #1B2A33; margin: 0 0 5px;">
+                  {g.kind === 'series' && <span class="ser-num">{String(n.data.seriesOrder).padStart(2, '0')}</span>}{n.data.title}
+                </h4>
+                <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0 0 7px; max-width: 54ch;">{n.data.summary}</p>
+                <span style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(27,42,51,.4);">{iso(n.data.date)} · <span style="color: #D9A521;">{n.data.tags.join(' · ')}</span></span>
+              </a>
+            ))}
+          </div>
+        </section>
+      );
+    })}
 
     <div style="padding: 32px 0;"></div>
 

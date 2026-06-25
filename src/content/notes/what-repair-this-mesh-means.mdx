@@ -1,0 +1,25 @@
+---
+title: "What 'repair this mesh' actually means"
+date: 2026-03-01
+tags: ["engineering", "math"]
+summary: "'Repair this STL' sounds like one button. It's about seven different problems in a trenchcoat, and a 3D printer will faceplant on any one of them. Building the repair tool meant naming all seven."
+draft: true
+---
+
+"Repair this STL" sounds like a single button, and I built the tool that pretends to be that button, so I can tell you it's really about seven different problems wearing one trenchcoat. A 3D printer will faceplant on any one of them, and they each break it in a different way.
+
+Here's what a printable model has to be: watertight and manifold. Watertight means the surface is fully closed, no gaps. Manifold means it's a sane surface everywhere, and in particular that every edge is shared by exactly two faces, so there's an unambiguous inside and outside. Models you download from the internet are routinely neither, and they look completely fine on screen, because your eyes don't care about any of this and a slicer cares about nothing else.
+
+The slicer is why. To print a model, software cuts it into horizontal layers, and for every point in every layer it has to answer one question: am I inside the object here, or outside? Inside gets plastic, outside doesn't. Every kind of mesh damage is a way of making that question unanswerable:
+
+- **holes**, a gap in the surface, so "inside" leaks out and the slicer can't tell where the boundary is
+- **non-manifold edges**, an edge where three or more faces meet, so the surface forks and "which side is inside" stops having one answer
+- **inverted normals**, a face pointing the wrong way, so a patch of the model reads as inside-out
+- **degenerate faces**, triangles with effectively zero area, math landmines that produce nonsense when you compute anything from them
+- **self-intersections** and **duplicate vertices or faces**, the geometry contradicting itself
+
+Once you've got that list, "repair" stops being one verb. It's a pipeline, and it has opinions. Fix the normals so every face faces out. Close the holes, and even that has a choice, because you can fill a hole flat or fill it to match the curvature around it, and a flat patch on a curved surface is a visible scar. Resolve the non-manifold edges. And before any of it, you pick a goal: preserve the geometry exactly, optimize for printability, or minimize triangle count. The same broken mesh comes out different depending on which one you asked for.
+
+The detail I enjoyed building most: the tool reports the indices of every face it touched, so the interface can highlight exactly what changed. A diff, except for a 3D surface, so you get to see the scar tissue instead of just trusting that something happened.
+
+What stuck with me is that "repair" was hiding a whole taxonomy. Once you can name the seven ways a surface can lie about being solid, the button stops being magic and becomes a checklist, and you finally understand why half the models you download print clean and the other half collapse into spaghetti for reasons that were invisible the whole time.

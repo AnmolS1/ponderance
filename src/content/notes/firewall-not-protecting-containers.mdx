@@ -1,0 +1,32 @@
+---
+title: "Your firewall isn't protecting your containers"
+date: 2026-05-02
+series: "discofin-server"
+seriesOrder: 2
+tags: ["security", "homelab"]
+summary: "I had ufw on, default-deny, the whole posture. Docker published a port straight past it, because the two of them are fighting over iptables and Docker writes its rules first. The firewall I trusted was guarding a door the traffic never used."
+draft: true
+---
+
+I had ufw running, default-deny inbound, and I felt good about it. Then I published a container port and watched it answer from the open internet, deny policy and all. Nothing clever happened. ufw wasn't bypassed or beaten. It just wasn't in the conversation.
+
+This is the kind of thing that's obvious in retrospect and infuriating in the moment, so here's the mechanism. A host firewall like ufw polices the kernel's `INPUT` chain, the traffic addressed to the host itself. When you publish a port, Docker doesn't ask ufw for permission. It writes its own `iptables` rules to NAT and forward that traffic down to the container, and forwarded traffic rides the `FORWARD` path, where ufw's `INPUT` policy never applies. So your published port sits wide open according to Docker's rules while your default-deny stands guard over a chain this traffic never touches. Docker documents this behavior. It still gets everyone once, and it got me.
+
+The fix is to put your policy where Docker actually looks. Docker leaves you a chain called `DOCKER-USER`, evaluated early in the forward path, before its per-container rules, specifically so you can filter this traffic. That's the real front door of a Docker host. Default-drop it, then let in only the sources you actually trust:
+
+```bash
+# /etc/ufw/after.rules. DOCKER-USER is what really governs published-port
+# traffic; ufw's own rules never see it.
+-A DOCKER-USER -s 10.0.0.0/24      -j RETURN   # LAN  (placeholder subnet)
+-A DOCKER-USER -s 100.64.0.0/10    -j RETURN   # tailnet CGNAT range
+-A DOCKER-USER -m conntrack --ctstate ESTABLISHED,RELATED -j RETURN
+-A DOCKER-USER -i lo               -j RETURN
+# ...allow the docker bridge networks...
+-A DOCKER-USER -j DROP                          # everyone else: gone
+```
+
+I've redacted the real source ranges.[^ranges] The shape is what matters. Trusted networks `RETURN` and fall through to Docker's normal handling, and everything else hits that `DROP` at the bottom and dies there. The result is that internal service ports are reachable from the LAN and the tailnet only, and the single thing that reaches them from the public internet is a tunnel that dials out from the box, so it never needs an inbound hole at all.
+
+The lesson outlived Docker for me. Any time two tools both believe they own the firewall, the one whose rules run first wins, and your sense of what's exposed is worth exactly as much as your knowledge of which chain you're reading. So now I treat `DOCKER-USER` as the perimeter, I treat a clean-looking ufw rule as decoration until I've proven otherwise, and I check exposure by scanning from off the network, never from the host, where everything always looks fine and tells you nothing.
+
+[^ranges]: Publishing a working homelab's exact allow-list would just hand out a target map for no benefit. The mechanism is the part that transfers. Drop in your own LAN range and tailnet and you've got it.

@@ -1,0 +1,65 @@
+---
+title: "The torrent client with no IP of its own"
+date: 2026-04-22
+series: "discofin-server"
+seriesOrder: 1
+tags: ["homelab", "security"]
+summary: "Putting the torrent client inside the VPN container's network namespace gives you a kill-switch you can't forget to turn on, and it breaks port mapping in a way that finally taught me what a container's network identity actually is."
+draft: true
+---
+
+My torrent client doesn't have an IP address. Ask it what network it's on and it has nothing for you. No interface, no routing table, no port of its own. It lives inside the VPN container's network namespace, and that one fact is the whole design.
+
+In Compose it's a single line:
+
+```yaml
+qbittorrent:
+  network_mode: "service:gluetun"   # no stack of its own; it borrows gluetun's
+```
+
+That line tells Docker not to give this container a network, and to share the VPN container's instead. So every packet it sends leaves through the tunnel, because there's no other door out of the room it's standing in.
+
+<figure>
+  <img src="/marginalia/vpn-namespace.svg" alt="The torrent client shares the VPN container's network namespace, so all its traffic exits through the VPN tunnel and it has no interface of its own." />
+  <figcaption>The torrent client borrows the VPN's interface — the kill-switch is the wiring, not a setting.</figcaption>
+</figure>
+
+Here's the part I'm still a little smug about. People build elaborate kill-switches for exactly this situation, the "if the VPN drops, block everything" kind, with firewall rules and health checks and a fresh set of failure modes to babysit. I don't have one. I don't need one. If the VPN process dies, the namespace's routing dies with it, and the client is left in a room with no exits. It physically cannot leak to my home connection, because from where it sits, my home connection was never reachable in the first place. I didn't build that property. It falls out of where the container lives, and I trust it more than any rule I'd have to remember to keep switched on.
+
+The catch is the same fact biting back. The client has no ports, so you can't publish its web UI on it. There's nothing to publish onto. You publish on the VPN container instead:
+
+```yaml
+gluetun:
+  ports:
+    - 8080:8080   # the torrent web UI actually lives out here
+    - 6881:6881
+```
+
+This breaks everyone's mental model exactly once. You go to map a port on the torrent container, nothing happens, and you sit there genuinely confused for a minute before it lands: the container has no network for a port to attach to. The network belongs to its neighbor. I sat there for that minute. I'm saving you it.
+
+The one thing the namespace doesn't hand you for free is the forwarded port. A port-forwarding VPN gives out an inbound port that rotates, and the client has to know the current one or incoming connections quietly stop working. So a 20-line sidecar runs in the same namespace and keeps the two in sync:
+
+```sh
+#!/bin/sh
+# Runs inside gluetun's namespace, so "localhost" already means the torrent client.
+QBIT="http://localhost:8080"
+LAST=""
+while true; do
+  if [ -f /gluetun/forwarded_port ]; then
+    PORT=$(tr -d '[:space:]' < /gluetun/forwarded_port)
+    if [ -n "$PORT" ] && [ "$PORT" != "$LAST" ]; then
+      curl -fs -H "Referer: $QBIT" \
+        --data-urlencode "json={\"listen_port\":$PORT}" \
+        "$QBIT/api/v2/app/setPreferences" >/dev/null \
+        && LAST="$PORT"
+    fi
+  fi
+  sleep 60
+done
+```
+
+It's twenty lines instead of two hundred for the same reason the kill-switch is free. The sidecar lives in the namespace, so `localhost` is already the client. No service discovery, no cross-container DNS, no credentials shipped across a network. Two processes staring at the same loopback.
+
+I came into this assuming containers were for isolating processes, and they are. But the thing that actually solved my problem was using one to isolate a network *identity*, to make "this can only reach the internet through that tunnel" a fact about the box instead of a promise I keep to myself. One line of Compose did the job I'd have done worse with twenty firewall rules, and that trade is most of why I like this setup.
+
+[^pf]: Hence a poll loop rather than a one-shot. The forwarded port can rotate out from under a running client, and a missed update kills inbound connectivity without making a sound about it.

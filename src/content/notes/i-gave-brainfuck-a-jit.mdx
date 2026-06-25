@@ -1,0 +1,34 @@
+---
+title: "I gave Brainfuck a JIT"
+date: 2026-03-20
+tags: ["engineering"]
+summary: "Brainfuck is a deliberately useless language: eight characters, openly hostile to humans. I wrote it a profiling JIT compiler. I want to explain why that isn't as stupid as it sounds, though I'll admit it's a little stupid."
+draft: true
+---
+
+Brainfuck is one of the most useless programming languages ever made, and that's the goal, not an accident. Eight characters, a tape of bytes, a pointer that moves left and right, and a syntax openly hostile to being read by a human. I wrote a JIT compiler for it. Let me explain why that's less stupid than it sounds. It's still a little stupid, I'm not going to pretend otherwise.
+
+A tree-walking interpreter for Brainfuck is a weekend's work: read an instruction, match on which of the eight it is, do the thing, move on. The problem is the same one every interpreter has. Each `+` is a trip through a big match statement, and a tight loop running ten million times re-walks the exact same instructions ten million times, paying that dispatch cost on every single op. The work itself is trivial. The overhead wrapped around the work is where all the time goes.
+
+The grown-up answer is a JIT: at runtime, compile the hot code down to native machine instructions and run those directly. That's what the JVM and the JavaScript engine in your browser do, so I did the same thing, for Brainfuck, using Cranelift (a pure-Rust code generator). It turns a loop body into a real native function, allocates executable memory, and I call into it like any other function pointer.
+
+The piece I'm actually proud of is that it doesn't JIT everything, because compiling has its own cost and most code isn't hot. It profiles. It counts how many times each loop runs, and only once a loop crosses a threshold does it get compiled and cached:
+
+```rust
+// Count how often each loop runs; once it's clearly hot, compile it once
+// and call native code forever after.
+let count = self.loop_counts.entry(loop_pc).or_insert(0);
+*count += 1;
+
+if let Some(&jit_fn) = self.jit_cache.get(&loop_pc) {
+    ptr = unsafe { jit_fn(mem_ptr, ptr, &mut ctx.base) };   // already native
+} else if *count >= JIT_THRESHOLD {
+    let jit_fn = self.compile_loop(loop_pc)?;                // Cranelift to native
+    self.jit_cache.insert(loop_pc, jit_fn);
+    ptr = unsafe { jit_fn(mem_ptr, ptr, &mut ctx.base) };
+}
+```
+
+That's tiered execution: interpret until something proves it's worth compiling, then compile it and never look back. It's the same core idea as the adaptive optimization in a real language runtime, just small enough that I could hold the entire thing in my head and watch every layer work. The interpreter and the JIT even share one bytecode, so an optimizer pass feeds both, and a separate ahead-of-time path emits real object files from that same representation.
+
+Nobody needs a fast Brainfuck. That was never the point, and pretending otherwise would miss it. The point is that a language small enough to fit in your palm is the perfect place to build the thing that would never otherwise fit in your head, a profiling JIT with a hot-path threshold and a compile cache, and come out the other side understanding every layer of it instead of three-quarters of one. The uselessness of Brainfuck is the whole reason it was the right teacher. There was nothing else to hide behind.
