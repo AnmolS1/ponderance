@@ -8,7 +8,7 @@ const work = defineCollection({
     summary: z.string(),
     role: z.string(),
     stack: z.array(z.string()),
-    category: z.enum(['ml', 'security', 'frontend', 'infra', 'automation']),
+    category: z.enum(['ml', 'security', 'frontend', 'infra', 'automation', 'games', 'devtools']),
     repo: z.string().url().optional(),
     liveUrl: z.string().url().optional(),
     featured: z.boolean(),
@@ -38,6 +38,8 @@ const notes = defineCollection({
       .min(1),
     summary: z.string(),
     draft: z.boolean().default(true),
+    series: z.string().optional(),
+    seriesOrder: z.number().int().positive().optional(),
   }),
 });
 

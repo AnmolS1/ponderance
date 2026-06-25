@@ -1,0 +1,23 @@
+---
+title: "The auth I deliberately didn't add"
+date: 2026-06-09
+series: "discofin-server"
+seriesOrder: 3
+tags: ["security", "homelab"]
+summary: "The reflex advice for any exposed service is 'put SSO in front of it.' Twice I started to, and stopped, because the gate would have broken the thing without making it any safer. More auth doesn't automatically mean more secure, and learning that took unlearning the reflex."
+draft: true
+---
+
+If you show anyone a self-hosted service reachable from the internet, the first thing they'll tell you is to put an authentication gate in front of it. SSO, an identity proxy, something with a login page. It's good advice often enough that people give it without thinking, and I was one of them for a while. Then twice I went to actually do it. I looked at a service, agreed it felt under-guarded, started wiring up the gate, and backed out, because in both cases the gate would have broken the service while doing almost nothing for its security. Sitting with the reason was the most useful security thing I did all year.
+
+Both cases are the same shape, so here it is with the names filed off.
+
+**A service whose only clients are apps.** Picture an end-to-end-encrypted store, the kind where the server holds ciphertext it has no key to read. Its real clients aren't browsers. They're a browser extension and a mobile app that talk to fixed API endpoints with their own token flow. An interactive auth gate assumes a human who can be bounced to a login page and click through a challenge, and an app hitting an API can't do that dance. So the gate would guard the one path nobody's clients use, the human login page, while breaking sync on every path they actually use. And it would be standing guard over a server that already can't read its own data. The protection that fits here is the encryption that's already there, plus closing signups and putting a second factor on the account. Bolting SSO on would trade working sync for a login screen nobody visits.
+
+**A service whose client polls.** Now a notifier whose mobile app holds a long-lived connection to receive pushes. Drop an interactive challenge in front of it and the poll just breaks, because the app isn't a browser and won't satisfy the challenge, and you've traded working notifications for another login page. This kind of thing is built to sit on the open internet. It ships with token auth and a deny-by-default model, and that's the control that matches how it's actually used.
+
+The thread tying them together is that an auth proxy has a precondition baked into it: a human, with a browser, who can be interactively challenged. The second your real client is an app or an API consumer, that precondition is false, and the gate quietly turns from a security control into an outage with a login screen on it.
+
+The trap underneath all of this is that "add more auth" feels like it can only help. One more layer, surely that's safer. It isn't, when the layer you bolt on shoves aside a control that actually fit the threat and replaces it with one that doesn't, when it answers "is there a login page?" instead of the only question worth asking, which is "what's the specific attack, and does this stop it without breaking the people who are supposed to get in?" A gate that locks out every legitimate user to protect a page they never load hasn't raised an attacker's cost by a cent. It's added the appearance of security and quietly taken away the real thing.
+
+So I left both alone, with the controls that fit: end-to-end encryption, closed signups, and a second factor on one; token auth and deny-all on the other. The convenient call and the secure call landed in the same place, which is to leave the browser-shaped lock off the service no browser uses. The urge to add the gate was real, and ignoring it was the actual decision. That one still feels backwards every time I look at it, which is how I know it was worth writing down.

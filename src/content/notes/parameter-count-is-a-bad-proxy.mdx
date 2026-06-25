@@ -1,0 +1,20 @@
+---
+title: "Parameter count is a bad proxy"
+date: 2026-03-09
+tags: ["ml", "evals"]
+summary: "Bigger isn't better in any simple way — architecture and inference-time compute have made raw parameter count a weak signal."
+draft: true
+---
+
+"How many parameters?" is the first question people ask about a model, and it's a worse proxy for capability every year. Parameter count signals *capacity* — roughly, how much pattern and fact a model can hold — and all else equal a bigger model holds more. But "all else equal" stopped being true a while ago.
+
+Several things move performance as much as raw size:
+
+- **Mixture-of-Experts.** An MoE model routes each token to a small subset of its parameters, so the *activated* parameter count can be a fraction of the *total*. A well-built MoE can beat a larger dense model across most benchmarks while activating only a small share of its weights — full capacity when it's needed, cheap when it isn't.
+- **Data quality.** A smaller model trained on well-curated data routinely beats a bigger one trained on noise.
+- **Inference-time compute.** Letting a model think longer before it answers buys accuracy on hard problems with zero extra parameters.
+- **Post-training.** Instruction-following and alignment decide whether all that capacity is actually usable. A trillion-parameter model that won't follow instructions is dead weight.
+
+So the count is a rough capacity signal and not much more.[^marketing] The levers that actually matter now are architecture, data, and how much computation you're willing to spend at the moment the question is asked.
+
+[^marketing]: It's why headline "X-billion-parameter" figures read a lot like marketing — they describe the size of the tank, not how far the car goes.

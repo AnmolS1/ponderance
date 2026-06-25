@@ -1,0 +1,35 @@
+---
+title: "The reverse proxy that ignored my edits"
+date: 2026-05-12
+series: "discofin-server"
+seriesOrder: 4
+tags: ["engineering", "homelab"]
+summary: "I changed the config, reloaded, and nothing happened. The file on disk was right. The reload said success. The proxy kept serving the old routes. Three facts that can't all be true, except they were, and the culprit was an inode."
+draft: true
+---
+
+I changed my reverse proxy's config, reloaded it, and nothing happened. What made this one genuinely maddening, the kind that has you questioning whether you understand how computers work, is that every single check passed on its own. The file on disk had my edit, plain as day. The reload command returned success and told me *config is unchanged*. The proxy kept serving the old routes. Three facts that can't all be true at once, and there they were, all true, while I burned an evening on it.
+
+The config was bind-mounted into the container as a single file:
+
+```yaml
+volumes:
+  - ./Caddyfile:/etc/caddy/Caddyfile   # the trap, though I didn't know it yet
+```
+
+The villain turned out to be how my editor saves. Like most of them, it saves *atomically*: it writes the new contents to a temp file and renames it over the old one, so a crash mid-save can never leave you with a half-written config. Sensible. The catch is that renaming a new file into place gives you a **new inode**, and a Docker bind mount of a single file binds the *inode*, not the path. It resolves the path once, at mount time, and then holds that exact inode forever.
+
+So after one save, the host path points at a shiny new inode carrying my edit, and the container is still clutching the old inode, the one I was sure I'd just replaced. I was editing a file the container couldn't see anymore. When I reloaded, the proxy re-read its bound inode, found it byte-for-byte identical to last time, and cheerfully, correctly, reported *unchanged*. It wasn't ignoring me. We were looking at two different files and both of us were right, which is somehow worse.
+
+That "unchanged" is the actual fingerprint, and now I can spot it from across the room. A syntax error gives you an error. Stale routes after a *successful, unchanged* reload is the signature of an inode mismatch, not a config problem. Once you read it that way the fix is almost insulting in its simplicity. Mount the directory instead of the file:
+
+```yaml
+volumes:
+  - ./caddy:/etc/caddy   # bind the directory; entries resolve by name every access
+```
+
+A directory mount looks up its entries by name on every access, so the rename-in-place is followed and the container sees the new file. Same reload command. Now it actually reloads.
+
+The thing I carried out of that evening is bigger than one proxy. A single-file bind mount plus any atomic-save workflow is a latent bug just sitting there, and it bites `.env` files, app configs, anything an editor or a templating step rewrites by renaming.[^same] So when a bind-mounted file won't update, I don't debug the app anymore. I check whether I'm even mounting the file the app is reading. Mount directories for anything you plan to touch.
+
+[^same]: It's the same reason `tail -f` follows the wrong file after some editors save, and why an `inotify` watch on a single path sleeps right through an atomic replace unless you watch the directory instead.

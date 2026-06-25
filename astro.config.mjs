@@ -5,6 +5,7 @@ import mdx from "@astrojs/mdx";
 import { unified } from "@astrojs/markdown-remark";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import rehypeSidenotes from "./src/lib/rehype-sidenotes.mjs";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
@@ -23,7 +24,9 @@ export default defineConfig({
     // unified() processor; MDX inherits via the processor reference
     processor: unified({
       remarkPlugins: [remarkMath],
-      rehypePlugins: [rehypeKatex],
+      // rehypeSidenotes runs after the GFM footnotes section exists, relocating
+      // each [^name] footnote into a right-gutter sidenote at its reference.
+      rehypePlugins: [rehypeKatex, rehypeSidenotes],
     }),
     shikiConfig: { theme: "github-dark", wrap: false },
   },

@@ -1,0 +1,28 @@
+---
+title: "Why a 90-unit Sonobe ball is a pentakis dodecahedron"
+date: 2026-06-22
+series: "Sonobe geometry"
+seriesOrder: 1
+tags: ["math", "origami"]
+summary: "Each paper unit is one edge of a hidden polyhedron — so the unit count alone tells you the whole shape."
+draft: true
+---
+
+I folded a 90-unit Sonobe ball and wanted to know what to call it. The answer turned out to be the doorway into a surprising amount of geometry.
+
+The trick is that each Sonobe unit is exactly one *edge* of an underlying polyhedron, and a little pyramid — a spike — sits on each *face*. So the unit count isn't decorative. It's a hard constraint that names the solid.
+
+<figure>
+  <img src="/marginalia/sonobe-unit-fold.svg" alt="Folding a single Sonobe unit in four steps: crease the midline, fold the edges to the center, fold two opposite corners, yielding a parallelogram unit with a tab and a pocket." />
+  <figcaption>One Sonobe unit, folded from a square — a tab on one end, a pocket on the other.</figcaption>
+</figure>
+
+90 units means 90 edges. The polyhedron with 90 edges and the icosahedral symmetry these balls have is the pentakis dodecahedron: 32 vertices, 90 edges, 60 triangular faces. Because the spikes sit on the faces, the ball has 60 three-sided spikes — formally a stellated pentakis dodecahedron, though everyone just calls it a 90-unit ball.
+
+The name is the recipe. Parse *pentakis dodecahedron* as penta–kis–dodecahedron: start from a dodecahedron (12 pentagons), apply *kis* (raise a pyramid on each face), and because the faces are pentagons, each one splits into 5 triangles.[^kis] Twelve pentagons times five triangles is sixty triangles. The whole kis family works this way — triakis caps triangles, tetrakis caps squares, pentakis caps pentagons.
+
+Here's the sanity check that makes the edge-counting click: 60 triangular faces, 3 edges each, divided by 2 because every edge is shared by two faces, gives $60 \times 3 / 2 = 90$ edges — 90 units. The count was never arbitrary.
+
+For comparison, the starter 30-unit ball is built on the bare icosahedron (30 edges), and the next clean step up, 270 units, is a frequency-3 geodesic icosahedron with 270 edges and 180 spikes. Which raises the obvious question — *why those numbers and not others?* That's the next note.
+
+[^kis]: "kis" is the operator "raise a pyramid on each face"; the prefix tells you which face is being capped. Pentakis = pyramids on pentagons.

@@ -1,0 +1,19 @@
+---
+title: "Knowing what's playing vs. knowing what the music is doing"
+date: 2026-05-29
+tags: ["engineering"]
+summary: "I wanted a visualizer that moved with the song, with bars that land when the song lands. Getting the computer to know what was playing was easy. Getting it to know what the music was doing is the part still open in the repo."
+draft: true
+---
+
+I wanted a music visualizer that actually moved with the song, with bars that land when the song lands instead of bouncing around to nothing. The half I finished taught me more than I expected, mostly by showing me exactly where the hard half starts. I'll be honest up front: this one isn't done, and the part that isn't done is the whole point.
+
+What works: it signs into Spotify and follows your playback in real time, which track and where you are in it, to the second. If you skip, it knows. That part felt like it should be the hard bit and turned out to be the easy bit.
+
+The wall is that Spotify never hands you the audio. You can't read the waveform of a track you're streaming, no samples, no signal to run an FFT over. What you can get is their audio analysis: a precomputed map of the song into beats, bars, sections, and little segments, each tagged with loudness and pitch. So the dream of driving the visuals from the music quietly turns into a narrower thing, which is driving the visuals from this JSON description of the song, lined up against the playback clock.
+
+That's where the difficulty actually lives, in two places I didn't see coming. The analysis is metadata about the song rather than the sound itself, so you're animating to a description of the music, a step removed from the thing your ears are reacting to. And aligning that description to live playback means fighting latency and clock drift between my app and the player, where being a few hundred milliseconds off is the gap between hitting the beat and feeling broken. "Real-time" was doing enormous, quiet work in my original sentence.
+
+The thing I took from it, even with the repo half-open, is that there's a real gap between knowing what's playing and knowing what the audio is doing right now, and almost all the engineering lives in the second one. The first is an API call. The second is a research problem I walked into thinking it was a weekend feature.
+
+It's not finished. The visualizer runs and follows the song faithfully. Making it feel the song is still sitting in the TODO, unchecked, and I've mostly made peace with that being the genuinely interesting half rather than the leftover one.

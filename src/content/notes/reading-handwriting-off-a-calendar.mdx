@@ -1,0 +1,22 @@
+---
+title: "Reading my handwriting off a calendar"
+date: 2025-08-18
+tags: ["ml", "engineering"]
+summary: "An app that reads handwriting off a photo of a paper calendar and drops the events into my phone. The handwriting was the easy part. The hard part was figuring out which day each scribble belonged to."
+draft: true
+---
+
+I built an app that takes a photo of a handwritten paper calendar and puts the events into my phone's calendar. Going in, I assumed the whole challenge was the handwriting. It wasn't. Reading the letters is a solved problem you can rent by the API call. Working out which day each scribble belongs to is the part nobody hands you.
+
+The genuinely-easy-now part is turning pixels into text. Cloud OCR has gotten quietly excellent at handwriting. You send it the image, it gives you back words and, crucially, where on the image each word sits. (With an on-device fallback for when there's no signal.) I budgeted most of my time for this and spent almost none of it here.
+
+The real problem is the shape of a calendar. It's a grid, and "Dentist 3pm" is just noise until you know it was written in the cell for Tuesday the 14th. OCR gives you the words and their pixel coordinates and then politely stops, and everything that makes the app work happens after that, in the part where you rebuild the grid the words were living in:
+
+1. **Find the calendar in the photo.** It's not the whole frame, and it's photographed at an angle, so first you locate the calendar's boundary and correct the perspective, un-skewing it back into a clean rectangle.
+2. **Reconstruct the grid.** A month is roughly six rows by seven columns. You work out where the cell lines fall so you have actual day-cells to work with.
+3. **Bind text to cells.** Each scrap of OCR'd text has a position. You drop it into whichever cell contains it, and within a cell you separate the day number from the events written under it.
+4. **Only now** do you have "an event, on a date," the thing you can actually hand to a calendar.
+
+The OCR is step zero in the middle of all that, and the least of the difficulty. Everything load-bearing is the layout reconstruction, the part that's specific to calendars and that no general API knows anything about, because the structure is yours to understand.
+
+That's the reframe I walked away with. "Read the text" is a commodity now; you can buy it. "Understand the layout the text is arranged in" is the actual engineering, and it stays yours, because the meaning lives in where the characters sit relative to each other, and the characters themselves were never the hard part.
