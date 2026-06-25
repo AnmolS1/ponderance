@@ -1,0 +1,33 @@
+---
+title: "(b,c), chirality, and why the blueprint is the name"
+date: 2026-06-22
+series: "Sonobe geometry"
+seriesOrder: 4
+tags: ["math", "origami"]
+summary: "The two numbers that pin down a geodesic ball's size, twist, and handedness — and the moment the blueprint turns out to be the name."
+draft: true
+---
+
+$T = b^2 + bc + c^2$ keeps showing up, so what *are* $b$ and $c$? They're a walk. Stand on one of the 12 corner vertices, step $b$ units along a row of triangles, turn 60°, step $c$ units. Where you land is the next corner. That single instruction — the vector $(b,c)$ — pins down the whole ball: its size (through $T$), its twist, and its handedness.
+
+The $T$ formula isn't arbitrary either. It's the law of cosines on a 60° triangular lattice: two steps of length $b$ and $c$ meeting at the lattice's 120° angle give a squared separation of $b^2 + bc + c^2$.[^cosine] So "how far apart are the corners" and "how many triangles fit between them" are literally the same computation.
+
+The walk also sorts every ball into three classes:
+
+- **Class I** — $c = 0$. The walk runs straight along a lattice row. Aligned, no twist.
+- **Class II** — $b = c$. A symmetric diagonal walk. Twisted, but still mirror-symmetric.
+- **Class III** — $b \neq c$, both nonzero. The walk is lopsided, and the ball becomes *chiral*: it exists in distinct left- and right-handed versions you genuinely cannot fold into one another. The 210-unit ball is the smallest chiral one — meaning a paper ball can have a handedness.
+
+There are three naming systems, and it's worth knowing which to reach for. *Descriptive* names just count faces (60 kite faces gives "deltoidal hexecontahedron") and tell you nothing about construction. *Conway* notation names the recipe: seed letters T/C/O/D/I and operators applied right-to-left like function composition, so `kD` is "kis dodecahedron" (the pentakis dodecahedron) and `tI` is "truncate the icosahedron" (a soccer ball).[^conway] But for geodesic balls specifically there's Coxeter's notation, $\{3,5+\}(b,c)$: triangular faces (the 3), arranged around icosahedral 5-fold vertices (the 5+), subdivided by the vector $(b,c)$.
+
+And that's the quiet payoff of the whole rabbit hole:
+
+- $30 = \{3,5+\}(1,0)$
+- $90 = \{3,5+\}(1,1)$
+- $210 = \{3,5+\}(2,1)$ — chiral
+- $270 = \{3,5+\}(3,0)$
+
+The $(b,c)$ I'd been chasing for its own sake — the little walk that fixes size, twist, and handedness — *is literally the name.* The "real object" I kept saying was lurking behind the unit count is exactly what Coxeter notation writes down. The blueprint and the name are the same string.
+
+[^cosine]: The $+bc$ cross-term is the $\cos(120°) = -\tfrac{1}{2}$ contribution, doubled — the signature of a 60° lattice rather than a square one.
+[^conway]: Conway operators include `k` (kis), `t` (truncate), `d` (dual), `a` (ambo), `s` (snub). A fun consequence: `dkD` is a truncated icosahedron again — `kD` and `tI` are duals of each other.

@@ -1,0 +1,23 @@
+---
+title: "A reboot is the one thing I can't automate"
+date: 2026-05-20
+series: "discofin-server"
+seriesOrder: 6
+tags: ["homelab", "engineering"]
+summary: "Almost everything on this box self-heals. The reboot stays half-manual, not because it's hard to script, but because a reboot destroys the one thing that could tell me it worked."
+draft: true
+---
+
+Almost everything on this box takes care of itself. Security patches land on their own. Containers restart when they fall over. A boot-time check waits for the storage mount and the container runtime, then tells me if anything came back wrong. The one operation I won't fully hand off is the reboot. Scripting it is trivial. What you can't script is the part that matters, because a reboot can't confirm its own success.
+
+The setup is deliberately dull. OS updates are limited to the security origin, since I don't want feature updates showing up unannounced, and if one needs a reboot there's a window for it to happen. A small unit waits at boot for the filesystem and Docker to genuinely be up, then reports the state of the stack. That's the "did it come back?" layer, the part a human can read.
+
+What can't be closed is the validation, and the reason is almost a riddle. A reboot I trigger from my SSH or agent session kills that session on the way down. Whatever I'd written to check "are we okay on the other side" died with the connection it would have run over. The act of rebooting destroys the observer that was supposed to watch the reboot. You can't watch a thing through the exact moment it stops existing, not from inside it. Nothing can.
+
+So the confirmation has to come from outside the reboot. A separate notifier that pings me from the far shore, or me, looking after the fact. The loop only closes with a witness that didn't go down with the box.
+
+This generalizes to a whole family of operations, the ones that tear down their own control plane. Rebooting from a session on the host. Restarting the network stack over the network. Flushing firewall rules over SSH.[^iptables] Every one of them cuts the wire you'd use to check the result or undo the damage. The engineering answer is always the same two doors: keep an out-of-band observer that outlives the operation, or keep a human in the loop. There's no third door, and I've looked.
+
+So the box reboots itself, but it never tells *itself* it worked. It tells me. The last sliver of automation here isn't worth chasing, because no amount of cleverness lets a system watch itself through the instant it ceases to exist. Some things you have to come back from to know you came back.
+
+[^iptables]: The classic version: never `iptables -F` a remote box without a job already queued to restore the rules if you don't check back in. Same shape of mistake. You saw off the branch you're sitting on, and then you can't reach the saw.

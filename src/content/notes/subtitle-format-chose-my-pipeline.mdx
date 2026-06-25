@@ -1,0 +1,30 @@
+---
+title: "How a subtitle format chose my whole media pipeline"
+date: 2026-06-11
+series: "discofin-server"
+seriesOrder: 7
+tags: ["homelab", "engineering", "ml"]
+summary: "A 4K stutter traced all the way back to image-based subtitles being burned into video in real time. Killing that one thing rippled backward through six services, and ended up rewriting what the box is even allowed to download."
+draft: true
+---
+
+The most consequential architectural decision in my media stack was made by a subtitle format, and I didn't make it so much as walk into it, the way you walk into a tripwire. By tripping it, and then spending a while figuring out what I'd tripped.
+
+The symptom was small and specific. Some 4K files stuttered on playback. Not all of them. Same player, same client, same network, and this file plays clean while the next one judders, with no obvious reason for one and not the other.
+
+What the bad files had in common was their subtitles. They carried image-based subtitles,[^pgs] bitmaps, literal little pictures of the text instead of a text track. That detail is the whole story, once you know what it costs to put a bitmap subtitle on screen. A text subtitle gets shipped to the player and drawn there, cheaply, on top of the video. A bitmap subtitle can't be redrawn by a player that doesn't speak its exact format, so to show it the server has to burn it in: decode the video, paint the bitmap onto every single frame, and re-encode the result. Burning subs into 4K means decoding 4K, compositing, and re-encoding 4K live, fast enough to stay ahead of playback. Ask an integrated GPU to do that and it falls behind real time. There's your stutter.
+
+The thing that unlocked it, and I remember the exact moment it clicked, was realizing my GPU was never too weak. I was asking it to re-encode 4K in real time so it could paint words onto the picture. Kill the burn-in and the entire category of stutter is just gone. Not this file. The whole class of them.
+
+The fix turned into a cascade, one root cause that six services had to bend around:
+
+1. **Subtitles, text only.** Tell the fetcher to pull only text formats and never image ones. Text subs go to the client and render there, and the video plays untouched. This is the fix. Everything after it exists to defend it.
+2. **Close the back door.** Some media has no text subtitle anywhere on earth. If the system shrugs and falls back to the embedded image sub, the burn-in is right back. So a last-resort provider runs a small speech-to-text model, a CPU Whisper, over the audio and writes a text track from scratch. It's slow and it's imperfect and I do not care, because it produces a text sidecar, which is the only property that matters. This is the one place machine learning earns a seat in a media server, not to be clever, just to guarantee the output is text.
+3. **Reach back into what I download.** Tell the quality automation to cap new grabs at 1080p h264 and score the heavier codecs negative on those profiles. The logic runs upstream: 1080p h264 direct-plays on my clients, and not grabbing new 4K means not piling up new 4K image-subs to burn down the line. The fix for a playback stutter reached all the way back into my download rules, which still feels slightly unhinged to say out loud.
+4. **Stop the silt.** A prune step keeps only the subtitle languages I actually use, so the library doesn't slowly fill with dozens of sidecars the fetcher grabbed on its way through.
+
+Here's the part I keep turning over. I sat down to change a transcoding setting and stood up having rewritten my download policy. The expensive operation, live 4K re-encode, was only ever the symptom. The cheapest and most permanent fix lived three services upstream, in what the box is allowed to fetch in the first place. Performance problems wander like that. The place a system hurts is almost never the place it's actually wrong, and chasing the pain instead of the cause is how you spend a weekend tuning the thing that was fine all along.
+
+A subtitle is a few kilobytes of text, by a wide margin the smallest file in the whole pipeline. Whether those kilobytes are text or image set my resolution ceiling, dragged a machine-learning model into the stack, and rewrote the rules for what I'm allowed to download. The smallest artifact in the system turned out to be holding the constraint the entire thing organizes itself around, and untangling that is still some of the most satisfying debugging I've done.
+
+[^pgs]: PGS, or Presentation Graphic Stream, the bitmap subtitle format Blu-rays ship. Each "subtitle" is a timed image rather than a string, which is exactly why it can't be redrawn client-side and has to be composited into the frame.

@@ -1,0 +1,35 @@
+---
+title: "Loeschian numbers and the Eisenstein integers"
+date: 2026-06-22
+series: "Sonobe geometry"
+seriesOrder: 6
+tags: ["math"]
+summary: "Why 'rounds nicely' secretly depends on the prime factorization of T — a tour down to the Eisenstein integers."
+draft: true
+---
+
+The whole Sonobe story rests on one condition — $T = b^2 + bc + c^2$ — and I kept treating it as a black box. The numbers it produces are called **Loeschian numbers**, and the reason some integers are Loeschian and others aren't is genuinely deep.
+
+A quick refresher on notation first, since the rest leans on it. $a \equiv b \pmod n$ means $a$ and $b$ leave the same remainder when divided by $n$. A clock is the everyday version: $15\!:\!00 \equiv 3 \pmod{12}$. Working mod 3 just sorts every integer into three bins by remainder — the multiples of 3, the ones that leave remainder 1, and the ones that leave remainder 2.
+
+The test for whether $n$ is Loeschian, prime by prime:
+
+- primes $\equiv 1 \pmod 3$: free, any power
+- the prime 3: free, any power
+- primes $\equiv 2 \pmod 3$: allowed only to *even* powers
+
+That instantly explains the puzzles from the paper-budget note. $61$ is prime and $61 \equiv 1 \pmod 3$, so it contains zero troublesome primes and sails through — and sure enough $61 = (5,4)$. Meanwhile $95 = 5 \cdot 19$: here $5 \equiv 2 \pmod 3$ appears to the first power, an odd power, so 95 is not Loeschian, and no Sonobe ball lands there.
+
+Why are the $\equiv 2$ primes the troublemakers? This is the part that made me sit up. The form factors:
+
+$$b^2 + bc + c^2 = (b - c\omega)(b - c\omega^2)$$
+
+where $\omega$ is a primitive cube root of unity, satisfying $\omega^2 + \omega + 1 = 0$. That product is a *norm* — the squared size of the number $b - c\omega$ in the ring of **Eisenstein integers**, the triangular lattice of points $a + b\omega$ in the complex plane.[^lattice] And the behavior of an ordinary prime $p$ in that ring is exactly what the mod-3 rule is tracking:
+
+- $p \equiv 1 \pmod 3$ **splits** — it factors into two Eisenstein primes whose norms multiply back to $p$, so it can contribute any power.
+- $p \equiv 2 \pmod 3$ stays **inert** — it remains prime in the Eisenstein integers, and the smallest norm it can contribute is $p^2$, which is precisely why it's forced to even powers.
+- $p = 3$ is the lone **ramified** case, sitting on its own.
+
+So the question "will my paper ball round nicely?" reduces, after enough unfolding, to "how does this number factor in the Eisenstein integers?" The triangular lattice the units physically sit on is the same lattice the number theory is secretly about. The geometry and the algebra were never two different things — which, after six notes, feels like the right place to stop.
+
+[^lattice]: The Eisenstein integers are to a 60° triangular grid what the ordinary integers are to the number line — and it's the very same triangular grid your Sonobe faces tile.

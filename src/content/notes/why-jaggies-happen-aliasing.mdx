@@ -1,0 +1,19 @@
+---
+title: "Why jaggies happen"
+date: 2026-04-11
+tags: ["math", "engineering"]
+summary: "Jaggies, the backwards-spinning wagon wheel, and shimmering textures are all the same bug — undersampling."
+draft: true
+---
+
+Jagged, stair-stepped edges on a diagonal line — "jaggies" — look like a rendering limitation, and they are, but the real cause is a single idea from signal processing that turns up everywhere once you've seen it.
+
+The culprit is undersampling, and the governing rule is Nyquist–Shannon: to faithfully capture a signal you have to sample it at least twice as fast as its highest-frequency component. A pixel grid samples a continuous image at fixed points. When the image carries detail finer than the grid can resolve — and a sharp diagonal edge is, in frequency terms, very high-frequency — there aren't enough samples, and the lost detail doesn't simply vanish. It comes back *disguised* as lower-frequency structure: a false pattern, an "alias." That disguise is exactly where the name comes from.
+
+What makes it worth knowing is that the same mechanism wears different costumes:
+
+- **spatial aliasing** — jaggies on geometry
+- **temporal aliasing** — the wagon-wheel effect, where a spoked wheel filmed at a fixed frame rate appears to rotate slowly backwards
+- **texture aliasing** — moiré shimmer on a detailed texture viewed at a distance
+
+All three are the same undersampling failure, playing out in space, in time, and across a texture. And once you frame it that way, anti-aliasing stops being a grab-bag of tricks: it's just sampling smarter — averaging several samples per pixel, or rendering at high resolution and scaling down — so the high frequencies can't masquerade as low ones.

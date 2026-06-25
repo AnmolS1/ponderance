@@ -1,0 +1,21 @@
+---
+title: "MQTT is the nervous system my house runs on"
+date: 2026-06-18
+series: "discofin-server"
+seriesOrder: 10
+tags: ["homelab", "engineering"]
+summary: "Every smart thing in my house that isn't a screen talks to exactly one other thing, a message bus. None of them know about each other. They know about the bus, and that's the whole reason the system can keep growing without turning into a tangle."
+draft: true
+---
+
+Every smart thing in my house that isn't a screen talks to exactly one other thing: a message bus. A door sensor, a temperature probe, a switch, the 3D printer's status, my own little scripts. None of them know about each other. They know about the bus. The protocol is MQTT, and the day I got it running, adding the next device stopped being integration work and turned into a one-line subscription.
+
+Start with the problem it solves, because it's easy to miss. Half my devices don't speak IP at all. A battery-powered Zigbee sensor speaks Zigbee, a low-power mesh built so a coin cell lasts a year, which rules out it ever holding open a TCP connection. So there's a translator in the middle: a little USB radio (the coordinator) plus a bridge that takes the whole Zigbee mesh and republishes it onto the MQTT bus. Now a twelve-dollar sensor and my entire home-automation brain can have a conversation, because they've been introduced on neutral ground neither one had to understand.
+
+The reason a bus beats wiring things straight to each other is decoupling, and it's one of those ideas that sounds like nothing until it saves you. A sensor publishes a message, `contact: open`, to a topic. It has no idea who's listening, and it doesn't want one. Home Assistant subscribes to that topic. It has no idea which sensor sent it, and it doesn't need one. They never hold a reference to each other. The topic is the only thing they share. So the day I decide to also log that event, or alert on it, or kick off something new, I add another subscriber and touch nothing that already works. The first nineteen devices never notice the twentieth arrive. That's the exact property that lets this keep growing instead of collapsing into a nest of special cases.
+
+The addressing is just a path. Topics are hierarchical, `zigbee2mqtt/<device>/...`, and you subscribe with wildcards. Two small MQTT features are what make the house feel solid rather than flaky. Quality-of-service levels let a publisher insist a message was actually delivered instead of fired into the dark. And retained messages mean the broker keeps the last value on a topic, so a subscriber that wakes up late, say Home Assistant just restarted, instantly learns the current state of everything instead of sitting blind until the next time a door happens to swing.
+
+A shared bus comes with a shared-bus question, though: anything that can publish can, in principle, speak as anything. The honest answer is least privilege per topic, where each publisher is allowed to write only its own corner and each subscriber to read only what it actually needs, so one compromised gadget can't put words in another's mouth. That, plus keeping the broker off the public internet entirely (it never leaves the LAN and the tailnet, behind the same default-drop from a couple notes back), is what keeps a bus like this trustworthy. The nervous-system metaphor is lovely right up until you remember that anyone who can tap a nerve can send a signal down it.
+
+Stepping back, here's what I actually like about it. My house doesn't integrate device-to-device. Every part integrates with the bus, once, and then gets to forget the others exist. It's the same reason solid software leans on a message queue instead of a web of direct calls: you pay a little indirection and buy the freedom to add the next thing without renegotiating with all the previous ones. Mine just happens to be made of door sensors and a printer that tells me when it's done.

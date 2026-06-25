@@ -1,30 +1,15 @@
 ---
-title: "shreyachanth.com"
-summary: "Personal site for classical vocalist Shreya Chanth — zero-compromise performance and accessibility on a creative's budget."
-role: "Engineering lead"
-stack: ["Astro", "Cloudflare Pages", "Tailwind v4", "MDX", "Cloudflare Images"]
+title: "Shreya Chanth"
+slug: "shreyachanth"
+cover: "/work/shreyachanth-cover.svg"
+summary: "A production portfolio and lead-capture site for a fitness coach: the design, the build, and the serverless plumbing behind the contact form."
+role: "Designer & full-stack developer (solo)"
+stack: ["React", "TypeScript", "Vite", "Tailwind CSS", "Cloudflare Pages", "Pages Functions", "R2", "Resend", "Turnstile"]
 category: "frontend"
+repo: "https://github.com/AnmolS1/shreyachanth"
 liveUrl: "https://shreyachanth.com"
 featured: true
 order: 1
-cover: "/work/shreyachanth-cover.png"
 ---
 
-A performance-first personal site for Bay Area classical vocalist Shreya Chanth, built to survive the moment an Insta post goes viral and her agent sends a link.
-
-The brief was simple: beautiful, fast everywhere, accessible to every visitor, maintainable by a non-engineer. The constraints made it interesting.
-
-## What I built
-
-- Static-first Astro site deployed on Cloudflare Pages — 100 Lighthouse performance score on every tested page.
-- Cloudflare Images for zero-cost adaptive serving (WebP/AVIF, correct srcset, no CDN bill).
-- Edge TTFB under 40ms globally, measured cold.
-- Zero client-side JavaScript on any content page. All interactivity is CSS.
-- WCAG AA throughout — 100/100 Lighthouse accessibility. Meaningful alt text, skip links, focus rings.
-- MDX-driven content: Shreya updates her bio and sets list without touching code.
-
-## The fold
-
-The hard part wasn't performance — Cloudflare Pages and static Astro give you that for free. The hard part was the **image pipeline**: Shreya had 200+ high-res performance photos taken by four different photographers at different aspect ratios, exported at inconsistent resolutions. I wrote a one-time migration script that ingested all 200 photos into Cloudflare Images, generated the canonical `cf-images://` src references, and rebuilt the gallery as a single MDX file Shreya can reorder by changing a number.
-
-The result: zero support calls since launch.
+This is the one that has to actually work, for a real client, in front of real visitors. It's a fitness coach's site. The front is the easy half to describe (React, Vite, Tailwind, deployed to Cloudflare Pages), and the half I'm prouder of is the back. The contact form and the Instagram feed both run on Cloudflare Pages Functions, so there's no server I babysit. The form posts to a function that talks to Resend for delivery, and a second function proxies Instagram so the page never ships a token to the browser. Media is self-hosted in R2 instead of leaning on a third party, and Turnstile keeps the contact form from becoming a spam funnel. I kept one rule the whole way through: the approved design prototype is the single source of truth, and every visual decision gets settled against it instead of against my mood that day.

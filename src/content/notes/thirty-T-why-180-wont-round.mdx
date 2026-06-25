@@ -1,0 +1,35 @@
+---
+title: "N = 30T, and why a 180-unit ball won't round"
+date: 2026-06-22
+series: "Sonobe geometry"
+seriesOrder: 2
+tags: ["math", "origami"]
+summary: "A short derivation of which unit counts exist, and why 180 folds fine but comes out lumpy."
+draft: true
+---
+
+After the 90, the question I actually wanted answered was: given any unit count, can I predict the shape *and* whether it'll look round? Two rules do all the work.
+
+**Rule 1 — is it even a valid all-triangle ball?** Drop the unit count $N$ into Euler's formula. If every face is a triangle, then faces $= 2N/3$ and vertices $= N/3 + 2$, which forces $N$ to be divisible by 3. (180 passes: 120 spikes, 62 vertices. So you *can* fold it.)
+
+Where does $N = 30T$ come from? Build up from the bare icosahedron — 20 faces, 30 edges, 12 vertices:
+
+1. **Subdivide.** Replace each triangular face with a patch of $T$ smaller triangles. Total faces $= 20T$.
+2. **Faces to edges.** Each triangle has 3 edges, each edge shared by 2 triangles, so edges $= 3 \times 20T / 2 = 30T$.
+3. **Units are edges.** Therefore $N = 30T$.
+
+Vertices fall out for free: $V = E - F + 2 = 30T - 20T + 2 = 10T + 2$ — which is where the 12, 32, and 92 from the other notes came from.
+
+**Rule 2 — will it round?** For an evenly round ball you want icosahedral symmetry, and that lands only on counts where
+
+$$N = 30T, \qquad T = b^2 + bc + c^2$$
+
+for whole numbers $b, c$. Those $T$ values are $1, 3, 4, 7, 9, 12, \dots$, giving units of $30, 90, 120, 210, 270, 360, \dots$
+
+So $180 = 30 \times 6$, and $6$ cannot be written as $b^2 + bc + c^2$.[^loeschian] That's why 180 isn't in the round family — the clean intermediates are 120 and 210, not 180. You can still triangulate a 180-edge icosahedral solid, but its triangles come in mismatched shapes, so it reads slightly lumpier than the balls on either side of it.
+
+Now the satisfying part — *why* the magic numbers round. Every one of these balls has exactly 12 "corners," the original icosahedron vertices, where only 5 triangles meet. By Descartes' theorem the total angular defect of any closed polyhedron is exactly 720°, and on these balls essentially all of it stays parked at those 12 corners. Every *other* vertex has 6 triangles around it — 360°, locally flat. Add more units and the flat patches between the 12 corners grow bigger and smoother, so your eye reads the whole thing as rounder. The magic numbers are precisely the subdivisions where every new vertex lands at a clean 6-triangle spot without breaking symmetry; off-magic counts shove some vertices into irregular positions, and that's the lumpiness you see.
+
+The manual recipe, then: divisible by 3 means a valid ball; equal to $30 \times (b^2 + bc + c^2)$ means it rounds beautifully.
+
+[^loeschian]: That "$b^2 + bc + c^2$" condition has a name — Loeschian numbers — and a genuinely deep reason, which is the capstone note in this series.
