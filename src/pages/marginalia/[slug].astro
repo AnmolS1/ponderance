@@ -75,9 +75,12 @@ const dateStr = date.toISOString().slice(0, 10);
     /* Shiki code blocks */
     :global(.note-body pre){border-radius:5px;overflow-x:auto;margin:0 0 26px;}
     :global(.note-body pre code){font-family:var(--font-mono);font-size:13px;line-height:1.85;}
-    /* Figures */
+    /* Figures. Diagrams are now inlined <svg class="note-fig"> (themed via
+       var(--color-*), so they track the toggle); raster figures may still be
+       <img>. Both share the framed --color-inset box. */
     :global(.note-body figure){margin:10px 0 28px;}
-    :global(.note-body figure img){width:100%;height:auto;display:block;border:1px solid var(--color-crease-line);border-radius:6px;background:var(--color-inset);}
+    :global(.note-body figure img),:global(.note-body figure svg.note-fig){width:100%;height:auto;display:block;border:1px solid var(--color-crease-line);border-radius:6px;background:var(--color-inset);}
+    :global(.note-body figure svg.note-fig){padding:16px;max-width:520px;margin-inline:auto;}
     :global(.note-body figcaption){font-family:var(--font-mono);font-size:12px;line-height:1.5;color:var(--color-graphite-40);margin-top:10px;text-align:center;}
     @media (prefers-reduced-motion:reduce){.readbar{display:none!important;}}
   </style>

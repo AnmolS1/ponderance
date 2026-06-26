@@ -7,13 +7,11 @@ tags: ["math", "origami"]
 summary: "The two numbers that pin down a geodesic ball's size, twist, and handedness, and the moment the blueprint turns out to be the name."
 draft: false
 ---
+import NoteFigure from '../../components/NoteFigure.astro';
 
 $T = b^2 + bc + c^2$ keeps showing up, so what *are* $b$ and $c$? They're a walk. A small, bossy walk that decides everything about the ball before you've folded a single unit. Stand on one of the 12 corner vertices, step $b$ units along a row of triangles, turn 60°, step $c$ units. Where you land is the next corner. That single instruction, the vector $(b,c)$, pins down the whole ball: its size (through $T$), its twist, and its handedness.
 
-<figure>
-  <img src="/marginalia/bc-walk-lattice.svg" alt="The (b,c) walk on a triangular lattice: step b units along a row, turn 60 degrees, step c units, landing on the next corner vertex." />
-  <figcaption>The vector (b,c) as a walk on the triangular lattice, fixing size, twist, and handedness.</figcaption>
-</figure>
+<NoteFigure src="/marginalia/bc-walk-lattice.svg" alt="The (b,c) walk on a triangular lattice: step b units along a row, turn 60 degrees, step c units, landing on the next corner vertex.">The vector (b,c) as a walk on the triangular lattice, fixing size, twist, and handedness.</NoteFigure>
 
 The $T$ formula isn't arbitrary either. It's the law of cosines on a 60° triangular lattice: two steps of length $b$ and $c$ meeting at the lattice's 120° angle give a squared separation of $b^2 + bc + c^2$.[^cosine] So "how far apart are the corners" and "how many triangles fit between them" are literally the same computation.
 

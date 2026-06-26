@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import CoverArt from '../../components/CoverArt.astro';
 import { getCollection } from 'astro:content';
 
 const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
@@ -67,7 +68,9 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
     .build-card{display:flex;flex-direction:column;background:var(--color-graph-card);border:1px solid var(--color-crease-line-bold);border-radius:5px;overflow:hidden;transition:transform .18s ease,box-shadow .18s ease;text-decoration:none;}
     .build-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-card);}
     .build-card:hover h3{color:var(--color-crane);}
-    .build-cover{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;border-bottom:1px solid var(--color-crease-line);background:var(--color-graph-card);}
+    /* :global — the cover is an inlined <svg> injected via set:html, so it never
+       receives Astro's scoped data-astro-cid attribute a scoped selector needs. */
+    :global(.build-cover){width:100%;aspect-ratio:16/10;display:block;border-bottom:1px solid var(--color-crease-line);background:var(--color-graph-card);overflow:hidden;}
     .meta-link{font-family:var(--font-mono);font-size:11px;color:var(--color-crease);text-decoration:none;border-bottom:1px solid var(--color-crease-line-bold);}
     @media (prefers-reduced-motion:reduce){.build-card{transition:none!important;}}
     /* Responsive reflow (lifted from Workshop.dc.html) */
@@ -112,7 +115,7 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
           </div>
           <div class="ws-cover" style="position: relative; border-left: 1px solid var(--color-crease-line-bold); min-height: 360px; background: var(--color-graph-card);">
             {lead.data.cover
-              ? <img src={lead.data.cover} alt={`${lead.data.title} cover`} style="width: 100%; height: 100%; object-fit: contain; display: block;" />
+              ? <CoverArt src={lead.data.cover} fit="contain" />
               : <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,var(--color-graph-card),var(--color-graph-card) 11px,var(--color-inset) 11px,var(--color-inset) 22px);"></div>}
           </div>
         </div>
@@ -125,7 +128,7 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
         <div class="secondary-grid" style="display: grid; grid-template-columns: .42fr .58fr;">
           <div class="ws-cover" style="position: relative; min-height: 220px; border-right: 1px solid var(--color-crease-line-bold); background: var(--color-graph-card);">
             {secondary.data.cover
-              ? <img src={secondary.data.cover} alt={`${secondary.data.title} cover`} style="width: 100%; height: 100%; object-fit: contain; display: block;" />
+              ? <CoverArt src={secondary.data.cover} fit="contain" />
               : <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,var(--color-graph-card),var(--color-graph-card) 11px,var(--color-inset) 11px,var(--color-inset) 22px);"></div>}
           </div>
           <div style="padding: 30px 34px;">
@@ -182,7 +185,7 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
           <div class="grid-builds" style="display: grid; grid-template-columns: repeat(3,1fr); gap: 16px;">
             {group.items.map(w => (
               <a class="build-card" href={`/workshop/${w.id}`}>
-                {w.data.cover && <img class="build-cover" src={w.data.cover} alt={`${w.data.title} cover`} loading="lazy" />}
+                {w.data.cover && <CoverArt class="build-cover" src={w.data.cover} fit="cover" />}
                 <div style="padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1;">
                   <p style="font-family: var(--font-mono); font-size: 11px; color: var(--color-sax); margin: 0 0 8px;">/ {group.label.toLowerCase()}</p>
                   <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 17px; color: var(--color-graphite); margin: 0 0 6px; transition: color .18s ease;">{w.data.title}</h3>

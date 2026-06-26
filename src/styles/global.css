@@ -98,6 +98,11 @@
   --color-orbit: #2A2A6E;
   --color-orbit-ink: #2A2A6E;
 
+  /* Accent ink for inlined SVG labels (covers / marginalia figures). Theme-aware
+     so the warm emphasis stays AA as text in BOTH themes: crane-dark reads on the
+     light ground, but is too dark on the night ground — there it lifts to crane. */
+  --art-accent: var(--color-crane-dark);
+
   /* Always-dark panel ink — light-on-indigo text that lives on the
      --color-orbit surface in BOTH themes (terminal/console/aside/skill
      panels), so it is theme-invariant by design. */
@@ -131,6 +136,7 @@
   --color-sax: #E0B43F;
   --color-orbit: #212146;
   --color-orbit-ink: #A6A8DC;
+  --art-accent: var(--color-crane);
   --panel-line: rgba(255, 255, 255, 0.12);
   --shadow-card: 0 10px 26px rgba(0, 0, 0, 0.45);
   color-scheme: dark;

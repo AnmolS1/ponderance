@@ -7,15 +7,13 @@ tags: ["math", "origami"]
 summary: "Each paper unit is one edge of a hidden polyhedron, so the unit count alone tells you the whole shape."
 draft: false
 ---
+import NoteFigure from '../../components/NoteFigure.astro';
 
 I folded a 90-unit Sonobe ball, sat back, and realized I had no idea what to call the thing I'd just spent an afternoon making. The answer turned out to be the doorway into a day's worth of geometric decoding.
 
 The trick is that each Sonobe unit is exactly one *edge* of an underlying polyhedron, and a little pyramid, a spike, sits on each *face*. So the unit count isn't decorative. It's a hard constraint that names the solid.
 
-<figure>
-  <img src="/marginalia/sonobe-unit-fold.svg" alt="Folding a single Sonobe unit in four steps: crease the midline, fold the edges to the center, fold two opposite corners, yielding a parallelogram unit with a tab and a pocket." />
-  <figcaption>One Sonobe unit, folded from a square: a tab on one end, a pocket on the other.</figcaption>
-</figure>
+<NoteFigure src="/marginalia/sonobe-unit-fold.svg" alt="Folding a single Sonobe unit in four steps: crease the midline, fold the edges to the center, fold two opposite corners, yielding a parallelogram unit with a tab and a pocket.">One Sonobe unit, folded from a square: a tab on one end, a pocket on the other.</NoteFigure>
 
 90 units means 90 edges. The polyhedron with 90 edges and the icosahedral symmetry these balls have is the pentakis dodecahedron: 32 vertices, 90 edges, 60 triangular faces. Because the spikes sit on the faces, the ball has 60 three-sided spikes, formally a stellated pentakis dodecahedron, though everyone just calls it a 90-unit ball.
 

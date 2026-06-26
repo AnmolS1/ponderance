@@ -7,6 +7,7 @@ tags: ["math", "physics", "origami"]
 summary: "Buckminster Fuller, virologists, and origami folders are all building the same object, and here's the great-circle idea that connects them."
 draft: false
 ---
+import NoteFigure from '../../components/NoteFigure.astro';
 
 "Geodesic" gets thrown around (geodesic dome, geodesic sphere) and at some point I realized I didn't actually know what it meant, or why my paper ball had earned the word.
 
@@ -14,10 +15,7 @@ On a flat plane, the shortest path between two points is a straight line. On a c
 
 On a sphere, every geodesic is a **great circle**, a circle whose plane passes through the sphere's center.[^latitude] It's why a long flight bows toward the pole on a flat map, the route your brain calls a detour and the planet knows is a shortcut. It's tracing the great-circle arc, the genuine shortest hop, which the flat projection distorts into a curve.
 
-<figure>
-  <img src="/marginalia/geodesic-great-circles.svg" alt="A sphere crossed by several great circles — circles whose planes pass through the center — showing the straightest paths a sphere allows." />
-  <figcaption>Great circles: every geodesic on a sphere is one, its plane passing through the center.</figcaption>
-</figure>
+<NoteFigure src="/marginalia/geodesic-great-circles.svg" alt="A sphere crossed by several great circles — circles whose planes pass through the center — showing the straightest paths a sphere allows.">Great circles: every geodesic on a sphere is one, its plane passing through the center.</NoteFigure>
 
 Here's the link to the ball. Fuller wanted to build a sphere out of flat triangles so that the structural struts would run along great circles, because that spreads load evenly using the sphere's own natural straight lines. The recipe: take an icosahedron sitting inside a sphere, chop each triangular face into a grid of smaller triangles, then push every new vertex outward onto the sphere's surface. The strut network you get approximates a web of great-circle arcs. Geodesics. A Sonobe ball is the folded-paper incarnation of that exact skeleton: the chains of units wrap around it in rings that trace those great-circle paths. Color one chain and you can watch a single band circle the entire ball.
 

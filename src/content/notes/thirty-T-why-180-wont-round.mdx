@@ -7,6 +7,7 @@ tags: ["math", "origami"]
 summary: "A short derivation of which unit counts exist, and why 180 folds fine but comes out lumpy."
 draft: false
 ---
+import NoteFigure from '../../components/NoteFigure.astro';
 
 After the 90, the question I actually wanted to answer was: given any unit count, can I predict the shape *and* whether it'll look round? Two rules do all the work.
 
@@ -20,10 +21,7 @@ Where does $N = 30T$ come from? Build up from the bare icosahedron (20 faces, 30
 
 Vertices fall out for free: $V = E - F + 2 = 30T - 20T + 2 = 10T + 2$, which is where the 12, 32, and 92 from the other notes came from.
 
-<figure>
-  <img src="/marginalia/sonobe-subdivision.svg" alt="An icosahedral face subdivided into a patch of T smaller triangles, illustrating how N = 30T edges arise from subdividing each of the 20 faces." />
-  <figcaption>Subdividing each icosahedron face into T triangles, where the patch edges are the paper units.</figcaption>
-</figure>
+<NoteFigure src="/marginalia/sonobe-subdivision.svg" alt="An icosahedral face subdivided into a patch of T smaller triangles, illustrating how N = 30T edges arise from subdividing each of the 20 faces.">Subdividing each icosahedron face into T triangles, where the patch edges are the paper units.</NoteFigure>
 
 **Rule 2: will it round?** For an evenly round ball you want icosahedral symmetry, and that lands only on counts where
 
