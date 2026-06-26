@@ -71,9 +71,6 @@ const iso = (d: Date) => d.toISOString().slice(0, 10);
 
     <!-- HERO -->
     <header style="display: grid; grid-template-columns: repeat(12,1fr); gap: 18px; align-items: end; padding: 54px 0 30px; border-bottom: 1px solid rgba(46,94,140,.28);">
-      <div style="grid-column: 1 / 13;">
-        <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 16px;">marginalia</p>
-      </div>
       <h1 style="grid-column: 1 / 9; font-family: var(--font-display); font-weight: 700; font-size: clamp(34px,4.4vw,54px); line-height: 1.05; letter-spacing: -.025em; color: #1B2A33; margin: 0; max-width: 20ch;">Things I worked out, written down before I forgot them.</h1>
       <div style="grid-column: 10 / 13; align-self: end; text-align: right; font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4); line-height: 1.7;">
         <b style="color: #1B2A33; font-size: 22px; display: block; font-weight: 600;">{allNotes.length}</b>
@@ -86,7 +83,7 @@ const iso = (d: Date) => d.toISOString().slice(0, 10);
       <section aria-label="Featured note" style="display: grid; grid-template-columns: repeat(12,1fr); gap: 18px; align-items: start; padding: 34px 0; border-bottom: 1px solid rgba(46,94,140,.28);">
         <a class="feat" href={`/marginalia/${lead.id}`} style="grid-column: 1 / 8; position: relative; background: #F6F7F4; border: 1px solid #2E5E8C; border-radius: 5px; padding: 26px 30px 28px; overflow: hidden; text-decoration: none; display: block;">
           <span aria-hidden="true" class="feat-fold"></span>
-          <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #E84A27; margin: 0 0 12px;">most recent</p>
+          <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: #E84A27; margin: 0 0 12px;">most recent</p>
           <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 27px; line-height: 1.1; letter-spacing: -.015em; color: #1B2A33; margin: 0 0 10px; max-width: 18ch;">{lead.data.title}</h2>
           <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: rgba(27,42,51,.6); margin: 0 0 18px; max-width: 46ch;">{lead.data.summary}</p>
           <div style="display: flex; align-items: center; gap: 14px; font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">

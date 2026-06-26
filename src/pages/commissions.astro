@@ -4,7 +4,7 @@ import Base from '../layouts/Base.astro';
 
 <Base
   title="Commissions — ponderance"
-  description="An ML & security engineer who ships real production frontends — with the CI/CD and edge infra to back them."
+  description="An ML & security engineer who ships real production frontends, with the CI/CD and edge infra to back them."
   footerLink={{ href: '/colophon', label: 'how this was built →' }}
 >
   <style>
@@ -22,9 +22,7 @@ import Base from '../layouts/Base.astro';
 
     <!-- POSITIONING -->
     <header style="padding: 54px 0 42px; border-bottom: 1px solid rgba(46,94,140,.28); display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap;">
-      <div style="max-width: 40ch;">
-        <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 16px;">commissions</p>
-        <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(34px,4.3vw,52px); line-height: 1.06; letter-spacing: -.025em; color: #1B2A33; margin: 0;">An ML and security engineer who also ships real production frontends — with the CI/CD and edge infra to back them.</h1>
+      <div style="max-width: 40ch;">        <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(34px,4.3vw,52px); line-height: 1.06; letter-spacing: -.025em; color: #1B2A33; margin: 0;">An ML and security engineer who also ships real production frontends, with the CI/CD and edge infra to back them.</h1>
       </div>
       <span style="display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 13px; color: #1B2A33; background: rgba(217,165,33,.16); border: 1px solid rgba(217,165,33,.5); border-radius: 999px; padding: 8px 16px; white-space: nowrap;">
         <span style="width: 8px; height: 8px; border-radius: 50%; background: #D9A521;"></span>
@@ -63,7 +61,7 @@ import Base from '../layouts/Base.astro';
             <span style="color: #E84A27;">→</span>
             <span class="pipe" style="font-family: var(--font-mono); font-size: 13px; color: #fff; background: #2E5E8C; border-radius: 3px; padding: 6px 12px; animation-delay: 1.35s;">merge</span>
           </div>
-          <p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.6; color: #1B2A33; margin: 0 0 14px;">Every change rides a branch to a live preview URL you can click before anything ships. CI gates the merge — types, accessibility, and a Semgrep scan all pass or it doesn't go in.</p>
+          <p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.6; color: #1B2A33; margin: 0 0 14px;">Every change rides a branch to a live preview URL you can click before anything ships. CI gates the merge: types, accessibility, and a Semgrep scan all pass or it doesn't go in.</p>
           <p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.6; color: rgba(27,42,51,.6); margin: 0;">When it's done, hand-off is built for non-technical owners: edit your content without touching code, and without calling me at 11pm.</p>
         </div>
       </div>
@@ -71,7 +69,7 @@ import Base from '../layouts/Base.astro';
 
     <!-- PROOF -->
     <section aria-label="Proof" style="padding: 40px 0; border-bottom: 1px solid rgba(46,94,140,.28); display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
-      <p style="font-family: var(--font-body); font-size: 18px; color: #1B2A33; margin: 0; max-width: 42rem;">Don't take my word for it — <strong>shreyachanth.com</strong> is the whole argument, taken apart fold by fold in the workshop.</p>
+      <p style="font-family: var(--font-body); font-size: 18px; color: #1B2A33; margin: 0; max-width: 42rem;">Don't take my word for it, <strong>shreyachanth.com</strong> is the whole argument, taken apart fold by fold in the workshop.</p>
       <a href="/workshop" style="font-family: var(--font-body); font-weight: 600; font-size: 15px; color: #1B2A33; padding: 12px 22px; border-radius: 3px; border: 1px solid rgba(46,94,140,.28); white-space: nowrap; text-decoration: none;">See the case studies →</a>
     </section>
 
@@ -90,7 +88,7 @@ import Base from '../layouts/Base.astro';
         </div>
 
         <form id="inquiry-form" action="/api/inquiry" method="POST" style="background: #22224f; padding: 22px 24px 26px;">
-          <p style="font-family: var(--font-mono); font-size: 12.5px; color: #7fae7f; margin: 0 0 18px;"># fill the prompts, then RUN. no third-party scripts here — that's the point.</p>
+          <p style="font-family: var(--font-mono); font-size: 12.5px; color: #7fae7f; margin: 0 0 18px;"># fill the prompts, then RUN. no third-party scripts here, that's the point.</p>
 
           <div class="console-row">
             <label for="f-name" style="font-family: var(--font-mono); font-size: 15px; color: #E84A27; flex: none; width: 78px;">name&gt;</label>
@@ -125,7 +123,7 @@ import Base from '../layouts/Base.astro';
           </div>
         </form>
       </div>
-      <p style="font-family: var(--font-mono); font-size: 13px; color: rgba(27,42,51,.6); margin: 16px 0 0;">Prefer plain email? <a href="mailto:hello@ponderance.dev" style="color: #E84A27; border-bottom: 1px solid #E84A27; padding-bottom: 1px; text-decoration: none;">hello@ponderance.dev</a> — the mailto fallback, always available.</p>
+      <p style="font-family: var(--font-mono); font-size: 13px; color: rgba(27,42,51,.6); margin: 16px 0 0;">Prefer plain email? <a href="mailto:hello@ponderance.dev" style="color: #E84A27; border-bottom: 1px solid #E84A27; padding-bottom: 1px; text-decoration: none;">hello@ponderance.dev</a>, the mailto fallback, always available.</p>
     </section>
 
   </div>

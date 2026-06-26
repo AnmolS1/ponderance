@@ -32,7 +32,7 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
     <div style="max-width: 1180px; margin: 0 auto; padding: 0 32px;">
       <div style="display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; padding: 64px 0 70px;">
         <div>
-          <p class="rise" style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 22px; animation-delay: .1s;">crease pattern → crane</p>
+          <p class="rise" style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: #2E5E8C; margin: 0 0 22px; animation-delay: .1s;">crease pattern → crane</p>
           <h1 class="rise" style="font-family: var(--font-display); font-weight: 700; font-size: clamp(44px,5.6vw,76px); line-height: 1.02; letter-spacing: -.025em; color: #1B2A33; margin: 0; animation-delay: .2s;">Rigorous systems,<br>folded into things<br>that <span style="color: #E84A27;">feel alive.</span></h1>
           <p class="rise" style="font-family: var(--font-body); font-size: 20px; line-height: 1.55; color: rgba(27,42,51,.6); max-width: 30rem; margin: 26px 0 0; animation-delay: .32s;">I'm an ML and security engineer who ships real production frontends. By day: model work and edge infrastructure. The rest of the time: origami, a saxophone, two cats, and the occasional derivation that wouldn't leave me alone.</p>
           <div class="rise" style="display: flex; align-items: center; gap: 26px; margin-top: 34px; animation-delay: .44s;">
@@ -79,10 +79,8 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
       <div style="display: grid; grid-template-columns: 1.15fr .85fr; gap: 28px; padding: 56px 0;">
         <!-- Featured build -->
         <article style="position: relative; background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 30px 32px 32px; overflow: hidden;">
-          <div aria-hidden="true" style="position: absolute; top: 0; right: 0; width: 34px; height: 34px; background: linear-gradient(135deg,transparent 50%,rgba(46,94,140,.13) 50%); border-left: 1px solid rgba(46,94,140,.28); border-bottom: 1px solid rgba(46,94,140,.28);"></div>
-          <p style="font-family: var(--font-mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 14px;">featured build</p>
-          <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 30px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 8px;">shreyachanth.com</h2>
-          <p style="font-family: var(--font-body); font-size: 16.5px; line-height: 1.55; color: rgba(27,42,51,.6); margin: 0 0 22px; max-width: 34rem;">A full production build on Cloudflare — Turnstile and rate-limited functions guarding the inquiry path, R2 for media, a CI gate that won't merge until it passes, and an editing flow a non-technical client actually uses without calling me. WCAG AA throughout.</p>
+          <div aria-hidden="true" style="position: absolute; top: 0; right: 0; width: 34px; height: 34px; background: linear-gradient(135deg,transparent 50%,rgba(46,94,140,.13) 50%); border-left: 1px solid rgba(46,94,140,.28); border-bottom: 1px solid rgba(46,94,140,.28);"></div>          <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 30px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 8px;">shreyachanth.com</h2>
+          <p style="font-family: var(--font-body); font-size: 16.5px; line-height: 1.55; color: rgba(27,42,51,.6); margin: 0 0 22px; max-width: 34rem;">A full production build on Cloudflare, with Turnstile and rate-limited functions guarding the inquiry path, R2 for media, a CI gate that won't merge until it passes, and an editing flow a non-technical client actually uses without calling me. WCAG AA throughout.</p>
           <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;">
             <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 9px;">Cloudflare Workers</span>
             <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 9px;">Turnstile</span>
