@@ -52,6 +52,7 @@
   /* — surface colors — */
   --color-graph: #EEF0EC;
   --color-graph-card: #F6F7F4;
+  --color-inset: #FFFFFF;            /* small "white" insets: pills, math/figure bg */
 
   /* — ink — */
   --color-graphite: #1B2A33;
@@ -62,12 +63,14 @@
   --color-crease: #2E5E8C;
   --color-crease-line: rgba(46, 94, 140, 0.13);
   --color-crease-line-bold: rgba(46, 94, 140, 0.28);
+  --color-grid-line: rgba(46, 94, 140, 0.07);   /* the blueprint graph-paper ground */
 
   /* — accents — */
   --color-crane: #E84A27;
   --color-crane-dark: #C23A1C;
   --color-sax: #D9A521;
-  --color-orbit: #2A2A6E;
+  --color-orbit: #2A2A6E;           /* indigo PANEL surface (terminal/console/aside) */
+  --color-orbit-ink: #2A2A6E;       /* indigo used as TEXT on light bg ("deep space") */
 
   /* — typography — */
   --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
@@ -81,16 +84,56 @@
 :root {
   --color-graph: #EEF0EC;
   --color-graph-card: #F6F7F4;
+  --color-inset: #FFFFFF;
   --color-graphite: #1B2A33;
   --color-graphite-60: rgba(27, 42, 51, 0.6);
   --color-graphite-40: rgba(27, 42, 51, 0.4);
   --color-crease: #2E5E8C;
   --color-crease-line: rgba(46, 94, 140, 0.13);
   --color-crease-line-bold: rgba(46, 94, 140, 0.28);
+  --color-grid-line: rgba(46, 94, 140, 0.07);
   --color-crane: #E84A27;
   --color-crane-dark: #C23A1C;
   --color-sax: #D9A521;
   --color-orbit: #2A2A6E;
+  --color-orbit-ink: #2A2A6E;
+
+  /* Always-dark panel ink — light-on-indigo text that lives on the
+     --color-orbit surface in BOTH themes (terminal/console/aside/skill
+     panels), so it is theme-invariant by design. */
+  --panel-ink: #E7E7F5;
+  --panel-ink-60: #C7C9EC;
+  --panel-muted: #9092C8;
+  --panel-line: rgba(255, 255, 255, 0.10);
+
+  --shadow-card: 0 8px 22px rgba(27, 42, 51, 0.10);
+  color-scheme: light;
+}
+
+/* ── Dark theme — "the blueprint at night" ──────────────────────
+   Attribute-driven override (so the toggle can force it); seeded pre-paint
+   from localStorage → prefers-color-scheme. Values lifted from the design
+   package's crease.css; contrast audited in Foundations.dc.html (clears AA
+   everywhere, most pairings AAA). */
+[data-theme="dark"] {
+  --color-graph: #0E1A24;
+  --color-graph-card: #182530;
+  --color-inset: #1E2C38;
+  --color-graphite: #E9ECE7;
+  --color-graphite-60: rgba(233, 236, 231, 0.66);
+  --color-graphite-40: rgba(233, 236, 231, 0.50);
+  --color-crease: #82A9CE;
+  --color-crease-line: rgba(130, 169, 206, 0.15);
+  --color-crease-line-bold: rgba(130, 169, 206, 0.30);
+  --color-grid-line: rgba(122, 162, 200, 0.07);
+  --color-crane: #F5613C;
+  --color-crane-dark: #C23A1C;
+  --color-sax: #E0B43F;
+  --color-orbit: #212146;
+  --color-orbit-ink: #A6A8DC;
+  --panel-line: rgba(255, 255, 255, 0.12);
+  --shadow-card: 0 10px 26px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
 }
 
 /* ── Base resets & global styles ────────────────────────────── */
@@ -109,18 +152,23 @@ body {
 body {
   background-color: var(--color-graph);
   background-image:
-    linear-gradient(rgba(46, 94, 140, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(46, 94, 140, 0.07) 1px, transparent 1px);
+    linear-gradient(var(--color-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid-line) 1px, transparent 1px);
   background-size: 32px 32px;
   background-position: -1px -1px;
   font-family: var(--font-body);
   color: var(--color-graphite);
+  transition: background-color 0.35s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
   background: rgba(232, 74, 39, 0.18);
+}
+
+[data-theme="dark"] ::selection {
+  background: rgba(245, 97, 60, 0.26);
 }
 
 a {
