@@ -56,7 +56,7 @@
 
   /* — ink — */
   --color-graphite: #1B2A33;
-  --color-graphite-60: rgba(27, 42, 51, 0.6);
+  --color-graphite-60: rgba(27, 42, 51, 0.72);
   --color-graphite-40: rgba(27, 42, 51, 0.4);
 
   /* — structure — */
@@ -86,7 +86,7 @@
   --color-graph-card: #F6F7F4;
   --color-inset: #FFFFFF;
   --color-graphite: #1B2A33;
-  --color-graphite-60: rgba(27, 42, 51, 0.6);
+  --color-graphite-60: rgba(27, 42, 51, 0.72);
   --color-graphite-40: rgba(27, 42, 51, 0.4);
   --color-crease: #2E5E8C;
   --color-crease-line: rgba(46, 94, 140, 0.13);
