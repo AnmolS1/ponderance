@@ -49,6 +49,16 @@
     return root.hasAttribute('data-cp-menu-open');
   }
 
+  // Auto-close the fold-out menu if the viewport widens past the nav
+  // breakpoint (860px — mirrors the @media in global.css). The burger that
+  // would close it is hidden at desktop width, so the sheet must self-dismiss;
+  // setMenu(false) also clears the body scroll-lock a CSS rule couldn't reach.
+  if (window.matchMedia) {
+    window.matchMedia('(max-width: 860px)').addEventListener('change', function (e) {
+      if (!e.matches && menuOpen()) setMenu(false);
+    });
+  }
+
   /* ---- Delegated events (robust to the chrome being shared across pages) -- */
   document.addEventListener('click', function (e) {
     var t = e.target.closest && e.target.closest('[data-cp-toggle],[data-cp-burger],[data-cp-menu-close],.cp-menu-link');
