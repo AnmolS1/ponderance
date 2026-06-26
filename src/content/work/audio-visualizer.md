@@ -11,4 +11,4 @@ featured: false
 order: 16
 ---
 
-Signs into Spotify and tracks what you're playing in real time, down to your position in the song. The finished half is the sync to playback; the open half is driving the visuals from Spotify's beats-and-segments analysis against real latency and clock drift, and that's the genuinely hard part still sitting in the repo. *(In progress.)*
+Signs into Spotify and tracks what you're playing in real time, down to your position in the song. The finished half is the sync to playback; the open half is driving the visuals from Spotify's beats-and-segments analysis against real latency and clock drift, and that's the annoyingly hard part still sitting in the repo. *(In progress.)*

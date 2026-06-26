@@ -12,7 +12,7 @@ $$
 S = \int_{t_1}^{t_2} L(q, \dot{q}, t) \, dt
 $$
 
-The principle of least action says: the physical path is the one where $\delta S = 0$ — small variations around the true path produce no first-order change in $S$.
+The principle of least action says: the physical path is the one where $\delta S = 0$. Small variations around the true path produce no first-order change in $S$. The whole of mechanics, riding on a sentence about nothing changing.
 
 ## The derivation
 
@@ -34,7 +34,7 @@ $$
 \int_{t_1}^{t_2} \left( \frac{\partial L}{\partial q} - \frac{d}{dt}\frac{\partial L}{\partial \dot{q}} \right) \eta \, dt = 0
 $$
 
-Since this must hold for all $\eta$, the integrand itself must vanish — the **Euler-Lagrange equation**:
+Since this must hold for all $\eta$, the integrand itself must vanish. This is the **Euler-Lagrange equation**:
 
 $$
 \frac{d}{dt}\frac{\partial L}{\partial \dot{q}} - \frac{\partial L}{\partial q} = 0
@@ -54,11 +54,11 @@ $$
 m\ell^2\ddot{\theta} + mg\ell\sin\theta = 0 \implies \ddot{\theta} + \frac{g}{\ell}\sin\theta = 0
 $$
 
-The same equation you'd get from Newton's second law, but without drawing a single free-body diagram.
+The same equation you'd get from Newton's second law, but without drawing a single free-body diagram, that swamp of tiny arrows I have never once enjoyed.
 
 ## Numerical integration
 
-Here's the small-angle pendulum integrated two ways — the Euler-Lagrange ODE and the equivalent Newtonian form — to confirm they agree:
+Here's the small-angle pendulum integrated two ways (the Euler-Lagrange ODE and the equivalent Newtonian form) to confirm they agree:
 
 ```python
 import numpy as np
@@ -117,8 +117,8 @@ fn main() {
 }
 ```
 
-Both converge to the same trajectory for small angles. For $\theta_0 \lesssim 20°$, $\sin\theta \approx \theta$ and the period is $T \approx 2\pi\sqrt{\ell/g}$ — independent of amplitude, which is the famous isochronous result Galileo observed.
+Both converge to the same trajectory for small angles. For $\theta_0 \lesssim 20°$, $\sin\theta \approx \theta$ and the period is $T \approx 2\pi\sqrt{\ell/g}$, independent of amplitude, the famous isochronous result Galileo observed.
 
 ## Why this matters for ML
 
-The path-integral formulation of quantum mechanics is a direct generalization: the probability amplitude for a particle to travel from $A$ to $B$ is a sum over *all* paths, weighted by $e^{iS/\hbar}$. The Lagrangian framing unifies classical mechanics, field theory, and quantum theory in a single notation. Once you see the world through $\delta S = 0$, the equations of motion for everything — electrodynamics, general relativity, the Standard Model — follow from the same one-line principle.
+The path-integral formulation of quantum mechanics is a direct generalization: the probability amplitude for a particle to travel from $A$ to $B$ is a sum over *all* paths, weighted by $e^{iS/\hbar}$. The Lagrangian framing unifies classical mechanics, field theory, and quantum theory in a single notation. Once you see the world through $\delta S = 0$, the equations of motion for everything (electrodynamics, general relativity, the Standard Model) follow from the same one-line principle. One line of bookkeeping, and the universe handles the rest of the paperwork.

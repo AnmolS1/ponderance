@@ -8,7 +8,7 @@ summary: "I wanted the house to tell me when a print finished. One line of autom
 draft: false
 ---
 
-I wanted one thing. When a print finishes, the house should tell me. That's the entire feature. It turned into a guided tour of every place a "simple" integration keeps a sharp edge, and I have the small scars to show for it.
+I wanted one thing. When a print finishes, the house should tell me. That's the entire feature. It turned into a guided tour of every place a "simple" integration keeps a sharp edge, and I have the small scars to show for it, mostly emotional.
 
 The base is genuinely easy. Home Assistant talks to the printer in LAN mode, local only, no round-trip to anyone's cloud, using its local address and an access code. The entities show up prefixed with the printer's serial, like `sensor.x1c_<serial>_print_status`. So far, so smooth.
 
@@ -31,4 +31,4 @@ The states come straight out of the firmware's gcode-state vocabulary, and the l
 
 **Bridge mode to dodge a collision.** The print-archive dashboard's default deployment wants a host port another service already owns. Its default mode's main draw is auto-discovery on the network, but I add the printer by a fixed address, so I don't need discovery at all. So it runs in bridge mode, publishing just its web UI. I gave up the one feature I wasn't using and got the port back. Fair trade.
 
-None of these were hard, and that's the actual point I want to make. A "simple" integration is a little stack of very specific facts: the real state enum, the native entity that already exists, the stream format the browser will accept, the port map. The work is reading each one instead of assuming it. The automation that finally tells me a print is done is a single line. Learning that "printing" is spelled `running` was the job, and honestly it's the kind of job I enjoy more than I'll admit.
+None of these were hard, and that's the actual point I want to make. A "simple" integration is a little stack of very specific facts: the real state enum, the native entity that already exists, the stream format the browser will accept, the port map. The work is reading each one instead of assuming it. The automation that finally tells me a print is done is a single line. Learning that "printing" is spelled `running` was the job. One word. One stupid, load-bearing word. And honestly it's the kind of job I enjoy more than I'll admit.

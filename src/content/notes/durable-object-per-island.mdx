@@ -28,7 +28,7 @@ export class IslandDurableObject extends DurableObject<Env> {
 }
 ```
 
-The object forgets everything except what it deliberately stapled to each socket before dozing off. I find that a weirdly lovely way to think about state. You don't keep everything in memory forever. You decide what's worth surviving sleep, and pin exactly that.
+The object forgets everything except what it deliberately stapled to each socket before dozing off. I find that a weirdly lovely way to think about state. You don't keep everything in memory forever. You decide what's worth surviving sleep, and pin exactly that. I think about that line more than I think about most real advice.
 
 One thing that isn't cute, just necessary: because these objects are conjured on demand by name and they cost money, I validate that an island id is a real UUID before I route to it.[^uuid] Skip that and an authenticated user can name-spin arbitrary objects into existence and run up a bill. It's a one-line regex that's quietly a security control, sitting in the request path before any object gets created.
 

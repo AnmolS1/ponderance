@@ -8,7 +8,7 @@ summary: "Every smart thing in my house that isn't a screen talks to exactly one
 draft: false
 ---
 
-Every smart thing in my house that isn't a screen talks to exactly one other thing: a message bus. A door sensor, a temperature probe, a switch, the 3D printer's status, my own little scripts. None of them know about each other. They know about the bus. The protocol is MQTT, and the day I got it running, adding the next device stopped being integration work and turned into a one-line subscription.
+Every smart thing in my house that isn't a screen talks to exactly one other thing: a message bus. A door sensor, a temperature probe, a switch, the 3D printer's status, my own little scripts. None of them know about each other. It's the healthiest set of relationships in my house. They know about the bus. The protocol is MQTT, and the day I got it running, adding the next device stopped being integration work and turned into a one-line subscription.
 
 Start with the problem it solves, because it's easy to miss. Half my devices don't speak IP at all. A battery-powered Zigbee sensor speaks Zigbee, a low-power mesh built so a coin cell lasts a year, which rules out it ever holding open a TCP connection. So there's a translator in the middle: a little USB radio (the coordinator) plus a bridge that takes the whole Zigbee mesh and republishes it onto the MQTT bus. Now a twelve-dollar sensor and my entire home-automation brain can have a conversation, because they've been introduced on neutral ground neither one had to understand.
 

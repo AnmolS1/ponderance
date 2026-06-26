@@ -23,7 +23,7 @@ const dateStr = date.toISOString().slice(0, 10);
 >
   <style>
     /* Reading progress crease — @supports gated, CSS-only */
-    .readbar{position:fixed;top:0;left:0;right:0;height:3px;background:#E84A27;transform:scaleX(0);transform-origin:0 50%;z-index:90;}
+    .readbar{position:fixed;top:0;left:0;right:0;height:3px;background:var(--color-crane);transform:scaleX(0);transform-origin:0 50%;z-index:90;}
     @keyframes growBar{from{transform:scaleX(0);}to{transform:scaleX(1);}}
     @supports (animation-timeline:scroll()){
       .readbar{animation:growBar linear both;animation-timeline:scroll(root block);}
@@ -31,13 +31,13 @@ const dateStr = date.toISOString().slice(0, 10);
     @supports not (animation-timeline:scroll()){.readbar{display:none;}}
 
     /* Margin notes */
-    .mnote{font-family:var(--font-body);font-size:14px;line-height:1.5;color:rgba(27,42,51,.6);}
-    .mnote b{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#D9A521;display:block;margin-bottom:4px;font-weight:600;}
+    .mnote{font-family:var(--font-body);font-size:14px;line-height:1.5;color:var(--color-graphite-60);}
+    .mnote b{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-sax);display:block;margin-bottom:4px;font-weight:600;}
     @media (min-width:1000px){
-      .mnote{position:absolute;left:calc(100% + 3rem);width:15rem;top:0;border-left:2px solid #D9A521;padding-left:16px;}
+      .mnote{position:absolute;left:calc(100% + 3rem);width:15rem;top:0;border-left:2px solid var(--color-sax);padding-left:16px;}
     }
     @media (max-width:999px){
-      .mnote{display:block;margin:2px 0 22px;border-left:2px solid #D9A521;padding-left:14px;}
+      .mnote{display:block;margin:2px 0 22px;border-left:2px solid var(--color-sax);padding-left:14px;}
     }
 
     /* Footnote sidenotes (generated from [^name] by rehype-sidenotes).
@@ -45,49 +45,54 @@ const dateStr = date.toISOString().slice(0, 10);
        Astro's style-scoping pass, so they never receive the data-astro-cid
        attribute a scoped selector would demand. This block still ships only with
        note pages (it lives in this layout), and .note-body keeps it contained. */
-    :global(.note-body .sidenote-ref){font-family:var(--font-mono);font-size:11px;font-weight:600;color:#D9A521;vertical-align:super;line-height:0;}
-    :global(.note-body .sidenote){font-family:var(--font-body);font-size:13.5px;line-height:1.5;color:rgba(27,42,51,.62);}
-    :global(.note-body .sidenote .sidenote-label){font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;color:#D9A521;font-weight:600;}
+    :global(.note-body .sidenote-ref){font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--color-sax);vertical-align:super;line-height:0;}
+    :global(.note-body .sidenote){font-family:var(--font-body);font-size:13.5px;line-height:1.5;color:var(--color-graphite-60);}
+    :global(.note-body .sidenote .sidenote-label){font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;color:var(--color-sax);font-weight:600;}
     :global(.note-body .sidenote a){font-size:13.5px;}
     @media (min-width:1000px){
-      :global(.note-body .sidenote){float:right;clear:right;width:14rem;margin:.1rem -16rem .9rem 0;border-left:2px solid #D9A521;padding-left:14px;text-align:left;}
+      :global(.note-body .sidenote){float:right;clear:right;width:14rem;margin:.1rem -16rem .9rem 0;border-left:2px solid var(--color-sax);padding-left:14px;text-align:left;}
     }
     @media (max-width:999px){
-      :global(.note-body .sidenote){display:block;margin:6px 0 18px;border-left:2px solid #D9A521;padding-left:14px;}
+      :global(.note-body .sidenote){display:block;margin:6px 0 18px;border-left:2px solid var(--color-sax);padding-left:14px;}
     }
 
-    /* Article body typography */
-    .note-body{font-family:var(--font-body);font-size:18px;line-height:1.72;color:#1B2A33;}
-    .note-body h2{font-family:var(--font-display);font-weight:600;font-size:24px;letter-spacing:-.015em;color:#1B2A33;margin:36px 0 14px;}
-    .note-body p{margin:0 0 20px;}
-    .note-body ul,.note-body ol{margin:0 0 20px;padding-left:1.4em;}
-    .note-body li{margin-bottom:8px;}
-    .note-body strong{font-weight:700;}
-    .note-body em{font-style:italic;}
-    .note-body a{color:#2E5E8C;border-bottom:1px solid rgba(46,94,140,.28);text-decoration:none;}
-    /* KaTeX display math wrapper */
-    .note-body .katex-display{border-left:2px solid #2E5E8C;background:#fff;border-radius:0 4px 4px 0;padding:18px 22px;margin:0 0 22px;overflow-x:auto;}
+    /* Article body typography. The .note-body wrapper is a template element (so its
+       scoped base applies), but its CONTENT is compiled MDX + rehype-injected
+       KaTeX/Shiki nodes that never receive Astro's data-astro-cid — so every
+       descendant rule must be :global() (like the sidenotes above) or it silently
+       no-ops (inline links would render indistinguishable from body text, and math
+       / figures would lose their frame). */
+    .note-body{font-family:var(--font-body);font-size:18px;line-height:1.72;color:var(--color-graphite);}
+    :global(.note-body h2){font-family:var(--font-display);font-weight:600;font-size:24px;letter-spacing:-.015em;color:var(--color-graphite);margin:36px 0 14px;}
+    :global(.note-body p){margin:0 0 20px;}
+    :global(.note-body ul),:global(.note-body ol){margin:0 0 20px;padding-left:1.4em;}
+    :global(.note-body li){margin-bottom:8px;}
+    :global(.note-body strong){font-weight:700;}
+    :global(.note-body em){font-style:italic;}
+    :global(.note-body a){color:var(--color-crease);border-bottom:1px solid var(--color-crease-line-bold);text-decoration:none;}
+    /* KaTeX display math — themed frame + scroll for long equations */
+    :global(.note-body .katex-display){border-left:2px solid var(--color-crease);background:var(--color-inset);border-radius:0 4px 4px 0;padding:18px 22px;margin:0 0 22px;overflow-x:auto;}
     /* Shiki code blocks */
-    .note-body pre{border-radius:5px;overflow:hidden;margin:0 0 26px;}
-    .note-body pre code{font-family:var(--font-mono);font-size:13px;line-height:1.85;}
+    :global(.note-body pre){border-radius:5px;overflow-x:auto;margin:0 0 26px;}
+    :global(.note-body pre code){font-family:var(--font-mono);font-size:13px;line-height:1.85;}
     /* Figures */
-    .note-body figure{margin:10px 0 28px;}
-    .note-body figure img{width:100%;height:auto;display:block;border:1px solid rgba(46,94,140,.18);border-radius:6px;background:#fff;}
-    .note-body figcaption{font-family:var(--font-mono);font-size:12px;line-height:1.5;color:rgba(27,42,51,.5);margin-top:10px;text-align:center;}
+    :global(.note-body figure){margin:10px 0 28px;}
+    :global(.note-body figure img){width:100%;height:auto;display:block;border:1px solid var(--color-crease-line);border-radius:6px;background:var(--color-inset);}
+    :global(.note-body figcaption){font-family:var(--font-mono);font-size:12px;line-height:1.5;color:var(--color-graphite-40);margin-top:10px;text-align:center;}
     @media (prefers-reduced-motion:reduce){.readbar{display:none!important;}}
   </style>
 
   <div aria-hidden="true" class="readbar"></div>
 
   <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
-    <a href="/marginalia" style="display: inline-block; margin: 26px 0 0; font-family: var(--font-body); font-weight: 600; font-size: 14px; color: #2E5E8C; text-decoration: none;">← Marginalia</a>
+    <a href="/marginalia" style="display: inline-block; margin: 26px 0 0; font-family: var(--font-body); font-weight: 600; font-size: 14px; color: var(--color-crease); text-decoration: none;">← Marginalia</a>
 
     <!-- Article head -->
-    <div style="padding: 14px 0 26px; border-bottom: 1px solid rgba(46,94,140,.28); max-width: 65ch;">
-      <p style="font-family: var(--font-mono); font-size: 12px; color: #D9A521; margin: 0 0 14px; letter-spacing: .02em;">{tags.join(' · ')}</p>
-      <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(30px,3.6vw,42px); line-height: 1.08; letter-spacing: -.025em; color: #1B2A33; margin: 0 0 12px;">{title}</h1>
-      <p style="font-family: var(--font-body); font-style: italic; font-size: 18px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0 0 8px;">{summary}</p>
-      <p style="font-family: var(--font-mono); font-size: 12.5px; color: rgba(27,42,51,.4); margin: 0;">{dateStr}</p>
+    <div style="padding: 14px 0 26px; border-bottom: 1px solid var(--color-crease-line-bold); max-width: 65ch;">
+      <p style="font-family: var(--font-mono); font-size: 12px; color: var(--color-sax); margin: 0 0 14px; letter-spacing: .02em;">{tags.join(' · ')}</p>
+      <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(30px,3.6vw,42px); line-height: 1.08; letter-spacing: -.025em; color: var(--color-graphite); margin: 0 0 12px;">{title}</h1>
+      <p style="font-family: var(--font-body); font-style: italic; font-size: 18px; line-height: 1.5; color: var(--color-graphite-60); margin: 0 0 8px;">{summary}</p>
+      <p style="font-family: var(--font-mono); font-size: 12.5px; color: var(--color-graphite-40); margin: 0;">{dateStr}</p>
     </div>
 
     <!-- Reading column -->
@@ -97,8 +102,8 @@ const dateStr = date.toISOString().slice(0, 10);
       </div>
 
       <!-- End rule with prev/next links -->
-      <div style="display: flex; align-items: center; gap: 16px; margin-top: 34px; padding-top: 22px; border-top: 1px solid rgba(46,94,140,.28); max-width: 65ch;">
-        <a href="/marginalia" style="font-family: var(--font-body); font-weight: 600; font-size: 14.5px; color: #2E5E8C; text-decoration: none;">← back to the index</a>
+      <div style="display: flex; align-items: center; gap: 16px; margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--color-crease-line-bold); max-width: 65ch;">
+        <a href="/marginalia" style="font-family: var(--font-body); font-weight: 600; font-size: 14.5px; color: var(--color-crease); text-decoration: none;">← back to the index</a>
       </div>
     </div>
 
