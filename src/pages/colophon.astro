@@ -16,60 +16,60 @@ import Base from '../layouts/Base.astro';
   <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
 
     <!-- HERO WITH TITLE BLOCK -->
-    <header style="display: grid; grid-template-columns: 1.45fr .9fr; gap: 36px; align-items: end; padding: 52px 0 40px; border-bottom: 1px solid rgba(46,94,140,.28);">
+    <header style="display: grid; grid-template-columns: 1.45fr .9fr; gap: 36px; align-items: end; padding: 52px 0 40px; border-bottom: 1px solid var(--color-crease-line-bold);">
       <div>
-        <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: #2E5E8C; margin: 0 0 16px;">colophon · how this was built</p>
-        <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(36px,4.4vw,56px); line-height: 1.04; letter-spacing: -.025em; color: #1B2A33; margin: 0; max-width: 18ch;">The site is a build, and the build is the point.</h1>
-        <p style="font-family: var(--font-body); font-size: 19px; line-height: 1.6; color: rgba(27,42,51,.6); max-width: 42rem; margin: 22px 0 0;">If a portfolio claims its author can ship production infra, the portfolio itself should be the proof. So this one is. Same edge platform, same CI gate, same paranoia I'd bring to a commission.</p>
+        <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); margin: 0 0 16px;">colophon · how this was built</p>
+        <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(36px,4.4vw,56px); line-height: 1.04; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; max-width: 18ch;">The site is a build, and the build is the point.</h1>
+        <p style="font-family: var(--font-body); font-size: 19px; line-height: 1.6; color: var(--color-graphite-60); max-width: 42rem; margin: 22px 0 0;">If a portfolio claims its author can ship production infra, the portfolio itself should be the proof. So this one is. Same edge platform, same CI gate, same paranoia I'd bring to a commission.</p>
       </div>
       <!-- Engineering title block -->
-      <div style="position: relative; border: 1px solid #2E5E8C; border-radius: 3px; overflow: hidden; background: #F6F7F4;">
-        <div style="background: #2E5E8C; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
+      <div style="position: relative; border: 1px solid var(--color-crease); border-radius: 3px; overflow: hidden; background: var(--color-graph-card);">
+        <div style="background: var(--color-crease); padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
           <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #dce6f0;">title block</span>
           <span style="font-family: var(--font-mono); font-size: 11px; color: #a9c4dd;">⌖</span>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr;">
-          <div style="padding: 11px 14px; border-right: 1px solid rgba(46,94,140,.28); border-bottom: 1px solid rgba(46,94,140,.28);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: rgba(27,42,51,.4); margin: 0 0 3px;">dwg no.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: #1B2A33; margin: 0;">PNDR-06</p></div>
-          <div style="padding: 11px 14px; border-bottom: 1px solid rgba(46,94,140,.28);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: rgba(27,42,51,.4); margin: 0 0 3px;">revision</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: #1B2A33; margin: 0;">v2.1.0</p></div>
-          <div style="padding: 11px 14px; border-right: 1px solid rgba(46,94,140,.28); border-bottom: 1px solid rgba(46,94,140,.28);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: rgba(27,42,51,.4); margin: 0 0 3px;">scale</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: #1B2A33; margin: 0;">1 : 1</p></div>
-          <div style="padding: 11px 14px; border-bottom: 1px solid rgba(46,94,140,.28);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: rgba(27,42,51,.4); margin: 0 0 3px;">sheet</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: #1B2A33; margin: 0;">6 of 6</p></div>
-          <div style="padding: 11px 14px; border-right: 1px solid rgba(46,94,140,.28);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: rgba(27,42,51,.4); margin: 0 0 3px;">medium</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: #1B2A33; margin: 0;">woff2 · edge</p></div>
-          <div style="padding: 11px 14px;"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: rgba(27,42,51,.4); margin: 0 0 3px;">drawn by</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: #E84A27; margin: 0;">Anmol</p></div>
+          <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">dwg no.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">PNDR-06</p></div>
+          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">revision</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">v2.1.0</p></div>
+          <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">scale</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">1 : 1</p></div>
+          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">sheet</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">6 of 6</p></div>
+          <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">medium</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">woff2 · edge</p></div>
+          <div style="padding: 11px 14px;"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">drawn by</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-crane); margin: 0;">Anmol</p></div>
         </div>
       </div>
     </header>
 
     <!-- STACK: request-path fold sequence -->
-    <section style="padding: 48px 0; border-bottom: 1px solid rgba(46,94,140,.28);">
+    <section style="padding: 48px 0; border-bottom: 1px solid var(--color-crease-line-bold);">
       <div style="display: flex; align-items: baseline; gap: 16px; margin-bottom: 8px;">
-        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: #1B2A33; margin: 0;">The stack</h2>
-        <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">request in → response out</span>
+        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0;">The stack</h2>
+        <span style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40);">request in → response out</span>
       </div>
-      <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: rgba(27,42,51,.6); margin: 0 0 30px; max-width: 40rem;">Read it as a fold sequence, the path a single page takes from request to rendered.</p>
+      <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: var(--color-graphite-60); margin: 0 0 30px; max-width: 40rem;">Read it as a fold sequence, the path a single page takes from request to rendered.</p>
       <div style="display: flex; flex-direction: column; gap: 14px;">
-        <div style="position: relative; max-width: 580px; margin-left: 0; background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
-          <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: rgba(46,94,140,.13);">01</span>
-          <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 6px;">framework · the sheet</p>
-          <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: #1B2A33; margin: 0 0 4px;">Astro 6</h3>
-          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0; max-width: 34rem;">Zero-JS by default. Ships flat HTML and hydrates only the islands that truly need it, like the inquiry console.</p>
+        <div style="position: relative; max-width: 580px; margin-left: 0; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
+          <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: var(--color-crease-line);">01</span>
+          <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 6px;">framework · the sheet</p>
+          <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: var(--color-graphite); margin: 0 0 4px;">Astro 6</h3>
+          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: var(--color-graphite-60); margin: 0; max-width: 34rem;">Zero-JS by default. Ships flat HTML and hydrates only the islands that truly need it, like the inquiry console.</p>
         </div>
-        <div style="position: relative; max-width: 580px; margin-left: 80px; background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
-          <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: rgba(46,94,140,.13);">02</span>
-          <span aria-hidden="true" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: #E84A27;">↳</span>
-          <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 6px;">edge · the first fold</p>
-          <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: #1B2A33; margin: 0 0 4px;">Cloudflare</h3>
-          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0; max-width: 34rem;">Served from the edge in ~40ms worldwide. Workers run the dynamic bits. The static sheet is cached close to you.</p>
+        <div style="position: relative; max-width: 580px; margin-left: 80px; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
+          <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: var(--color-crease-line);">02</span>
+          <span aria-hidden="true" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: var(--color-crane);">↳</span>
+          <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 6px;">edge · the first fold</p>
+          <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: var(--color-graphite); margin: 0 0 4px;">Cloudflare</h3>
+          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: var(--color-graphite-60); margin: 0; max-width: 34rem;">Served from the edge in ~40ms worldwide. Workers run the dynamic bits. The static sheet is cached close to you.</p>
         </div>
-        <div style="position: relative; max-width: 580px; margin-left: 160px; background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
-          <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: rgba(46,94,140,.13);">03</span>
-          <span aria-hidden="true" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: #E84A27;">↳</span>
-          <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 6px;">guard · the reinforced crease</p>
-          <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: #1B2A33; margin: 0 0 4px;">Turnstile &amp; KV</h3>
-          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0; max-width: 34rem;">Bot defense on the inquiry path without a third-party widget. Rate-limiting in KV, tight from the same edge.</p>
+        <div style="position: relative; max-width: 580px; margin-left: 160px; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
+          <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: var(--color-crease-line);">03</span>
+          <span aria-hidden="true" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: var(--color-crane);">↳</span>
+          <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 6px;">guard · the reinforced crease</p>
+          <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: var(--color-graphite); margin: 0 0 4px;">Turnstile &amp; KV</h3>
+          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: var(--color-graphite-60); margin: 0; max-width: 34rem;">Bot defense on the inquiry path without a third-party widget. Rate-limiting in KV, tight from the same edge.</p>
         </div>
-        <div style="position: relative; max-width: 580px; margin-left: 240px; background: #2A2A6E; border: 1px solid #2A2A6E; border-radius: 4px; padding: 20px 24px; overflow: hidden;">
+        <div style="position: relative; max-width: 580px; margin-left: 240px; background: var(--color-orbit); border: 1px solid var(--color-orbit); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
           <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: rgba(255,255,255,.07);">04</span>
-          <span aria-hidden="true" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: #E84A27;">↳</span>
+          <span aria-hidden="true" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: var(--color-crane);">↳</span>
           <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #9092c8; margin: 0 0 6px;">content · the finished crane</p>
           <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: #fff; margin: 0 0 4px;">MDX + KaTeX + Shiki</h3>
           <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: #c7c9ec; margin: 0; max-width: 34rem;">Notes author in MDX. Math renders with KaTeX and code with Shiki, both at build time, so not a byte of client library ships.</p>
@@ -78,10 +78,10 @@ import Base from '../layouts/Base.astro';
     </section>
 
     <!-- PRINCIPLES: stamped spec clauses -->
-    <section style="padding: 48px 0; border-bottom: 1px solid rgba(46,94,140,.28);">
+    <section style="padding: 48px 0; border-bottom: 1px solid var(--color-crease-line-bold);">
       <div style="display: flex; align-items: baseline; gap: 16px; margin-bottom: 26px;">
-        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: #1B2A33; margin: 0;">Principles I didn't bend</h2>
-        <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">four clauses · all enforced in CI</span>
+        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0;">Principles I didn't bend</h2>
+        <span style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40);">four clauses · all enforced in CI</span>
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
         {[
@@ -90,45 +90,45 @@ import Base from '../layouts/Base.astro';
           { id: '§03 · CI is the gate', delay: '1.24s', body: 'Lint, types, an axe-core accessibility pass and a Semgrep scan all run on every PR. Red means it does not merge. Main is always shippable because the gate won\'t let it be anything else.' },
           { id: '§04 · motion asks permission', delay: '1.36s', body: 'AA contrast throughout, a real skip-link, visible focus rings, and one hero animation that fully respects <span style="font-family:var(--font-mono);font-size:14px;">prefers-reduced-motion</span>. The crane folds for you only if you let it.' },
         ].map(p => (
-          <div style="position: relative; background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 24px 26px; overflow: hidden;">
-            <span aria-hidden="true" style="position: absolute; top: 0; right: 0; width: 34px; height: 34px; background: linear-gradient(135deg,transparent 50%,rgba(46,94,140,.13) 50%); border-left: 1px solid rgba(46,94,140,.28); border-bottom: 1px solid rgba(46,94,140,.28);"></span>
+          <div style="position: relative; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; padding: 24px 26px; overflow: hidden;">
+            <span aria-hidden="true" style="position: absolute; top: 0; right: 0; width: 34px; height: 34px; background: linear-gradient(135deg,transparent 50%,var(--color-crease-line) 50%); border-left: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"></span>
             <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin: 0 0 10px;">
-              <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #E84A27; margin: 0;">{p.id}</p>
-              <span style="font-family: var(--font-mono); font-size: 9.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: #E84A27; border: 1.5px solid #E84A27; border-radius: 3px; padding: 3px 7px; transform: rotate(-8deg); flex: none; animation: stampIn .5s both;" style={`animation-delay: ${p.delay};`}>enforced</span>
+              <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-crane); margin: 0;">{p.id}</p>
+              <span style="font-family: var(--font-mono); font-size: 9.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 3px 7px; transform: rotate(-8deg); flex: none; animation: stampIn .5s both;" style={`animation-delay: ${p.delay};`}>enforced</span>
             </div>
-            <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: #1B2A33; margin: 0;" set:html={p.body}></p>
+            <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: var(--color-graphite); margin: 0;" set:html={p.body}></p>
           </div>
         ))}
       </div>
     </section>
 
     <!-- LIVE SELF-INSPECTION PANEL -->
-    <section aria-label="Live page readout" style="padding: 48px 0; border-bottom: 1px solid rgba(46,94,140,.28);">
-      <div style="position: relative; background: #2A2A6E; border-radius: 6px; overflow: hidden; padding: 30px 34px 34px;">
+    <section aria-label="Live page readout" style="padding: 48px 0; border-bottom: 1px solid var(--color-crease-line-bold);">
+      <div style="position: relative; background: var(--color-orbit); border-radius: 6px; overflow: hidden; padding: 30px 34px 34px;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-          <span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #E84A27; animation: pulseDot 1.6s ease-in-out infinite;"></span>
+          <span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-crane); animation: pulseDot 1.6s ease-in-out infinite;"></span>
           <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 24px; letter-spacing: -.015em; color: #fff; margin: 0;">This page, measured live</h2>
         </div>
         <p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.55; color: #b9bbe4; margin: 0 0 26px; max-width: 44rem;">Nothing below is hard-coded. Your browser is reporting it back to me right now, the proof that the build does what the copy says.</p>
-        <div style="display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.1); border-radius: 4px; overflow: hidden;">
-          <div style="background: #2A2A6E; padding: 20px 22px;">
+        <div style="display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--panel-line); border: 1px solid var(--panel-line); border-radius: 4px; overflow: hidden;">
+          <div style="background: var(--color-orbit); padding: 20px 22px;">
             <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: #8587bd; margin: 0 0 10px;">self-hosted faces</p>
-            <p id="panel-faces" style="font-family: var(--font-mono); font-weight: 600; font-size: 30px; color: #D9A521; margin: 0; line-height: 1;">…</p>
+            <p id="panel-faces" style="font-family: var(--font-mono); font-weight: 600; font-size: 30px; color: var(--color-sax); margin: 0; line-height: 1;">…</p>
             <p style="font-family: var(--font-mono); font-size: 11px; color: #9092c8; margin: 8px 0 0;">ready from origin</p>
           </div>
-          <div style="background: #2A2A6E; padding: 20px 22px;">
+          <div style="background: var(--color-orbit); padding: 20px 22px;">
             <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: #8587bd; margin: 0 0 10px;">this viewport</p>
             <p id="panel-viewport" style="font-family: var(--font-mono); font-weight: 600; font-size: 30px; color: #fff; margin: 0; line-height: 1;">…</p>
             <p style="font-family: var(--font-mono); font-size: 11px; color: #9092c8; margin: 8px 0 0;">css px · live on resize</p>
           </div>
-          <div style="background: #2A2A6E; padding: 20px 22px;">
+          <div style="background: var(--color-orbit); padding: 20px 22px;">
             <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: #8587bd; margin: 0 0 10px;">motion preference</p>
             <p id="panel-motion" style="font-family: var(--font-mono); font-weight: 600; font-size: 30px; color: #fff; margin: 0; line-height: 1;">…</p>
             <p style="font-family: var(--font-mono); font-size: 11px; color: #9092c8; margin: 8px 0 0;">from your OS</p>
           </div>
-          <div style="background: #2A2A6E; padding: 20px 22px;">
+          <div style="background: var(--color-orbit); padding: 20px 22px;">
             <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: #8587bd; margin: 0 0 10px;">dom ready in</p>
-            <p id="panel-render" style="font-family: var(--font-mono); font-weight: 600; font-size: 30px; color: #D9A521; margin: 0; line-height: 1;">…</p>
+            <p id="panel-render" style="font-family: var(--font-mono); font-weight: 600; font-size: 30px; color: var(--color-sax); margin: 0; line-height: 1;">…</p>
             <p style="font-family: var(--font-mono); font-size: 11px; color: #9092c8; margin: 8px 0 0;">this load, this device</p>
           </div>
         </div>
@@ -136,42 +136,42 @@ import Base from '../layouts/Base.astro';
     </section>
 
     <!-- TYPE & CREDITS -->
-    <section style="padding: 48px 0 56px; border-bottom: 1px solid rgba(46,94,140,.28);">
+    <section style="padding: 48px 0 56px; border-bottom: 1px solid var(--color-crease-line-bold);">
       <div style="margin-bottom: 30px;">
-        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: #1B2A33; margin: 0;">Type &amp; credits</h2>
+        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0;">Type &amp; credits</h2>
       </div>
       <div style="display: flex; flex-direction: column; gap: 18px;">
-        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 5px; padding: 26px 30px;">
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 5px; padding: 26px 30px;">
           <div>
-            <p style="font-family: var(--font-display); font-weight: 700; font-size: clamp(40px,5vw,62px); line-height: .95; letter-spacing: -.025em; color: #1B2A33; margin: 0;">Bricolage</p>
-            <p style="font-family: var(--font-display); font-weight: 400; font-size: 18px; color: rgba(27,42,51,.4); margin: 10px 0 0; letter-spacing: .04em;">AaBbGg · 0123 · folded &amp; sharp</p>
+            <p style="font-family: var(--font-display); font-weight: 700; font-size: clamp(40px,5vw,62px); line-height: .95; letter-spacing: -.025em; color: var(--color-graphite); margin: 0;">Bricolage</p>
+            <p style="font-family: var(--font-display); font-weight: 400; font-size: 18px; color: var(--color-graphite-40); margin: 10px 0 0; letter-spacing: .04em;">AaBbGg · 0123 · folded &amp; sharp</p>
           </div>
           <div>
-            <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 6px;">display · the voice</p>
-            <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: #1B2A33; margin: 0 0 6px;">Bricolage Grotesque — Mathieu Triay. Hero, titles, every heading.</p>
-            <p style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4); margin: 0;">SIL OFL · variable wght · self-hosted woff2</p>
+            <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 6px;">display · the voice</p>
+            <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: var(--color-graphite); margin: 0 0 6px;">Bricolage Grotesque — Mathieu Triay. Hero, titles, every heading.</p>
+            <p style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40); margin: 0;">SIL OFL · variable wght · self-hosted woff2</p>
           </div>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 24px; align-items: center; background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 5px; padding: 26px 30px;">
+        <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 24px; align-items: center; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 5px; padding: 26px 30px;">
           <div>
-            <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 6px;">body · the workhorse</p>
-            <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: #1B2A33; margin: 0 0 6px;">Hanken Grotesk — Alfredo Marco Pradil. Prose, UI labels, navigation.</p>
-            <p style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4); margin: 0;">SIL OFL · roman &amp; italic · self-hosted woff2</p>
+            <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 6px;">body · the workhorse</p>
+            <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: var(--color-graphite); margin: 0 0 6px;">Hanken Grotesk — Alfredo Marco Pradil. Prose, UI labels, navigation.</p>
+            <p style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40); margin: 0;">SIL OFL · roman &amp; italic · self-hosted woff2</p>
           </div>
           <div style="text-align: right;">
-            <p style="font-family: var(--font-body); font-weight: 600; font-size: clamp(40px,5vw,62px); line-height: .95; color: #1B2A33; margin: 0;">Hanken</p>
-            <p style="font-family: var(--font-body); font-style: italic; font-size: 18px; color: rgba(27,42,51,.4); margin: 10px 0 0;">AaBbGg · 0123 · reads for hours</p>
+            <p style="font-family: var(--font-body); font-weight: 600; font-size: clamp(40px,5vw,62px); line-height: .95; color: var(--color-graphite); margin: 0;">Hanken</p>
+            <p style="font-family: var(--font-body); font-style: italic; font-size: 18px; color: var(--color-graphite-40); margin: 10px 0 0;">AaBbGg · 0123 · reads for hours</p>
           </div>
         </div>
-        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 5px; padding: 26px 30px;">
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 5px; padding: 26px 30px;">
           <div>
-            <p style="font-family: var(--font-mono); font-weight: 600; font-size: clamp(28px,3.5vw,44px); line-height: .95; color: #1B2A33; margin: 0;">IBM Plex</p>
-            <p style="font-family: var(--font-mono); font-size: 18px; color: rgba(27,42,51,.4); margin: 10px 0 0; letter-spacing: .04em;">AaBbGg · 0123 · data &amp; edges</p>
+            <p style="font-family: var(--font-mono); font-weight: 600; font-size: clamp(28px,3.5vw,44px); line-height: .95; color: var(--color-graphite); margin: 0;">IBM Plex</p>
+            <p style="font-family: var(--font-mono); font-size: 18px; color: var(--color-graphite-40); margin: 10px 0 0; letter-spacing: .04em;">AaBbGg · 0123 · data &amp; edges</p>
           </div>
           <div>
-            <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 6px;">mono · the instrument</p>
-            <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: #1B2A33; margin: 0 0 6px;">IBM Plex Mono — IBM Design. Code, eyebrows, the console, captions.</p>
-            <p style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4); margin: 0;">SIL OFL · 400–700 · self-hosted woff2</p>
+            <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 6px;">mono · the instrument</p>
+            <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: var(--color-graphite); margin: 0 0 6px;">IBM Plex Mono — IBM Design. Code, eyebrows, the console, captions.</p>
+            <p style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40); margin: 0;">SIL OFL · 400–700 · self-hosted woff2</p>
           </div>
         </div>
       </div>
