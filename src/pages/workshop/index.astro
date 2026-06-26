@@ -37,7 +37,7 @@ const skills = [
   },
   {
     title: 'Full-stack',
-    desc: 'shreyachanth, Golu Molu (Shopify/Liquid), Haven’s Artistry, BigStorage, Sister Isles, Resumable, weeboweebo — real production frontends.',
+    desc: 'shreyachanth, Golu Molu (Shopify/Liquid), Haven’s Artistry, BigStorage, Sister Isles, Resumable, weeboweebo. Real production frontends.',
   },
   {
     title: 'Infra / Cloud',
@@ -76,7 +76,7 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
   <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
 
     <header style="padding: 52px 0 40px;">
-      <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 16px;">the workshop · selected builds</p>
+      <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: #2E5E8C; margin: 0 0 16px;">the workshop · selected builds</p>
       <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(38px,4.6vw,58px); line-height: 1.04; letter-spacing: -.025em; color: #1B2A33; margin: 0; max-width: 20ch;">Production work, taken apart so you can see the folds.</h1>
     </header>
 
@@ -86,7 +86,6 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
         <div class="lead-grid" style="display: grid; grid-template-columns: 1.05fr .95fr;">
           <div style="padding: 34px 36px 36px;">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
-              <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #fff; background: #E84A27; border-radius: 2px; padding: 4px 10px;">lead case study</span>
               <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">{lead.data.role}</span>
             </div>
             <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 36px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 12px;">{lead.data.title}</h2>
@@ -122,7 +121,6 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
           </div>
           <div style="padding: 30px 34px;">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-              <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #2E5E8C; border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 10px;">secondary</span>
               <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">{CATEGORY_LABELS[secondary.data.category]}</span>
             </div>
             <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 10px;">{secondary.data.title}</h2>
@@ -145,7 +143,7 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
     <!-- SKILLS SET — Lego studs, CSS scroll-driven -->
     <section aria-label="Skills" style="padding-bottom: 50px; border-bottom: 1px solid rgba(46,94,140,.28);">
       <div style="margin-bottom: 26px;">
-        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 30px; letter-spacing: -.02em; color: #1B2A33; margin: 0; max-width: 20ch;">The skills set, modular by nature — they actually snap together</h2>
+        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 30px; letter-spacing: -.02em; color: #1B2A33; margin: 0; max-width: 20ch;">The skills set, modular by nature. They actually snap together</h2>
       </div>
       <div class="skills-grid" style="display: grid; grid-template-columns: repeat(5,1fr); gap: 14px;">
         {skills.map(s => (

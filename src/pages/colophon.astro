@@ -18,9 +18,9 @@ import Base from '../layouts/Base.astro';
     <!-- HERO WITH TITLE BLOCK -->
     <header style="display: grid; grid-template-columns: 1.45fr .9fr; gap: 36px; align-items: end; padding: 52px 0 40px; border-bottom: 1px solid rgba(46,94,140,.28);">
       <div>
-        <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 16px;">colophon · how this was built</p>
+        <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: #2E5E8C; margin: 0 0 16px;">colophon · how this was built</p>
         <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(36px,4.4vw,56px); line-height: 1.04; letter-spacing: -.025em; color: #1B2A33; margin: 0; max-width: 18ch;">The site is a build, and the build is the point.</h1>
-        <p style="font-family: var(--font-body); font-size: 19px; line-height: 1.6; color: rgba(27,42,51,.6); max-width: 42rem; margin: 22px 0 0;">If a portfolio claims its author can ship production infra, the portfolio itself should be the proof. So this one is — same edge platform, same CI gate, same paranoia I'd bring to a commission.</p>
+        <p style="font-family: var(--font-body); font-size: 19px; line-height: 1.6; color: rgba(27,42,51,.6); max-width: 42rem; margin: 22px 0 0;">If a portfolio claims its author can ship production infra, the portfolio itself should be the proof. So this one is. Same edge platform, same CI gate, same paranoia I'd bring to a commission.</p>
       </div>
       <!-- Engineering title block -->
       <div style="position: relative; border: 1px solid #2E5E8C; border-radius: 3px; overflow: hidden; background: #F6F7F4;">
@@ -45,34 +45,34 @@ import Base from '../layouts/Base.astro';
         <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: #1B2A33; margin: 0;">The stack</h2>
         <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">request in → response out</span>
       </div>
-      <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: rgba(27,42,51,.6); margin: 0 0 30px; max-width: 40rem;">Read it as a fold sequence — the path a single page takes from request to rendered.</p>
+      <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: rgba(27,42,51,.6); margin: 0 0 30px; max-width: 40rem;">Read it as a fold sequence, the path a single page takes from request to rendered.</p>
       <div style="display: flex; flex-direction: column; gap: 14px;">
         <div style="position: relative; max-width: 580px; margin-left: 0; background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
           <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: rgba(46,94,140,.13);">01</span>
           <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 6px;">framework · the sheet</p>
           <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: #1B2A33; margin: 0 0 4px;">Astro 6</h3>
-          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0; max-width: 34rem;">Zero-JS by default. Ships flat HTML and hydrates only the islands that truly need it — like the inquiry console.</p>
+          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0; max-width: 34rem;">Zero-JS by default. Ships flat HTML and hydrates only the islands that truly need it, like the inquiry console.</p>
         </div>
         <div style="position: relative; max-width: 580px; margin-left: 80px; background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
           <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: rgba(46,94,140,.13);">02</span>
           <span aria-hidden="true" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: #E84A27;">↳</span>
           <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 6px;">edge · the first fold</p>
           <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: #1B2A33; margin: 0 0 4px;">Cloudflare</h3>
-          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0; max-width: 34rem;">Served from the edge in ~40ms worldwide. Workers run the dynamic bits; the static sheet is cached close to you.</p>
+          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0; max-width: 34rem;">Served from the edge in ~40ms worldwide. Workers run the dynamic bits. The static sheet is cached close to you.</p>
         </div>
         <div style="position: relative; max-width: 580px; margin-left: 160px; background: #F6F7F4; border: 1px solid rgba(46,94,140,.28); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
           <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: rgba(46,94,140,.13);">03</span>
           <span aria-hidden="true" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: #E84A27;">↳</span>
           <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 6px;">guard · the reinforced crease</p>
           <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: #1B2A33; margin: 0 0 4px;">Turnstile &amp; KV</h3>
-          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0; max-width: 34rem;">Bot defense on the inquiry path without a third-party widget; rate-limiting in KV, tight from the same edge.</p>
+          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0; max-width: 34rem;">Bot defense on the inquiry path without a third-party widget. Rate-limiting in KV, tight from the same edge.</p>
         </div>
         <div style="position: relative; max-width: 580px; margin-left: 240px; background: #2A2A6E; border: 1px solid #2A2A6E; border-radius: 4px; padding: 20px 24px; overflow: hidden;">
           <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: rgba(255,255,255,.07);">04</span>
           <span aria-hidden="true" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: #E84A27;">↳</span>
           <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #9092c8; margin: 0 0 6px;">content · the finished crane</p>
           <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: #fff; margin: 0 0 4px;">MDX + KaTeX + Shiki</h3>
-          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: #c7c9ec; margin: 0; max-width: 34rem;">Notes author in MDX; math renders with KaTeX and code with Shiki — both at build time, so not a byte of client library ships.</p>
+          <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: #c7c9ec; margin: 0; max-width: 34rem;">Notes author in MDX. Math renders with KaTeX and code with Shiki, both at build time, so not a byte of client library ships.</p>
         </div>
       </div>
     </section>
@@ -85,7 +85,7 @@ import Base from '../layouts/Base.astro';
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
         {[
-          { id: '§01 · no third-party CDNs', delay: '1.0s', body: 'Every font on this page is <strong>self-hosted</strong> — Bricolage Grotesque, Hanken Grotesk and IBM Plex Mono served as woff2 from the same origin. No Google Fonts, no external script tags. The Content-Security-Policy stays tight.' },
+          { id: '§01 · no third-party CDNs', delay: '1.0s', body: 'Every font on this page is <strong>self-hosted</strong>: Bricolage Grotesque, Hanken Grotesk and IBM Plex Mono served as woff2 from the same origin. No Google Fonts, no external script tags. The Content-Security-Policy stays tight.' },
           { id: '§02 · the homelab boundary', delay: '1.12s', body: 'This site and my homelab share a domain and trust each other <strong>exactly zero</strong>. The portfolio lives entirely on Cloudflare\'s edge. A subdomain is not a security boundary, so I never treat it as one.' },
           { id: '§03 · CI is the gate', delay: '1.24s', body: 'Lint, types, an axe-core accessibility pass and a Semgrep scan all run on every PR. Red means it does not merge. Main is always shippable because the gate won\'t let it be anything else.' },
           { id: '§04 · motion asks permission', delay: '1.36s', body: 'AA contrast throughout, a real skip-link, visible focus rings, and one hero animation that fully respects <span style="font-family:var(--font-mono);font-size:14px;">prefers-reduced-motion</span>. The crane folds for you only if you let it.' },
@@ -109,7 +109,7 @@ import Base from '../layouts/Base.astro';
           <span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #E84A27; animation: pulseDot 1.6s ease-in-out infinite;"></span>
           <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 24px; letter-spacing: -.015em; color: #fff; margin: 0;">This page, measured live</h2>
         </div>
-        <p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.55; color: #b9bbe4; margin: 0 0 26px; max-width: 44rem;">Nothing below is hard-coded. Your browser is reporting it back to me right now — the proof that the build does what the copy says.</p>
+        <p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.55; color: #b9bbe4; margin: 0 0 26px; max-width: 44rem;">Nothing below is hard-coded. Your browser is reporting it back to me right now, the proof that the build does what the copy says.</p>
         <div style="display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.1); border-radius: 4px; overflow: hidden;">
           <div style="background: #2A2A6E; padding: 20px 22px;">
             <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: #8587bd; margin: 0 0 10px;">self-hosted faces</p>
