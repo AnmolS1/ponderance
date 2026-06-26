@@ -6,7 +6,7 @@ summary: "A short argument for why capability benchmarks and adversarial red-tea
 draft: false
 ---
 
-Capability benchmarks measure how well a model solves the *intended* task. Adversarial evals measure how well a model resists *unintended* inputs designed to hijack its behavior. These are not the same axis, and conflating them produces blind spots.
+Capability benchmarks measure how well a model solves the *intended* task. Adversarial evals measure how well a model resists *unintended* inputs designed to hijack its behavior. These are not the same axis, and conflating them is how you ship a model that aces every exam and then hands its lunch money to the first stranger who asks nicely.
 
 ## The gap
 
@@ -16,16 +16,16 @@ A model can score 90th-percentile on MMLU and still:
 - Exfiltrate data from a tool-calling context when the tool's description has been poisoned
 - Output plausible-looking but fatally wrong code under a targeted adversarial suffix
 
-None of these failures show up in standard capability evals because capability evals assume benign inputs. The adversarial surface is in the input distribution.
+None of these failures show up in standard capability evals because capability evals assume benign inputs. The adversarial surface is in the input distribution. The attack doesn't live in the model. It lives in the mail.
 
 ## What I look for in adversarial evals
 
 The things worth measuring are roughly:
 
-1. **Prompt injection resistance** — does the model follow instructions from the system prompt or from an attacker-controlled turn?
-2. **Jailbreak robustness** — does a persona framing or a "DAN"-style prefix override the safety training?
-3. **Tool-call integrity** — in an agentic loop, can a poisoned tool description cause the model to call a different tool or pass different arguments than intended?
-4. **Latent adversarial suffix sensitivity** — do adversarial suffixes (à la Zou et al. 2023) transfer between models, and at what success rate?
+1. **Prompt injection resistance**: does the model follow instructions from the system prompt or from an attacker-controlled turn?
+2. **Jailbreak robustness**: does a persona framing or a "DAN"-style prefix override the safety training?
+3. **Tool-call integrity**: in an agentic loop, can a poisoned tool description cause the model to call a different tool or pass different arguments than intended?
+4. **Latent adversarial suffix sensitivity**: do adversarial suffixes (à la Zou et al. 2023) transfer between models, and at what success rate?
 
 For items 1–3, the eval structure is identical to a standard task eval, except the input distribution is adversarially crafted. For item 4, you need a suffix-generation pipeline (GCG or a variant) and a separate attack-success rate metric.
 
@@ -63,10 +63,10 @@ def run_adversarial_eval(
     return {"pass_rate": pass_rate, "cases": results}
 ```
 
-The key design choice: `resistance_judge` is a *separate* model call — you don't let the model under test self-report. This avoids the eval gaming itself.
+The key design choice: `resistance_judge` is a *separate* model call. You don't let the model under test self-report. This avoids the eval gaming itself.
 
 ## The honest conclusion
 
-Adversarial evals are not a replacement for capability evals. They answer different questions. A model that fails both has obvious problems. A model that passes capability evals but fails adversarial evals is dangerous in production. A model that passes adversarial evals but fails capability evals is probably useless.
+Adversarial evals are not a replacement for capability evals. They answer different questions. A model that fails both has obvious problems. A model that passes capability evals but fails adversarial evals is dangerous in production. A model that passes adversarial evals but fails capability evals is probably useless. Bulletproof and brain-dead.
 
 The ratio of attention each gets in the field is roughly the inverse of their importance in deployed systems. Fix that.
