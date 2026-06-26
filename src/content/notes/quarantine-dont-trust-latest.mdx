@@ -5,7 +5,7 @@ series: "discofin-server"
 seriesOrder: 5
 tags: ["security", "homelab"]
 summary: "Auto-pulling :latest quietly hands an unattended supply chain the decision of what runs on your box tonight. I pulled that out and put a scan in its place: pull the candidate, scan it twice, and only promote it if it isn't a known-bad."
-draft: true
+draft: false
 ---
 
 For a while a watcher auto-pulled `:latest` for every container the second a newer image showed up. It's the convenient thing. It's the thing every homelab guide hands you on day one. It also means that whoever pushed that image, and whatever rode along inside it, gets to decide, with nobody watching, what executes on my machine tonight. Said plainly like that, I didn't love it. So I took it out.

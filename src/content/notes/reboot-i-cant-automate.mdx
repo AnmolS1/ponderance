@@ -5,7 +5,7 @@ series: "discofin-server"
 seriesOrder: 6
 tags: ["homelab", "engineering"]
 summary: "Almost everything on this box self-heals. The reboot stays half-manual, not because it's hard to script, but because a reboot destroys the one thing that could tell me it worked."
-draft: true
+draft: false
 ---
 
 Almost everything on this box takes care of itself. Security patches land on their own. Containers restart when they fall over. A boot-time check waits for the storage mount and the container runtime, then tells me if anything came back wrong. The one operation I won't fully hand off is the reboot. Scripting it is trivial. What you can't script is the part that matters, because a reboot can't confirm its own success.

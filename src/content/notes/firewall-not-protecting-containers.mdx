@@ -5,7 +5,7 @@ series: "discofin-server"
 seriesOrder: 2
 tags: ["security", "homelab"]
 summary: "I had ufw on, default-deny, the whole posture. Docker published a port straight past it, because the two of them are fighting over iptables and Docker writes its rules first. The firewall I trusted was guarding a door the traffic never used."
-draft: true
+draft: false
 ---
 
 I had ufw running, default-deny inbound, and I felt good about it. Then I published a container port and watched it answer from the open internet, deny policy and all. Nothing clever happened. ufw wasn't bypassed or beaten. It just wasn't in the conversation.

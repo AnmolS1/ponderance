@@ -3,7 +3,7 @@ title: "A Durable Object per island"
 date: 2026-06-19
 tags: ["engineering"]
 summary: "Each island in my little co-op game is its own tiny computer that falls asleep when nobody's around and wakes up still remembering who was in the room. That sentence is doing a lot of work, and most of it is the word 'each'."
-draft: true
+draft: false
 ---
 
 Each island in my little co-op game is its own server. I mean that almost literally: an addressable object with its own private storage, one per island, that the platform guarantees there's exactly one of. When you open an island, the platform routes you to that object, by name, wherever it happens to be living. The obvious way to build live multiplayer is one server holding every room's state in a big map in memory, and then it's your job to keep that map correct, and it's a single thing that falls over and takes every room down with it. This is a different shape, and the different shape turned out to be easier.

@@ -5,7 +5,7 @@ series: "discofin-server"
 seriesOrder: 10
 tags: ["homelab", "engineering"]
 summary: "Every smart thing in my house that isn't a screen talks to exactly one other thing, a message bus. None of them know about each other. They know about the bus, and that's the whole reason the system can keep growing without turning into a tangle."
-draft: true
+draft: false
 ---
 
 Every smart thing in my house that isn't a screen talks to exactly one other thing: a message bus. A door sensor, a temperature probe, a switch, the 3D printer's status, my own little scripts. None of them know about each other. They know about the bus. The protocol is MQTT, and the day I got it running, adding the next device stopped being integration work and turned into a one-line subscription.

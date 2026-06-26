@@ -5,7 +5,7 @@ series: "discofin-server"
 seriesOrder: 1
 tags: ["homelab", "security"]
 summary: "Putting the torrent client inside the VPN container's network namespace gives you a kill-switch you can't forget to turn on, and it breaks port mapping in a way that finally taught me what a container's network identity actually is."
-draft: true
+draft: false
 ---
 
 My torrent client doesn't have an IP address. Ask it what network it's on and it has nothing for you. No interface, no routing table, no port of its own. It lives inside the VPN container's network namespace, and that one fact is the whole design.

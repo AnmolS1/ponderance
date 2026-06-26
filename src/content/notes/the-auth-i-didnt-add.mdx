@@ -5,7 +5,7 @@ series: "discofin-server"
 seriesOrder: 3
 tags: ["security", "homelab"]
 summary: "The reflex advice for any exposed service is 'put SSO in front of it.' Twice I started to, and stopped, because the gate would have broken the thing without making it any safer. More auth doesn't automatically mean more secure, and learning that took unlearning the reflex."
-draft: true
+draft: false
 ---
 
 If you show anyone a self-hosted service reachable from the internet, the first thing they'll tell you is to put an authentication gate in front of it. SSO, an identity proxy, something with a login page. It's good advice often enough that people give it without thinking, and I was one of them for a while. Then twice I went to actually do it. I looked at a service, agreed it felt under-guarded, started wiring up the gate, and backed out, because in both cases the gate would have broken the service while doing almost nothing for its security. Sitting with the reason was the most useful security thing I did all year.
