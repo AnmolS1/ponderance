@@ -24,14 +24,43 @@ import Base from '../layouts/Base.astro';
 
   <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
 
-    <!-- POSITIONING -->
-    <header style="padding: 54px 0 42px; border-bottom: 1px solid var(--color-crease-line-bold); display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap;">
-      <div style="max-width: 40ch;">        <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(34px,4.3vw,52px); line-height: 1.06; letter-spacing: -.025em; color: var(--color-graphite); margin: 0;">An ML and security engineer who also ships real production frontends, with the CI/CD and edge infra to back them.</h1>
+    <!-- POSITIONING — recomposed (README §6): the display headline (left) is
+         counter-weighted by an engineered availability/fit card (right) in the
+         blueprint title-block language. Absorbs the lone "now booking" pill and
+         adds RESPONSE / ENGAGEMENT / STACK / GOOD-FIT spec cells. Stacks ≤880. -->
+    <header class="cm-hero" style="display: grid; grid-template-columns: 1.18fr .82fr; gap: 44px; align-items: start; padding: 56px 0 46px; border-bottom: 1px solid var(--color-crease-line-bold);">
+      <div>
+        <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(34px,4.3vw,52px); line-height: 1.06; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; max-width: 18ch;">An ML and security engineer who also ships real production frontends, with the CI/CD and edge infra to back them.</h1>
       </div>
-      <span style="display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 13px; color: var(--color-graphite); background: rgba(217,165,33,.16); border: 1px solid rgba(217,165,33,.5); border-radius: 999px; padding: 8px 16px; white-space: nowrap;">
-        <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-sax);"></span>
-        now booking · Q3 2026
-      </span>
+
+      <aside style="align-self: start; border: 1px solid var(--color-crease); border-radius: 5px; overflow: hidden; background: var(--color-graph-card);">
+        <div style="background: var(--color-crease); padding: 9px 16px; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #eef3f8;">availability</span>
+          <span style="font-family: var(--font-mono); font-size: 11px; color: #cfe0ee;">⌖ Q3 2026</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; padding: 18px 20px 16px; border-bottom: 1px solid var(--color-crease-line-bold);">
+          <span style="width: 9px; height: 9px; border-radius: 50%; background: var(--color-sax); flex: none; box-shadow: 0 0 0 4px rgba(217,165,33,.18);"></span>
+          <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-graphite);">now booking — <strong>1 slot open</strong></span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr;">
+          <div style="padding: 14px 16px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);">
+            <p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 4px;">response</p>
+            <p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">under 48h</p>
+          </div>
+          <div style="padding: 14px 16px; border-bottom: 1px solid var(--color-crease-line-bold);">
+            <p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 4px;">engagement</p>
+            <p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">fixed-scope</p>
+          </div>
+          <div style="padding: 14px 16px; border-right: 1px solid var(--color-crease-line-bold);">
+            <p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 4px;">stack</p>
+            <p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">edge · CI-gated</p>
+          </div>
+          <div style="padding: 14px 16px;">
+            <p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 4px;">good fit</p>
+            <p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-crane); margin: 0;">storefront · ml · sec</p>
+          </div>
+        </div>
+      </aside>
     </header>
 
     <!-- SERVICES / HOW I WORK -->
