@@ -56,30 +56,29 @@ const dateStr = date.toISOString().slice(0, 10);
       :global(.note-body .sidenote){display:block;margin:6px 0 18px;border-left:2px solid var(--color-sax);padding-left:14px;}
     }
 
-    /* Article body typography */
+    /* Article body typography. The .note-body wrapper is a template element (so its
+       scoped base applies), but its CONTENT is compiled MDX + rehype-injected
+       KaTeX/Shiki nodes that never receive Astro's data-astro-cid — so every
+       descendant rule must be :global() (like the sidenotes above) or it silently
+       no-ops (inline links would render indistinguishable from body text, and math
+       / figures would lose their frame). */
     .note-body{font-family:var(--font-body);font-size:18px;line-height:1.72;color:var(--color-graphite);}
-    .note-body h2{font-family:var(--font-display);font-weight:600;font-size:24px;letter-spacing:-.015em;color:var(--color-graphite);margin:36px 0 14px;}
-    .note-body p{margin:0 0 20px;}
-    .note-body ul,.note-body ol{margin:0 0 20px;padding-left:1.4em;}
-    .note-body li{margin-bottom:8px;}
-    .note-body strong{font-weight:700;}
-    .note-body em{font-style:italic;}
-    .note-body a{color:var(--color-crease);border-bottom:1px solid var(--color-crease-line-bold);text-decoration:none;}
-    /* KaTeX display math wrapper */
-    .note-body .katex-display{border-left:2px solid var(--color-crease);background:var(--color-inset);border-radius:0 4px 4px 0;padding:18px 22px;margin:0 0 22px;overflow-x:auto;}
+    :global(.note-body h2){font-family:var(--font-display);font-weight:600;font-size:24px;letter-spacing:-.015em;color:var(--color-graphite);margin:36px 0 14px;}
+    :global(.note-body p){margin:0 0 20px;}
+    :global(.note-body ul),:global(.note-body ol){margin:0 0 20px;padding-left:1.4em;}
+    :global(.note-body li){margin-bottom:8px;}
+    :global(.note-body strong){font-weight:700;}
+    :global(.note-body em){font-style:italic;}
+    :global(.note-body a){color:var(--color-crease);border-bottom:1px solid var(--color-crease-line-bold);text-decoration:none;}
+    /* KaTeX display math — themed frame + scroll for long equations */
+    :global(.note-body .katex-display){border-left:2px solid var(--color-crease);background:var(--color-inset);border-radius:0 4px 4px 0;padding:18px 22px;margin:0 0 22px;overflow-x:auto;}
     /* Shiki code blocks */
-    .note-body pre{border-radius:5px;overflow-x:auto;margin:0 0 26px;}
-    .note-body pre code{font-family:var(--font-mono);font-size:13px;line-height:1.85;}
+    :global(.note-body pre){border-radius:5px;overflow-x:auto;margin:0 0 26px;}
+    :global(.note-body pre code){font-family:var(--font-mono);font-size:13px;line-height:1.85;}
     /* Figures */
-    .note-body figure{margin:10px 0 28px;}
-    .note-body figure img{width:100%;height:auto;display:block;border:1px solid var(--color-crease-line);border-radius:6px;background:var(--color-inset);}
-    .note-body figcaption{font-family:var(--font-mono);font-size:12px;line-height:1.5;color:var(--color-graphite-40);margin-top:10px;text-align:center;}
-    /* KaTeX + Shiki nodes are injected by rehype AFTER Astro's scoping pass (like
-       the sidenotes above), so scoped .note-body rules never reach them. Globalize
-       just the overflow guard so long display math / code scroll instead of
-       widening the page on mobile. */
-    :global(.note-body .katex-display){overflow-x:auto;}
-    :global(.note-body pre){overflow-x:auto;}
+    :global(.note-body figure){margin:10px 0 28px;}
+    :global(.note-body figure img){width:100%;height:auto;display:block;border:1px solid var(--color-crease-line);border-radius:6px;background:var(--color-inset);}
+    :global(.note-body figcaption){font-family:var(--font-mono);font-size:12px;line-height:1.5;color:var(--color-graphite-40);margin-top:10px;text-align:center;}
     @media (prefers-reduced-motion:reduce){.readbar{display:none!important;}}
   </style>
 
