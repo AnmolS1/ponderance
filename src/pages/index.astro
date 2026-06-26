@@ -25,12 +25,28 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
       .crane-facet{opacity:1!important;transform:none!important;animation:none!important;}
       .wing-l,.wing-r{animation:none!important;}
     }
+
+    /* Responsive reflow (lifted from Ponderance.dc.html) */
+    @media (max-width:880px){
+      .home-hero{grid-template-columns:1fr!important;gap:36px!important;padding:44px 0 52px!important;}
+      .home-folds{grid-template-columns:1fr!important;}
+      .home-latest{grid-template-columns:1fr!important;}
+    }
+    @media (max-width:768px){
+      .home-foot{grid-template-columns:1fr 1fr!important;gap:28px 24px!important;}
+      .home-foot .home-foot-lead{grid-column:1 / -1!important;}
+    }
+    @media (max-width:480px){
+      .home-hero-art{max-width:320px;}
+      .home-foot{grid-template-columns:1fr!important;}
+      .otc-big{font-size:38px!important;}
+    }
   </style>
 
   <!-- HERO: 1180px wide per spec -->
   <section aria-label="Introduction" style="border-bottom: 1px solid var(--color-crease-line-bold);">
     <div style="max-width: 1180px; margin: 0 auto; padding: 0 32px;">
-      <div style="display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; padding: 64px 0 70px;">
+      <div class="home-hero" style="display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; padding: 64px 0 70px;">
         <div>
           <p class="rise" style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); margin: 0 0 22px; animation-delay: .1s;">crease pattern → crane</p>
           <h1 class="rise" style="font-family: var(--font-display); font-weight: 700; font-size: clamp(44px,5.6vw,76px); line-height: 1.02; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; animation-delay: .2s;">Rigorous systems,<br>folded into things<br>that <span style="color: var(--color-crane);">feel alive.</span></h1>
@@ -42,7 +58,7 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
         </div>
 
         <!-- Signature SVG crane -->
-        <div style="position: relative; aspect-ratio: 1.18/1; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; overflow: hidden;">
+        <div class="home-hero-art" style="position: relative; aspect-ratio: 1.18/1; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; overflow: hidden;">
           <svg viewBox="0 0 460 390" width="100%" height="100%" role="img" aria-label="An origami crease pattern folding into a paper crane" style="display: block;">
             <g stroke="var(--color-crease)" stroke-width="1" fill="none" opacity=".34">
               <path class="crane-stroke" pathLength="1" d="M60 60 L400 60 L400 330 L60 330 Z" style="animation: craneDraw 1s .1s both;"></path>
@@ -76,7 +92,7 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
   <!-- FEATURED BUILD + THREE FOLDS -->
   <section aria-label="Featured work" style="border-bottom: 1px solid var(--color-crease-line-bold);">
     <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
-      <div style="display: grid; grid-template-columns: 1.15fr .85fr; gap: 28px; padding: 56px 0;">
+      <div class="home-folds" style="display: grid; grid-template-columns: 1.15fr .85fr; gap: 28px; padding: 56px 0;">
         <!-- Featured build -->
         <article style="position: relative; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; padding: 30px 32px 32px; overflow: hidden;">
           <div aria-hidden="true" style="position: absolute; top: 0; right: 0; width: 34px; height: 34px; background: linear-gradient(135deg,transparent 50%,var(--color-crease-line) 50%); border-left: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"></div>          <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 30px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0 0 8px;">shreyachanth.com</h2>
@@ -123,7 +139,7 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
           <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0;">Latest from Marginalia</h2>
           <a href="/marginalia" style="font-family: var(--font-body); font-weight: 600; font-size: 14.5px; color: var(--color-crease); text-decoration: none;">All notes →</a>
         </div>
-        <div style="display: grid; grid-template-columns: 1.55fr 1fr; gap: 18px; align-items: stretch;">
+        <div class="home-latest" style="display: grid; grid-template-columns: 1.55fr 1fr; gap: 18px; align-items: stretch;">
           {notes[0] && (
             <a href={`/marginalia/${notes[0].id}`} style="position: relative; display: flex; flex-direction: column; justify-content: flex-end; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; padding: 30px 32px 28px; min-height: 188px; overflow: hidden; text-decoration: none;">
               <div aria-hidden="true" style="position: absolute; top: 0; right: 0; width: 38px; height: 38px; background: linear-gradient(135deg,transparent 50%,var(--color-crease-line) 50%); border-left: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"></div>
@@ -156,12 +172,12 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
         <div style="position: relative; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 5px; padding: 40px 44px 42px; overflow: hidden;">
           <div aria-hidden="true" style="position: absolute; top: 0; right: 0; width: 46px; height: 46px; background: linear-gradient(135deg,transparent 50%,var(--color-crease-line) 50%); border-left: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"></div>
           <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 14px 30px; max-width: 46rem;">
-            <span style="font-family: var(--font-display); font-weight: 700; font-size: 46px; letter-spacing: -.02em; color: var(--color-graphite); line-height: .95;">origami</span>
+            <span style="font-family: var(--font-display); font-weight: 700; font-size: 46px; letter-spacing: -.02em; color: var(--color-graphite); line-height: .95;" class="otc-big">origami</span>
             <span aria-hidden="true" style="color: var(--color-crane); font-size: 18px; transform: translateY(-6px);">◆</span>
             <span style="font-family: var(--font-display); font-weight: 500; font-size: 26px; color: var(--color-graphite);">the saxophone</span>
             <span aria-hidden="true" style="font-family: var(--font-mono); font-size: 22px; color: var(--color-sax);">♪</span>
             <span style="font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 22px; color: var(--color-orbit-ink);">deep space</span>
-            <span style="font-family: var(--font-display); font-weight: 700; font-size: 38px; letter-spacing: -.02em; color: var(--color-graphite); line-height: .95;">two cats</span>
+            <span style="font-family: var(--font-display); font-weight: 700; font-size: 38px; letter-spacing: -.02em; color: var(--color-graphite); line-height: .95;" class="otc-big">two cats</span>
             <span style="font-family: var(--font-mono); font-size: 14px; color: var(--color-graphite-60); border: 1px solid var(--color-crease-line-bold); border-radius: 2px; padding: 5px 11px;">the Bambu printer</span>
             <span style="font-family: var(--font-display); font-weight: 600; font-size: 30px; color: var(--color-graphite);">Doctor Who</span>
             <span style="font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 20px; color: var(--color-sax);">jazz at 1am</span>
@@ -174,8 +190,8 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
   <!-- HOME EXPANDED FOOTER -->
   <footer slot="footer" style="border-top: 1px solid var(--color-crease-line-bold);">
     <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
-      <div style="padding: 50px 0 64px; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; align-items: start;">
-        <div>
+      <div class="home-foot" style="padding: 50px 0 64px; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; align-items: start;">
+        <div class="home-foot-lead">
           <p style="font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0 0 8px;">Let's fold something.</p>
           <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: var(--color-graphite-60); margin: 0 0 16px; max-width: 24rem;">Commissions open for the right project. Notes in the margins, always.</p>
           <a href="mailto:hello@ponderance.dev" style="font-family: var(--font-mono); font-size: 14px; color: var(--color-crane); border-bottom: 1px solid var(--color-crane); padding-bottom: 2px; text-decoration: none;">hello@ponderance.dev</a>

@@ -70,7 +70,16 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
     .build-cover{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;border-bottom:1px solid var(--color-crease-line);background:var(--color-graph-card);}
     .meta-link{font-family:var(--font-mono);font-size:11px;color:var(--color-crease);text-decoration:none;border-bottom:1px solid var(--color-crease-line-bold);}
     @media (prefers-reduced-motion:reduce){.build-card{transition:none!important;}}
-    @media (max-width:720px){.grid-builds{grid-template-columns:1fr 1fr!important;}.skills-grid{grid-template-columns:1fr 1fr!important;}.lead-grid,.secondary-grid{grid-template-columns:1fr!important;}}
+    /* Responsive reflow (lifted from Workshop.dc.html) */
+    @media (max-width:900px){.skills-grid{grid-template-columns:repeat(3,1fr)!important;}}
+    @media (max-width:880px){
+      .lead-grid,.secondary-grid{grid-template-columns:1fr!important;}
+      .lead-grid .ws-cover,.secondary-grid .ws-cover{min-height:200px!important;border-left:none!important;border-right:none!important;border-top:1px solid var(--color-crease-line-bold)!important;}
+      .secondary-grid{display:flex!important;flex-direction:column-reverse!important;}
+    }
+    @media (max-width:768px){.grid-builds{grid-template-columns:1fr 1fr!important;}}
+    @media (max-width:620px){.skills-grid{grid-template-columns:1fr 1fr!important;}}
+    @media (max-width:480px){.grid-builds{grid-template-columns:1fr!important;}}
   </style>
 
   <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
@@ -101,7 +110,7 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
               {lead.data.repo && <a class="meta-link" href={lead.data.repo} target="_blank" rel="noopener">source ↗</a>}
             </div>
           </div>
-          <div style="position: relative; border-left: 1px solid var(--color-crease-line-bold); min-height: 360px; background: var(--color-graph-card);">
+          <div class="ws-cover" style="position: relative; border-left: 1px solid var(--color-crease-line-bold); min-height: 360px; background: var(--color-graph-card);">
             {lead.data.cover
               ? <img src={lead.data.cover} alt={`${lead.data.title} cover`} style="width: 100%; height: 100%; object-fit: contain; display: block;" />
               : <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,var(--color-graph-card),var(--color-graph-card) 11px,var(--color-inset) 11px,var(--color-inset) 22px);"></div>}
@@ -114,7 +123,7 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
     {secondary && (
       <section aria-label="Secondary build" style="border: 1px solid var(--color-crease-line-bold); border-radius: 6px; overflow: hidden; background: var(--color-graph-card); margin-bottom: 50px;">
         <div class="secondary-grid" style="display: grid; grid-template-columns: .42fr .58fr;">
-          <div style="position: relative; min-height: 220px; border-right: 1px solid var(--color-crease-line-bold); background: var(--color-graph-card);">
+          <div class="ws-cover" style="position: relative; min-height: 220px; border-right: 1px solid var(--color-crease-line-bold); background: var(--color-graph-card);">
             {secondary.data.cover
               ? <img src={secondary.data.cover} alt={`${secondary.data.title} cover`} style="width: 100%; height: 100%; object-fit: contain; display: block;" />
               : <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,var(--color-graph-card),var(--color-graph-card) 11px,var(--color-inset) 11px,var(--color-inset) 22px);"></div>}

@@ -68,12 +68,18 @@ const dateStr = date.toISOString().slice(0, 10);
     /* KaTeX display math wrapper */
     .note-body .katex-display{border-left:2px solid var(--color-crease);background:var(--color-inset);border-radius:0 4px 4px 0;padding:18px 22px;margin:0 0 22px;overflow-x:auto;}
     /* Shiki code blocks */
-    .note-body pre{border-radius:5px;overflow:hidden;margin:0 0 26px;}
+    .note-body pre{border-radius:5px;overflow-x:auto;margin:0 0 26px;}
     .note-body pre code{font-family:var(--font-mono);font-size:13px;line-height:1.85;}
     /* Figures */
     .note-body figure{margin:10px 0 28px;}
     .note-body figure img{width:100%;height:auto;display:block;border:1px solid var(--color-crease-line);border-radius:6px;background:var(--color-inset);}
     .note-body figcaption{font-family:var(--font-mono);font-size:12px;line-height:1.5;color:var(--color-graphite-40);margin-top:10px;text-align:center;}
+    /* KaTeX + Shiki nodes are injected by rehype AFTER Astro's scoping pass (like
+       the sidenotes above), so scoped .note-body rules never reach them. Globalize
+       just the overflow guard so long display math / code scroll instead of
+       widening the page on mobile. */
+    :global(.note-body .katex-display){overflow-x:auto;}
+    :global(.note-body pre){overflow-x:auto;}
     @media (prefers-reduced-motion:reduce){.readbar{display:none!important;}}
   </style>
 

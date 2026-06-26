@@ -12,10 +12,14 @@ import Base from '../layouts/Base.astro';
     .pipe{display:inline-block;animation:signal 3.6s ease-in-out infinite;}
     @media (prefers-reduced-motion:reduce){.pipe{animation:none!important;}}
     .hp-field{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden;}
-    .console-input{width:100%;background:transparent;border:none;outline:none;color:#eef0ec;font-family:var(--font-mono);font-size:15px;caret-color:#E84A27;padding:2px 0;}
+    .console-input{width:100%;background:transparent;border:none;outline:none;color:#eef0ec;font-family:var(--font-mono);font-size:16px;caret-color:#E84A27;padding:2px 0;}
     .console-input::placeholder{color:#6d6fa8;}
     .console-row{border-bottom:1px solid #3a3a78;padding:6px 4px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
     .console-row:focus-within{background:rgba(255,255,255,.04);}
+
+    /* Responsive reflow (lifted from Commissions.dc.html) */
+    @media (max-width:880px){.cm-hero{grid-template-columns:1fr!important;}.cm-services{grid-template-columns:1fr!important;}}
+    @media (max-width:480px){.cm-console-form{padding:18px 16px 20px!important;}.console-row label{width:64px!important;}}
   </style>
 
   <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
@@ -31,7 +35,7 @@ import Base from '../layouts/Base.astro';
     </header>
 
     <!-- SERVICES / HOW I WORK -->
-    <section aria-label="Services" style="display: grid; grid-template-columns: .9fr 1.1fr; gap: 24px; padding: 50px 0; border-bottom: 1px solid var(--color-crease-line-bold);">
+    <section aria-label="Services" class="cm-services" style="display: grid; grid-template-columns: .9fr 1.1fr; gap: 24px; padding: 50px 0; border-bottom: 1px solid var(--color-crease-line-bold);">
       <div>
         <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 23px; letter-spacing: -.015em; color: var(--color-graphite); margin: 0 0 18px;">What I build</h2>
         <div style="display: flex; flex-direction: column; gap: 14px;">
@@ -87,7 +91,7 @@ import Base from '../layouts/Base.astro';
           <span style="font-family: var(--font-mono); font-size: 12px; color: #9b9dcf; margin-left: 8px;">inquiry — /api/inquiry · same-origin</span>
         </div>
 
-        <form id="inquiry-form" action="/api/inquiry" method="POST" style="background: #22224f; padding: 22px 24px 26px;">
+        <form id="inquiry-form" class="cm-console-form" action="/api/inquiry" method="POST" style="background: #22224f; padding: 22px 24px 26px;">
           <p style="font-family: var(--font-mono); font-size: 12.5px; color: #7fae7f; margin: 0 0 18px;"># fill the prompts, then RUN. no third-party scripts here, that's the point.</p>
 
           <div class="console-row">
@@ -119,7 +123,7 @@ import Base from '../layouts/Base.astro';
 
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; flex-wrap: wrap;">
             <div id="console-status" aria-live="polite" role="status" style="min-height: 22px; flex: 1; min-width: 240px; font-family: var(--font-mono); font-size: 13.5px; color: #9fd1a0;"></div>
-            <button type="submit" style="font-family: var(--font-mono); font-weight: 600; font-size: 14px; letter-spacing: .08em; background: #E84A27; color: #fff; border: none; border-radius: 3px; padding: 11px 26px; cursor: pointer; flex: none;">RUN →</button>
+            <button type="submit" style="font-family: var(--font-mono); font-weight: 600; font-size: 14px; letter-spacing: .08em; background: #E84A27; color: #fff; border: none; border-radius: 3px; padding: 11px 26px; cursor: pointer; flex: none; min-height: 44px;">RUN →</button>
           </div>
         </form>
       </div>

@@ -11,12 +11,25 @@ import Base from '../layouts/Base.astro';
     @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.7);}}
     @keyframes stampIn{0%{opacity:0;transform:rotate(-8deg) scale(1.4);}60%{opacity:1;}100%{opacity:1;transform:rotate(-8deg) scale(1);}}
     @media (prefers-reduced-motion:reduce){*{animation:none!important;}}
+
+    /* Responsive reflow (lifted from Colophon.dc.html). The fold-staircase
+       margin-left cascade (0→240px) resets to 0 and the ↳ connectors hide at
+       ≤768 — it overflows otherwise. */
+    @media (max-width:880px){.col-hero{grid-template-columns:1fr!important;gap:26px!important;}}
+    @media (max-width:768px){
+      .col-principles{grid-template-columns:1fr!important;}
+      .col-type-row{grid-template-columns:1fr!important;text-align:left!important;}
+      .col-type-row .col-type-right{text-align:left!important;}
+      .col-foldcard{margin-left:0!important;}
+      .col-foldarrow{display:none!important;}
+    }
+    @media (max-width:600px){.col-panel-grid{grid-template-columns:1fr 1fr!important;}}
   </style>
 
   <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
 
     <!-- HERO WITH TITLE BLOCK -->
-    <header style="display: grid; grid-template-columns: 1.45fr .9fr; gap: 36px; align-items: end; padding: 52px 0 40px; border-bottom: 1px solid var(--color-crease-line-bold);">
+    <header class="col-hero" style="display: grid; grid-template-columns: 1.45fr .9fr; gap: 36px; align-items: end; padding: 52px 0 40px; border-bottom: 1px solid var(--color-crease-line-bold);">
       <div>
         <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); margin: 0 0 16px;">colophon · how this was built</p>
         <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(36px,4.4vw,56px); line-height: 1.04; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; max-width: 18ch;">The site is a build, and the build is the point.</h1>
@@ -47,29 +60,29 @@ import Base from '../layouts/Base.astro';
       </div>
       <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: var(--color-graphite-60); margin: 0 0 30px; max-width: 40rem;">Read it as a fold sequence, the path a single page takes from request to rendered.</p>
       <div style="display: flex; flex-direction: column; gap: 14px;">
-        <div style="position: relative; max-width: 580px; margin-left: 0; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
+        <div class="col-foldcard" style="position: relative; max-width: 580px; margin-left: 0; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
           <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: var(--color-crease-line);">01</span>
           <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 6px;">framework · the sheet</p>
           <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: var(--color-graphite); margin: 0 0 4px;">Astro 6</h3>
           <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: var(--color-graphite-60); margin: 0; max-width: 34rem;">Zero-JS by default. Ships flat HTML and hydrates only the islands that truly need it, like the inquiry console.</p>
         </div>
-        <div style="position: relative; max-width: 580px; margin-left: 80px; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
+        <div class="col-foldcard" style="position: relative; max-width: 580px; margin-left: 80px; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
           <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: var(--color-crease-line);">02</span>
-          <span aria-hidden="true" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: var(--color-crane);">↳</span>
+          <span aria-hidden="true" class="col-foldarrow" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: var(--color-crane);">↳</span>
           <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 6px;">edge · the first fold</p>
           <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: var(--color-graphite); margin: 0 0 4px;">Cloudflare</h3>
           <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: var(--color-graphite-60); margin: 0; max-width: 34rem;">Served from the edge in ~40ms worldwide. Workers run the dynamic bits. The static sheet is cached close to you.</p>
         </div>
-        <div style="position: relative; max-width: 580px; margin-left: 160px; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
+        <div class="col-foldcard" style="position: relative; max-width: 580px; margin-left: 160px; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
           <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: var(--color-crease-line);">03</span>
-          <span aria-hidden="true" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: var(--color-crane);">↳</span>
+          <span aria-hidden="true" class="col-foldarrow" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: var(--color-crane);">↳</span>
           <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 6px;">guard · the reinforced crease</p>
           <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: var(--color-graphite); margin: 0 0 4px;">Turnstile &amp; KV</h3>
           <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: var(--color-graphite-60); margin: 0; max-width: 34rem;">Bot defense on the inquiry path without a third-party widget. Rate-limiting in KV, tight from the same edge.</p>
         </div>
-        <div style="position: relative; max-width: 580px; margin-left: 240px; background: var(--color-orbit); border: 1px solid var(--color-orbit); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
+        <div class="col-foldcard" style="position: relative; max-width: 580px; margin-left: 240px; background: var(--color-orbit); border: 1px solid var(--color-orbit); border-radius: 4px; padding: 20px 24px; overflow: hidden;">
           <span aria-hidden="true" style="position: absolute; top: 6px; right: 18px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: rgba(255,255,255,.07);">04</span>
-          <span aria-hidden="true" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: var(--color-crane);">↳</span>
+          <span aria-hidden="true" class="col-foldarrow" style="position: absolute; left: -58px; top: 26px; font-family: var(--font-mono); font-size: 18px; color: var(--color-crane);">↳</span>
           <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #9092c8; margin: 0 0 6px;">content · the finished crane</p>
           <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 21px; color: #fff; margin: 0 0 4px;">MDX + KaTeX + Shiki</h3>
           <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.5; color: #c7c9ec; margin: 0; max-width: 34rem;">Notes author in MDX. Math renders with KaTeX and code with Shiki, both at build time, so not a byte of client library ships.</p>
@@ -83,7 +96,7 @@ import Base from '../layouts/Base.astro';
         <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0;">Principles I didn't bend</h2>
         <span style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40);">four clauses · all enforced in CI</span>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+      <div class="col-principles" style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
         {[
           { id: '§01 · no third-party CDNs', delay: '1.0s', body: 'Every font on this page is <strong>self-hosted</strong>: Bricolage Grotesque, Hanken Grotesk and IBM Plex Mono served as woff2 from the same origin. No Google Fonts, no external script tags. The Content-Security-Policy stays tight.' },
           { id: '§02 · the homelab boundary', delay: '1.12s', body: 'This site and my homelab share a domain and trust each other <strong>exactly zero</strong>. The portfolio lives entirely on Cloudflare\'s edge. A subdomain is not a security boundary, so I never treat it as one.' },
@@ -110,7 +123,7 @@ import Base from '../layouts/Base.astro';
           <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 24px; letter-spacing: -.015em; color: #fff; margin: 0;">This page, measured live</h2>
         </div>
         <p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.55; color: #b9bbe4; margin: 0 0 26px; max-width: 44rem;">Nothing below is hard-coded. Your browser is reporting it back to me right now, the proof that the build does what the copy says.</p>
-        <div style="display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--panel-line); border: 1px solid var(--panel-line); border-radius: 4px; overflow: hidden;">
+        <div class="col-panel-grid" style="display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--panel-line); border: 1px solid var(--panel-line); border-radius: 4px; overflow: hidden;">
           <div style="background: var(--color-orbit); padding: 20px 22px;">
             <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: #8587bd; margin: 0 0 10px;">self-hosted faces</p>
             <p id="panel-faces" style="font-family: var(--font-mono); font-weight: 600; font-size: 30px; color: var(--color-sax); margin: 0; line-height: 1;">…</p>
@@ -141,7 +154,7 @@ import Base from '../layouts/Base.astro';
         <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0;">Type &amp; credits</h2>
       </div>
       <div style="display: flex; flex-direction: column; gap: 18px;">
-        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 5px; padding: 26px 30px;">
+        <div class="col-type-row" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 5px; padding: 26px 30px;">
           <div>
             <p style="font-family: var(--font-display); font-weight: 700; font-size: clamp(40px,5vw,62px); line-height: .95; letter-spacing: -.025em; color: var(--color-graphite); margin: 0;">Bricolage</p>
             <p style="font-family: var(--font-display); font-weight: 400; font-size: 18px; color: var(--color-graphite-40); margin: 10px 0 0; letter-spacing: .04em;">AaBbGg · 0123 · folded &amp; sharp</p>
@@ -152,18 +165,18 @@ import Base from '../layouts/Base.astro';
             <p style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40); margin: 0;">SIL OFL · variable wght · self-hosted woff2</p>
           </div>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 24px; align-items: center; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 5px; padding: 26px 30px;">
+        <div class="col-type-row" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 24px; align-items: center; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 5px; padding: 26px 30px;">
           <div>
             <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 6px;">body · the workhorse</p>
             <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: var(--color-graphite); margin: 0 0 6px;">Hanken Grotesk — Alfredo Marco Pradil. Prose, UI labels, navigation.</p>
             <p style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40); margin: 0;">SIL OFL · roman &amp; italic · self-hosted woff2</p>
           </div>
-          <div style="text-align: right;">
+          <div class="col-type-right" style="text-align: right;">
             <p style="font-family: var(--font-body); font-weight: 600; font-size: clamp(40px,5vw,62px); line-height: .95; color: var(--color-graphite); margin: 0;">Hanken</p>
             <p style="font-family: var(--font-body); font-style: italic; font-size: 18px; color: var(--color-graphite-40); margin: 10px 0 0;">AaBbGg · 0123 · reads for hours</p>
           </div>
         </div>
-        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 5px; padding: 26px 30px;">
+        <div class="col-type-row" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 5px; padding: 26px 30px;">
           <div>
             <p style="font-family: var(--font-mono); font-weight: 600; font-size: clamp(28px,3.5vw,44px); line-height: .95; color: var(--color-graphite); margin: 0;">IBM Plex</p>
             <p style="font-family: var(--font-mono); font-size: 18px; color: var(--color-graphite-40); margin: 10px 0 0; letter-spacing: .04em;">AaBbGg · 0123 · data &amp; edges</p>
