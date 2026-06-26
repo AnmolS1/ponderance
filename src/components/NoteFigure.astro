@@ -1,0 +1,38 @@
+---
+/**
+ * NoteFigure — inlines a marginalia diagram SVG (transparent-bg, themed with
+ * var(--color-*)) into a <figure> so it tracks the light/dark toggle. The
+ * caption is passed as children and rendered into <figcaption>.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  src: string;
+  alt?: string;
+}
+const { src, alt } = Astro.props;
+
+let raw = '';
+try {
+  raw = fs.readFileSync(path.join(process.cwd(), 'public', src), 'utf-8').trim();
+} catch {
+  console.warn(`[NoteFigure] could not read ${src}`);
+}
+
+if (raw) {
+  const label = alt ? ` aria-label="${alt.replace(/"/g, '&quot;')}"` : '';
+  // ensure role + (optional) label on the root svg, then tag for styling
+  raw = /role=/.test(raw) ? raw : raw.replace(/<svg\b/, '<svg role="img"');
+  if (alt) {
+    raw = /aria-label=/.test(raw)
+      ? raw.replace(/aria-label="[^"]*"/, `aria-label="${alt.replace(/"/g, '&quot;')}"`)
+      : raw.replace(/<svg\b/, `<svg${label}`);
+  }
+  raw = raw.replace(/<svg\b/, '<svg class="note-fig"');
+}
+---
+<figure>
+  <Fragment set:html={raw} />
+  <figcaption><slot /></figcaption>
+</figure>

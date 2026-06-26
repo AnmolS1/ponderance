@@ -5,7 +5,7 @@ series: "discofin-server"
 seriesOrder: 7
 tags: ["homelab", "engineering", "ml"]
 summary: "A 4K stutter traced all the way back to image-based subtitles being burned into video in real time. Killing that one thing rippled backward through six services, and ended up rewriting what the box is even allowed to download."
-draft: true
+draft: false
 ---
 
 The most consequential architectural decision in my media stack was made by a subtitle format, and I didn't make it so much as walk into it, the way you walk into a tripwire. By tripping it, and then spending a while figuring out what I'd tripped.
@@ -23,7 +23,7 @@ The fix turned into a cascade, one root cause that six services had to bend arou
 3. **Reach back into what I download.** Tell the quality automation to cap new grabs at 1080p h264 and score the heavier codecs negative on those profiles. The logic runs upstream: 1080p h264 direct-plays on my clients, and not grabbing new 4K means not piling up new 4K image-subs to burn down the line. The fix for a playback stutter reached all the way back into my download rules, which still feels slightly unhinged to say out loud.
 4. **Stop the silt.** A prune step keeps only the subtitle languages I actually use, so the library doesn't slowly fill with dozens of sidecars the fetcher grabbed on its way through.
 
-Here's the part I keep turning over. I sat down to change a transcoding setting and stood up having rewritten my download policy. The expensive operation, live 4K re-encode, was only ever the symptom. The cheapest and most permanent fix lived three services upstream, in what the box is allowed to fetch in the first place. Performance problems wander like that. The place a system hurts is almost never the place it's actually wrong, and chasing the pain instead of the cause is how you spend a weekend tuning the thing that was fine all along.
+Here's the part I keep turning over. I sat down to change a transcoding setting and stood up having rewritten my download policy. I still don't fully trust the chain of events, and I'm the one who lived it. The expensive operation, live 4K re-encode, was only ever the symptom. The cheapest and most permanent fix lived three services upstream, in what the box is allowed to fetch in the first place. Performance problems wander like that. The place a system hurts is almost never the place it's actually wrong, and chasing the pain instead of the cause is how you spend a weekend tuning the thing that was fine all along.
 
 A subtitle is a few kilobytes of text, by a wide margin the smallest file in the whole pipeline. Whether those kilobytes are text or image set my resolution ceiling, dragged a machine-learning model into the stack, and rewrote the rules for what I'm allowed to download. The smallest artifact in the system turned out to be holding the constraint the entire thing organizes itself around, and untangling that is still some of the most satisfying debugging I've done.
 

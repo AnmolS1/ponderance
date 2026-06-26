@@ -5,8 +5,9 @@ series: "discofin-server"
 seriesOrder: 1
 tags: ["homelab", "security"]
 summary: "Putting the torrent client inside the VPN container's network namespace gives you a kill-switch you can't forget to turn on, and it breaks port mapping in a way that finally taught me what a container's network identity actually is."
-draft: true
+draft: false
 ---
+import NoteFigure from '../../components/NoteFigure.astro';
 
 My torrent client doesn't have an IP address. Ask it what network it's on and it has nothing for you. No interface, no routing table, no port of its own. It lives inside the VPN container's network namespace, and that one fact is the whole design.
 
@@ -19,12 +20,9 @@ qbittorrent:
 
 That line tells Docker not to give this container a network, and to share the VPN container's instead. So every packet it sends leaves through the tunnel, because there's no other door out of the room it's standing in.
 
-<figure>
-  <img src="/marginalia/vpn-namespace.svg" alt="The torrent client shares the VPN container's network namespace, so all its traffic exits through the VPN tunnel and it has no interface of its own." />
-  <figcaption>The torrent client borrows the VPN's interface — the kill-switch is the wiring, not a setting.</figcaption>
-</figure>
+<NoteFigure src="/marginalia/vpn-namespace.svg" alt="The torrent client shares the VPN container's network namespace, so all its traffic exits through the VPN tunnel and it has no interface of its own.">The torrent client borrows the VPN's interface. The kill-switch is the wiring, not a setting.</NoteFigure>
 
-Here's the part I'm still a little smug about. People build elaborate kill-switches for exactly this situation, the "if the VPN drops, block everything" kind, with firewall rules and health checks and a fresh set of failure modes to babysit. I don't have one. I don't need one. If the VPN process dies, the namespace's routing dies with it, and the client is left in a room with no exits. It physically cannot leak to my home connection, because from where it sits, my home connection was never reachable in the first place. I didn't build that property. It falls out of where the container lives, and I trust it more than any rule I'd have to remember to keep switched on.
+Here's the part I'm still a little smug about. People build elaborate kill-switches for exactly this situation, the "if the VPN drops, block everything" kind, with firewall rules and health checks and a fresh set of failure modes to babysit. I don't have one. I don't need one. If the VPN process dies, the namespace's routing dies with it, and the client is left in a room with no exits, a grim sentence for a person and a perfect one for a torrent client. It physically cannot leak to my home connection, because from where it sits, my home connection was never reachable in the first place. I didn't build that property. It falls out of where the container lives, and I trust it more than any rule I'd have to remember to keep switched on.
 
 The catch is the same fact biting back. The client has no ports, so you can't publish its web UI on it. There's nothing to publish onto. You publish on the VPN container instead:
 

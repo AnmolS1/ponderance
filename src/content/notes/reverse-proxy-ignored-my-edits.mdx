@@ -5,10 +5,10 @@ series: "discofin-server"
 seriesOrder: 4
 tags: ["engineering", "homelab"]
 summary: "I changed the config, reloaded, and nothing happened. The file on disk was right. The reload said success. The proxy kept serving the old routes. Three facts that can't all be true, except they were, and the culprit was an inode."
-draft: true
+draft: false
 ---
 
-I changed my reverse proxy's config, reloaded it, and nothing happened. What made this one genuinely maddening, the kind that has you questioning whether you understand how computers work, is that every single check passed on its own. The file on disk had my edit, plain as day. The reload command returned success and told me *config is unchanged*. The proxy kept serving the old routes. Three facts that can't all be true at once, and there they were, all true, while I burned an evening on it.
+I changed my reverse proxy's config, reloaded it, and nothing happened. What made this one genuinely maddening, the kind that has you questioning whether you understand how computers work, is that every single check passed on its own. The file on disk had my edit, plain as day. The reload command returned success and told me *config is unchanged*. The proxy kept serving the old routes. Three facts that can't all be true at once, and there they were, all true, smug about it, while I burned an evening on it.
 
 The config was bind-mounted into the container as a single file:
 

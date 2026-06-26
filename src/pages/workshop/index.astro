@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import CoverArt from '../../components/CoverArt.astro';
 import { getCollection } from 'astro:content';
 
 const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
@@ -37,7 +38,7 @@ const skills = [
   },
   {
     title: 'Full-stack',
-    desc: 'shreyachanth, Golu Molu (Shopify/Liquid), Haven’s Artistry, BigStorage, Sister Isles, Resumable, weeboweebo — real production frontends.',
+    desc: 'shreyachanth, Golu Molu (Shopify/Liquid), Haven’s Artistry, BigStorage, Sister Isles, Resumable, weeboweebo. Real production frontends.',
   },
   {
     title: 'Infra / Cloud',
@@ -64,48 +65,58 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
       .stud{opacity:0;animation:snapIn 1s cubic-bezier(.34,1.56,.64,1) both;animation-timeline:view();animation-range:entry 2% cover 26%;}
     }
     @media (prefers-reduced-motion:reduce){.stud{opacity:1!important;transform:none!important;animation:none!important;}}
-    .build-card{display:flex;flex-direction:column;background:#F6F7F4;border:1px solid rgba(46,94,140,.28);border-radius:5px;overflow:hidden;transition:transform .18s ease,box-shadow .18s ease;text-decoration:none;}
-    .build-card:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(27,42,51,.10);}
-    .build-card:hover h3{color:#E84A27;}
-    .build-cover{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;border-bottom:1px solid rgba(46,94,140,.18);background:#eef0ea;}
-    .meta-link{font-family:var(--font-mono);font-size:11px;color:#2E5E8C;text-decoration:none;border-bottom:1px solid rgba(46,94,140,.3);}
+    .build-card{display:flex;flex-direction:column;background:var(--color-graph-card);border:1px solid var(--color-crease-line-bold);border-radius:5px;overflow:hidden;transition:transform .18s ease,box-shadow .18s ease;text-decoration:none;}
+    .build-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-card);}
+    .build-card:hover h3{color:var(--color-crane);}
+    /* :global — the cover is an inlined <svg> injected via set:html, so it never
+       receives Astro's scoped data-astro-cid attribute a scoped selector needs. */
+    :global(.build-cover){width:100%;aspect-ratio:16/10;display:block;border-bottom:1px solid var(--color-crease-line);background:var(--color-graph-card);overflow:hidden;}
+    .meta-link{font-family:var(--font-mono);font-size:11px;color:var(--color-crease);text-decoration:none;border-bottom:1px solid var(--color-crease-line-bold);}
     @media (prefers-reduced-motion:reduce){.build-card{transition:none!important;}}
-    @media (max-width:720px){.grid-builds{grid-template-columns:1fr 1fr!important;}.skills-grid{grid-template-columns:1fr 1fr!important;}.lead-grid,.secondary-grid{grid-template-columns:1fr!important;}}
+    /* Responsive reflow (lifted from Workshop.dc.html) */
+    @media (max-width:900px){.skills-grid{grid-template-columns:repeat(3,1fr)!important;}}
+    @media (max-width:880px){
+      .lead-grid,.secondary-grid{grid-template-columns:1fr!important;}
+      .lead-grid .ws-cover,.secondary-grid .ws-cover{min-height:200px!important;border-left:none!important;border-right:none!important;border-top:1px solid var(--color-crease-line-bold)!important;}
+      .secondary-grid{display:flex!important;flex-direction:column-reverse!important;}
+    }
+    @media (max-width:768px){.grid-builds{grid-template-columns:1fr 1fr!important;}}
+    @media (max-width:620px){.skills-grid{grid-template-columns:1fr 1fr!important;}}
+    @media (max-width:480px){.grid-builds{grid-template-columns:1fr!important;}}
   </style>
 
   <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
 
     <header style="padding: 52px 0 40px;">
-      <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 16px;">the workshop · selected builds</p>
-      <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(38px,4.6vw,58px); line-height: 1.04; letter-spacing: -.025em; color: #1B2A33; margin: 0; max-width: 20ch;">Production work, taken apart so you can see the folds.</h1>
+      <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); margin: 0 0 16px;">the workshop · selected builds</p>
+      <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(38px,4.6vw,58px); line-height: 1.04; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; max-width: 20ch;">Production work, taken apart so you can see the folds.</h1>
     </header>
 
     <!-- LEAD CASE STUDY -->
     {lead && (
-      <section aria-label="Lead case study" style="border: 1px solid rgba(46,94,140,.28); border-radius: 6px; overflow: hidden; background: #F6F7F4; margin-bottom: 24px;">
+      <section aria-label="Lead case study" style="border: 1px solid var(--color-crease-line-bold); border-radius: 6px; overflow: hidden; background: var(--color-graph-card); margin-bottom: 24px;">
         <div class="lead-grid" style="display: grid; grid-template-columns: 1.05fr .95fr;">
           <div style="padding: 34px 36px 36px;">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
-              <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #fff; background: #E84A27; border-radius: 2px; padding: 4px 10px;">lead case study</span>
-              <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">{lead.data.role}</span>
+              <span style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40);">{lead.data.role}</span>
             </div>
-            <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 36px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 12px;">{lead.data.title}</h2>
-            <p style="font-family: var(--font-body); font-size: 17px; line-height: 1.6; color: rgba(27,42,51,.6); margin: 0 0 22px; max-width: 34rem;">{lead.data.summary}</p>
+            <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 36px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0 0 12px;">{lead.data.title}</h2>
+            <p style="font-family: var(--font-body); font-size: 17px; line-height: 1.6; color: var(--color-graphite-60); margin: 0 0 22px; max-width: 34rem;">{lead.data.summary}</p>
             <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;">
               {lead.data.stack.map(s => (
-                <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 9px;">{s}</span>
+                <span style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-60); border: 1px solid var(--color-crease-line-bold); border-radius: 2px; padding: 4px 9px;">{s}</span>
               ))}
             </div>
             <div style="display: flex; align-items: center; gap: 20px;">
-              <a href={`/workshop/${lead.id}`} style="font-family: var(--font-body); font-weight: 600; font-size: 15px; color: #E84A27; border-bottom: 1px solid #E84A27; padding-bottom: 2px; text-decoration: none;">Read the case study →</a>
+              <a href={`/workshop/${lead.id}`} style="font-family: var(--font-body); font-weight: 600; font-size: 15px; color: var(--color-crane); border-bottom: 1px solid var(--color-crane); padding-bottom: 2px; text-decoration: none;">Read the case study →</a>
               {lead.data.liveUrl && <a class="meta-link" href={lead.data.liveUrl} target="_blank" rel="noopener">{tokenLink(lead.data.liveUrl)} ↗</a>}
               {lead.data.repo && <a class="meta-link" href={lead.data.repo} target="_blank" rel="noopener">source ↗</a>}
             </div>
           </div>
-          <div style="position: relative; border-left: 1px solid rgba(46,94,140,.28); min-height: 360px; background: #eef0ea;">
+          <div class="ws-cover" style="position: relative; border-left: 1px solid var(--color-crease-line-bold); min-height: 360px; background: var(--color-graph-card);">
             {lead.data.cover
-              ? <img src={lead.data.cover} alt={`${lead.data.title} cover`} style="width: 100%; height: 100%; object-fit: cover; display: block;" />
-              : <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#e3e6e0,#e3e6e0 11px,#dde1da 11px,#dde1da 22px);"></div>}
+              ? <CoverArt src={lead.data.cover} fit="contain" />
+              : <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,var(--color-graph-card),var(--color-graph-card) 11px,var(--color-inset) 11px,var(--color-inset) 22px);"></div>}
           </div>
         </div>
       </section>
@@ -113,27 +124,26 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
 
     <!-- SECONDARY BUILD -->
     {secondary && (
-      <section aria-label="Secondary build" style="border: 1px solid rgba(46,94,140,.28); border-radius: 6px; overflow: hidden; background: #F6F7F4; margin-bottom: 50px;">
+      <section aria-label="Secondary build" style="border: 1px solid var(--color-crease-line-bold); border-radius: 6px; overflow: hidden; background: var(--color-graph-card); margin-bottom: 50px;">
         <div class="secondary-grid" style="display: grid; grid-template-columns: .42fr .58fr;">
-          <div style="position: relative; min-height: 220px; border-right: 1px solid rgba(46,94,140,.28); background: #eef0ea;">
+          <div class="ws-cover" style="position: relative; min-height: 220px; border-right: 1px solid var(--color-crease-line-bold); background: var(--color-graph-card);">
             {secondary.data.cover
-              ? <img src={secondary.data.cover} alt={`${secondary.data.title} cover`} style="width: 100%; height: 100%; object-fit: cover; display: block;" />
-              : <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#e3e6e0,#e3e6e0 11px,#dde1da 11px,#dde1da 22px);"></div>}
+              ? <CoverArt src={secondary.data.cover} fit="contain" />
+              : <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,var(--color-graph-card),var(--color-graph-card) 11px,var(--color-inset) 11px,var(--color-inset) 22px);"></div>}
           </div>
           <div style="padding: 30px 34px;">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-              <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #2E5E8C; border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 10px;">secondary</span>
-              <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">{CATEGORY_LABELS[secondary.data.category]}</span>
+              <span style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40);">{CATEGORY_LABELS[secondary.data.category]}</span>
             </div>
-            <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 10px;">{secondary.data.title}</h2>
-            <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.58; color: rgba(27,42,51,.6); margin: 0 0 18px; max-width: 36rem;">{secondary.data.summary}</p>
+            <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0 0 10px;">{secondary.data.title}</h2>
+            <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.58; color: var(--color-graphite-60); margin: 0 0 18px; max-width: 36rem;">{secondary.data.summary}</p>
             <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
               {secondary.data.stack.map(s => (
-                <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.6); border: 1px solid rgba(46,94,140,.28); border-radius: 2px; padding: 4px 9px;">{s}</span>
+                <span style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-60); border: 1px solid var(--color-crease-line-bold); border-radius: 2px; padding: 4px 9px;">{s}</span>
               ))}
             </div>
             <div style="display: flex; align-items: center; gap: 18px;">
-              <a href={`/workshop/${secondary.id}`} style="font-family: var(--font-body); font-weight: 600; font-size: 14px; color: #E84A27; border-bottom: 1px solid #E84A27; padding-bottom: 1px; text-decoration: none;">Open build →</a>
+              <a href={`/workshop/${secondary.id}`} style="font-family: var(--font-body); font-weight: 600; font-size: 14px; color: var(--color-crane); border-bottom: 1px solid var(--color-crane); padding-bottom: 1px; text-decoration: none;">Open build →</a>
               {secondary.data.liveUrl && <a class="meta-link" href={secondary.data.liveUrl} target="_blank" rel="noopener">{tokenLink(secondary.data.liveUrl)} ↗</a>}
               {secondary.data.repo && <a class="meta-link" href={secondary.data.repo} target="_blank" rel="noopener">source ↗</a>}
             </div>
@@ -143,13 +153,13 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
     )}
 
     <!-- SKILLS SET — Lego studs, CSS scroll-driven -->
-    <section aria-label="Skills" style="padding-bottom: 50px; border-bottom: 1px solid rgba(46,94,140,.28);">
+    <section aria-label="Skills" style="padding-bottom: 50px; border-bottom: 1px solid var(--color-crease-line-bold);">
       <div style="margin-bottom: 26px;">
-        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 30px; letter-spacing: -.02em; color: #1B2A33; margin: 0; max-width: 20ch;">The skills set, modular by nature — they actually snap together</h2>
+        <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 30px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0; max-width: 20ch;">The skills set, modular by nature. They actually snap together</h2>
       </div>
       <div class="skills-grid" style="display: grid; grid-template-columns: repeat(5,1fr); gap: 14px;">
         {skills.map(s => (
-          <div class="stud" style="position: relative; background: #2A2A6E; border-radius: 4px; padding: 30px 18px 22px; margin-top: 9px;">
+          <div class="stud" style="position: relative; background: var(--color-orbit); border-radius: 4px; padding: 30px 18px 22px; margin-top: 9px;">
             <div aria-hidden="true" style="position: absolute; top: -9px; left: 14px; display: flex; gap: 8px;">
               <span style="width: 16px; height: 9px; border-radius: 9px 9px 4px 4px; background: #3a3a85;"></span>
               <span style="width: 16px; height: 9px; border-radius: 9px 9px 4px 4px; background: #3a3a85;"></span>
@@ -163,23 +173,23 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
 
     <!-- OTHER BUILDS — grouped by category -->
     <section aria-label="Other builds" style="padding: 46px 0 56px;">
-      <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 24px; letter-spacing: -.02em; color: #1B2A33; margin: 0 0 6px;">Other builds</h2>
-      <p style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4); margin: 0 0 28px;">grouped by what they are</p>
+      <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 24px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0 0 6px;">Other builds</h2>
+      <p style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40); margin: 0 0 28px;">grouped by what they are</p>
 
       {categoryGroups.map(group => (
         <div style="margin-bottom: 38px;">
-          <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid rgba(46,94,140,.13); padding-bottom: 8px;">
-            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 18px; color: #1B2A33; margin: 0;">{group.label}</h3>
-            <span style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(27,42,51,.4);">{group.items.length} {group.items.length === 1 ? 'build' : 'builds'}</span>
+          <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--color-crease-line); padding-bottom: 8px;">
+            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 18px; color: var(--color-graphite); margin: 0;">{group.label}</h3>
+            <span style="font-family: var(--font-mono); font-size: 11.5px; color: var(--color-graphite-40);">{group.items.length} {group.items.length === 1 ? 'build' : 'builds'}</span>
           </div>
           <div class="grid-builds" style="display: grid; grid-template-columns: repeat(3,1fr); gap: 16px;">
             {group.items.map(w => (
               <a class="build-card" href={`/workshop/${w.id}`}>
-                {w.data.cover && <img class="build-cover" src={w.data.cover} alt={`${w.data.title} cover`} loading="lazy" />}
+                {w.data.cover && <CoverArt class="build-cover" src={w.data.cover} fit="cover" />}
                 <div style="padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1;">
-                  <p style="font-family: var(--font-mono); font-size: 11px; color: #D9A521; margin: 0 0 8px;">/ {group.label.toLowerCase()}</p>
-                  <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 17px; color: #1B2A33; margin: 0 0 6px; transition: color .18s ease;">{w.data.title}</h3>
-                  <p style="font-family: var(--font-body); font-size: 13px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0 0 12px;">{w.data.summary}</p>
+                  <p style="font-family: var(--font-mono); font-size: 11px; color: var(--color-sax); margin: 0 0 8px;">/ {group.label.toLowerCase()}</p>
+                  <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 17px; color: var(--color-graphite); margin: 0 0 6px; transition: color .18s ease;">{w.data.title}</h3>
+                  <p style="font-family: var(--font-body); font-size: 13px; line-height: 1.5; color: var(--color-graphite-60); margin: 0 0 12px;">{w.data.summary}</p>
                   <div style="margin-top: auto; display: flex; gap: 14px;">
                     {w.data.liveUrl && <span class="meta-link" style="border:0;">{tokenLink(w.data.liveUrl)} ↗</span>}
                     {w.data.repo && <span class="meta-link" style="border:0;">source ↗</span>}

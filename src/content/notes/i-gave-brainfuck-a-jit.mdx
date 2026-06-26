@@ -3,7 +3,7 @@ title: "I gave Brainfuck a JIT"
 date: 2026-03-20
 tags: ["engineering"]
 summary: "Brainfuck is a deliberately useless language: eight characters, openly hostile to humans. I wrote it a profiling JIT compiler. I want to explain why that isn't as stupid as it sounds, though I'll admit it's a little stupid."
-draft: true
+draft: false
 ---
 
 Brainfuck is one of the most useless programming languages ever made, and that's the goal, not an accident. Eight characters, a tape of bytes, a pointer that moves left and right, and a syntax openly hostile to being read by a human. I wrote a JIT compiler for it. Let me explain why that's less stupid than it sounds. It's still a little stupid, I'm not going to pretend otherwise.
@@ -31,4 +31,4 @@ if let Some(&jit_fn) = self.jit_cache.get(&loop_pc) {
 
 That's tiered execution: interpret until something proves it's worth compiling, then compile it and never look back. It's the same core idea as the adaptive optimization in a real language runtime, just small enough that I could hold the entire thing in my head and watch every layer work. The interpreter and the JIT even share one bytecode, so an optimizer pass feeds both, and a separate ahead-of-time path emits real object files from that same representation.
 
-Nobody needs a fast Brainfuck. That was never the point, and pretending otherwise would miss it. The point is that a language small enough to fit in your palm is the perfect place to build the thing that would never otherwise fit in your head, a profiling JIT with a hot-path threshold and a compile cache, and come out the other side understanding every layer of it instead of three-quarters of one. The uselessness of Brainfuck is the whole reason it was the right teacher. There was nothing else to hide behind.
+Nobody needs a fast Brainfuck. It's the most useful useless thing I've built. That was never the point, and pretending otherwise would miss it. The point is that a language small enough to fit in your palm is the perfect place to build the thing that would never otherwise fit in your head, a profiling JIT with a hot-path threshold and a compile cache, and come out the other side understanding every layer of it instead of three-quarters of one. The uselessness of Brainfuck is the whole reason it was the right teacher. There was nothing else to hide behind.

@@ -3,12 +3,12 @@ title: "What 'repair this mesh' actually means"
 date: 2026-03-01
 tags: ["engineering", "math"]
 summary: "'Repair this STL' sounds like one button. It's about seven different problems in a trenchcoat, and a 3D printer will faceplant on any one of them. Building the repair tool meant naming all seven."
-draft: true
+draft: false
 ---
 
 "Repair this STL" sounds like a single button, and I built the tool that pretends to be that button, so I can tell you it's really about seven different problems wearing one trenchcoat. A 3D printer will faceplant on any one of them, and they each break it in a different way.
 
-Here's what a printable model has to be: watertight and manifold. Watertight means the surface is fully closed, no gaps. Manifold means it's a sane surface everywhere, and in particular that every edge is shared by exactly two faces, so there's an unambiguous inside and outside. Models you download from the internet are routinely neither, and they look completely fine on screen, because your eyes don't care about any of this and a slicer cares about nothing else.
+Here's what a printable model has to be: watertight and manifold. Watertight means the surface is fully closed, no gaps. Manifold means it's a sane surface everywhere, and in particular that every edge is shared by exactly two faces, so there's an unambiguous inside and outside. Models you download from the internet are routinely neither, and they look completely fine on screen, because your eyes don't care about any of this and a slicer cares about nothing else. The model looks fine and is quietly lying to you.
 
 The slicer is why. To print a model, software cuts it into horizontal layers, and for every point in every layer it has to answer one question: am I inside the object here, or outside? Inside gets plastic, outside doesn't. Every kind of mesh damage is a way of making that question unanswerable:
 

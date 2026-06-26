@@ -5,16 +5,16 @@ series: "Sonobe geometry"
 seriesOrder: 5
 tags: ["math", "origami"]
 summary: "A counting problem that looks like calculus, turns out to be number theory, and quietly charges you quadratically for roundness."
-draft: true
+draft: false
 ---
 
 I had 1856 sheets of paper and a simple-sounding question: what's the biggest round ball I can fold, and what would another 1000 sheets buy me? It became the most satisfying wrong-turn-then-right-turn of the whole thread.
 
-The setup is $N = 30T \le \text{budget}$, so for 1856 sheets, $T \le 61$, i.e. $b^2 + bc + c^2 \le 61$. My instinct was calculus: treat it as an optimization, differentiate, find the critical points. That instinct produces real math and the wrong answer.
+The setup is $N = 30T \le \text{budget}$, so for 1856 sheets, $T \le 61$, i.e. $b^2 + bc + c^2 \le 61$. My instinct was calculus: treat it as an optimization, differentiate, find the critical points. That instinct produces real math, a genuinely pretty page of it, and the wrong answer.
 
-The trap is that the curve $b^2 + bc + c^2 = 61$ isn't a constraint you optimize $T$ *over* — it *is* a level set of $T$. Every point on it has $T = 61$ by definition, so there is nothing to maximize along it.[^implicit] I was trying to maximize the very quantity that draws the curve.
+The trap is that the curve $b^2 + bc + c^2 = 61$ isn't a constraint you optimize $T$ *over*. It *is* a level set of $T$. Every point on it has $T = 61$ by definition, so there is nothing to maximize along it.[^implicit] I was trying to maximize the very quantity that draws the curve.
 
-The real problem is discrete. I don't want a point *on* the ellipse; I want the integer lattice point *inside* it with the largest $T$. That's a number-theory question — find the largest value that $b^2 + bc + c^2$ actually achieves (a Loeschian number) at or below $\lfloor \text{budget}/30 \rfloor$, then read off its $(b,c)$. There's no clean formula, because Loeschian membership depends on prime factorization, but the search is only a couple of steps:
+The real problem is discrete. I don't want a point *on* the ellipse; I want the integer lattice point *inside* it with the largest $T$. That's a number-theory question: find the largest value that $b^2 + bc + c^2$ actually achieves (a Loeschian number) at or below $\lfloor \text{budget}/30 \rfloor$, then read off its $(b,c)$. There's no clean formula, because Loeschian membership depends on prime factorization, but the search is only a couple of steps:
 
 ```python
 import math
@@ -37,10 +37,10 @@ def largest_ball(sheets):
     return 30 * T, (b, c), T
 ```
 
-Run it. With 1856 sheets, $T$ caps at 61, and 61 is Loeschian on the nose — it's prime and $\equiv 1 \pmod 3$. That gives $(b,c) = (5,4)$, an 1830-unit ball, 26 sheets to spare. With another 1000 (2856 total), $T$ caps at 95, but $95 = 5 \cdot 19$ fails and 94 fails too, so it drops to $93 = 3 \cdot 31$, giving $(b,c) = (7,4)$ — a 2790-unit ball, $\{3,5+\}(7,4)$.
+Run it. With 1856 sheets, $T$ caps at 61, and 61 is Loeschian on the nose, it's prime and $\equiv 1 \pmod 3$. That gives $(b,c) = (5,4)$, an 1830-unit ball, 26 sheets to spare. With another 1000 (2856 total), $T$ caps at 95, but $95 = 5 \cdot 19$ fails and 94 fails too, so it drops to $93 = 3 \cdot 31$, giving $(b,c) = (7,4)$, a 2790-unit ball, $\{3,5+\}(7,4)$.
 
-Two things I didn't expect. Both winners are Class III chiral ($b \neq c$, both nonzero), so the largest ball I can fold is a giant left- or right-handed spiral. And the extra 1000 sheets only moved $T$ from 61 to 93, because the paper budget grows *linearly* while $T$ grows like the *square* of the ball's frequency. Doubling how round the ball looks costs four times the paper — you pay quadratically for roundness.
+Two things I didn't expect. Both winners are Class III chiral ($b \neq c$, both nonzero), so the largest ball I can fold is a giant left- or right-handed spiral, 1830 parallelograms all leaning the same way like wheat in wind. And the extra 1000 sheets only moved $T$ from 61 to 93, because the paper budget grows *linearly* while $T$ grows like the *square* of the ball's frequency. Doubling how round the ball looks costs four times the paper. You pay quadratically for roundness. Roundness is a luxury good.
 
 The lesson that stuck: the continuous-optimization reflex was right about the *method* and wrong about the *object*. The moment the variable becomes "how many integer lattice points fit," calculus hands the problem to number theory.
 
-[^implicit]: Implicit differentiation gives $dc/db = -(2b+c)/(b+2c)$, which is $0$ at $c = -2b$ and vertical at $c = -b/2$. Those are the tilted ellipse's extreme points — real geometry, just unrelated to counting units.
+[^implicit]: Implicit differentiation gives $dc/db = -(2b+c)/(b+2c)$, which is $0$ at $c = -2b$ and vertical at $c = -b/2$. Those are the tilted ellipse's extreme points, real geometry, just unrelated to counting units.

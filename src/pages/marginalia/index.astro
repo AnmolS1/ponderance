@@ -56,48 +56,55 @@ const iso = (d: Date) => d.toISOString().slice(0, 10);
   footerLink={{ href: '/rss.xml', label: 'RSS' }}
 >
   <style>
-    .note-row{display:block;padding:15px 0;border-top:1px solid rgba(46,94,140,.13);transition:padding-left .18s ease;text-decoration:none;}
+    .note-row{display:block;padding:15px 0;border-top:1px solid var(--color-crease-line);transition:padding-left .18s ease;text-decoration:none;}
     .note-row:first-child{border-top:0;}
     .note-row:hover{padding-left:10px;}
-    .note-row:hover h4{color:#2E5E8C;}
-    .ser-num{font-family:var(--font-mono);font-size:11.5px;color:#E84A27;font-weight:600;margin-right:8px;}
-    .grp-eyebrow{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#E84A27;display:block;margin-bottom:6px;}
-    .feat-fold{position:absolute;top:0;right:0;width:40px;height:40px;background:linear-gradient(225deg,#cfd3cc 0%,#e6e8e2 42%,#ffffff 74%);clip-path:polygon(0 0,100% 0,100% 100%);border-bottom-left-radius:7px;filter:drop-shadow(-3px 3px 2.5px rgba(27,42,51,.22));transition:width .32s cubic-bezier(.4,0,.2,1),height .32s cubic-bezier(.4,0,.2,1),filter .32s ease;}
+    .note-row:hover h4{color:var(--color-crease);}
+    .ser-num{font-family:var(--font-mono);font-size:11.5px;color:var(--color-crane);font-weight:600;margin-right:8px;}
+    .grp-eyebrow{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-crane);display:block;margin-bottom:6px;}
+    .feat-fold{position:absolute;top:0;right:0;width:40px;height:40px;background:linear-gradient(225deg,var(--color-crease-line-bold) 0%,var(--color-graph-card) 42%,var(--color-inset) 74%);clip-path:polygon(0 0,100% 0,100% 100%);border-bottom-left-radius:7px;filter:drop-shadow(-3px 3px 2.5px rgba(27,42,51,.22));transition:width .32s cubic-bezier(.4,0,.2,1),height .32s cubic-bezier(.4,0,.2,1),filter .32s ease;}
     .feat:hover .feat-fold{width:62px;height:62px;filter:drop-shadow(-7px 7px 6px rgba(27,42,51,.3));}
     @media (prefers-reduced-motion:reduce){.feat-fold{transition:none!important;}.note-row{transition:none!important;}}
+
+    /* Responsive reflow (lifted from Marginalia.dc.html): the 12-col hero / lead
+       / every theme & series group collapse to one column at ≤768; alternating
+       header sides reset to the left. The grid stays 12-col; each cell spans the
+       full track. */
+    @media (max-width:768px){
+      .mg-head-left,.mg-head-right,.mg-notes-left,.mg-notes-right,.mg-hero-h1,.mg-hero-stat,.mg-lead-card,.mg-lead-quote{grid-column:1 / -1!important;text-align:left!important;order:0!important;}
+      .mg-hero-stat{align-self:start!important;}
+      .mg-lead-quote{border-left:2px solid var(--color-sax);padding-left:18px;margin-top:6px;}
+    }
   </style>
 
   <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
 
     <!-- HERO -->
-    <header style="display: grid; grid-template-columns: repeat(12,1fr); gap: 18px; align-items: end; padding: 54px 0 30px; border-bottom: 1px solid rgba(46,94,140,.28);">
-      <div style="grid-column: 1 / 13;">
-        <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #2E5E8C; margin: 0 0 16px;">marginalia</p>
-      </div>
-      <h1 style="grid-column: 1 / 9; font-family: var(--font-display); font-weight: 700; font-size: clamp(34px,4.4vw,54px); line-height: 1.05; letter-spacing: -.025em; color: #1B2A33; margin: 0; max-width: 20ch;">Things I worked out, written down before I forgot them.</h1>
-      <div style="grid-column: 10 / 13; align-self: end; text-align: right; font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4); line-height: 1.7;">
-        <b style="color: #1B2A33; font-size: 22px; display: block; font-weight: 600;">{allNotes.length}</b>
+    <header style="display: grid; grid-template-columns: repeat(12,1fr); gap: 18px; align-items: end; padding: 54px 0 30px; border-bottom: 1px solid var(--color-crease-line-bold);">
+      <h1 class="mg-hero-h1" style="grid-column: 1 / 9; font-family: var(--font-display); font-weight: 700; font-size: clamp(34px,4.4vw,54px); line-height: 1.05; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; max-width: 20ch;">Things I worked out, written down before I forgot them.</h1>
+      <div class="mg-hero-stat" style="grid-column: 10 / 13; align-self: end; text-align: right; font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40); line-height: 1.7;">
+        <b style="color: var(--color-graphite); font-size: 22px; display: block; font-weight: 600;">{allNotes.length}</b>
         notes · est. 2026<br>napkin math &amp; half-proofs
       </div>
     </header>
 
     <!-- LEAD FEATURE NOTE + PULL QUOTE -->
     {lead && (
-      <section aria-label="Featured note" style="display: grid; grid-template-columns: repeat(12,1fr); gap: 18px; align-items: start; padding: 34px 0; border-bottom: 1px solid rgba(46,94,140,.28);">
-        <a class="feat" href={`/marginalia/${lead.id}`} style="grid-column: 1 / 8; position: relative; background: #F6F7F4; border: 1px solid #2E5E8C; border-radius: 5px; padding: 26px 30px 28px; overflow: hidden; text-decoration: none; display: block;">
+      <section aria-label="Featured note" style="display: grid; grid-template-columns: repeat(12,1fr); gap: 18px; align-items: start; padding: 34px 0; border-bottom: 1px solid var(--color-crease-line-bold);">
+        <a class="feat mg-lead-card" href={`/marginalia/${lead.id}`} style="grid-column: 1 / 8; position: relative; background: var(--color-graph-card); border: 1px solid var(--color-crease); border-radius: 5px; padding: 26px 30px 28px; overflow: hidden; text-decoration: none; display: block;">
           <span aria-hidden="true" class="feat-fold"></span>
-          <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #E84A27; margin: 0 0 12px;">most recent</p>
-          <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 27px; line-height: 1.1; letter-spacing: -.015em; color: #1B2A33; margin: 0 0 10px; max-width: 18ch;">{lead.data.title}</h2>
-          <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: rgba(27,42,51,.6); margin: 0 0 18px; max-width: 46ch;">{lead.data.summary}</p>
-          <div style="display: flex; align-items: center; gap: 14px; font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4);">
-            <span style="font-family: var(--font-body); font-weight: 600; font-size: 14.5px; color: #E84A27; border-bottom: 1px solid #E84A27; padding-bottom: 1px;">Read the note →</span>
+          <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--color-crane); margin: 0 0 12px;">most recent</p>
+          <h2 style="font-family: var(--font-display); font-weight: 700; font-size: 27px; line-height: 1.1; letter-spacing: -.015em; color: var(--color-graphite); margin: 0 0 10px; max-width: 18ch;">{lead.data.title}</h2>
+          <p style="font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: var(--color-graphite-60); margin: 0 0 18px; max-width: 46ch;">{lead.data.summary}</p>
+          <div style="display: flex; align-items: center; gap: 14px; font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40);">
+            <span style="font-family: var(--font-body); font-weight: 600; font-size: 14.5px; color: var(--color-crane); border-bottom: 1px solid var(--color-crane); padding-bottom: 1px;">Read the note →</span>
             <span>{iso(lead.data.date)}</span>
-            <span style="color: #D9A521;">{lead.data.tags.join(' · ')}</span>
+            <span style="color: var(--color-sax);">{lead.data.tags.join(' · ')}</span>
           </div>
         </a>
-        <div style="grid-column: 9 / 13; align-self: center; border-left: 2px solid #D9A521; padding: 4px 0 4px 20px;">
-          <p style="font-family: var(--font-body); font-style: italic; font-size: 16px; line-height: 1.55; color: #1B2A33; margin: 0 0 10px;">"Rigorous limits, and a full life folded inside them."</p>
-          <cite style="font-family: var(--font-mono); font-style: normal; font-size: 11.5px; color: rgba(27,42,51,.4);">— from the marginalia</cite>
+        <div class="mg-lead-quote" style="grid-column: 9 / 13; align-self: center; border-left: 2px solid var(--color-sax); padding: 4px 0 4px 20px;">
+          <p style="font-family: var(--font-body); font-style: italic; font-size: 16px; line-height: 1.55; color: var(--color-graphite); margin: 0 0 10px;">"Rigorous limits, and a full life folded inside them."</p>
+          <cite style="font-family: var(--font-mono); font-style: normal; font-size: 11.5px; color: var(--color-graphite-40);">— from the marginalia</cite>
         </div>
       </section>
     )}
@@ -106,20 +113,20 @@ const iso = (d: Date) => d.toISOString().slice(0, 10);
     {groups.map((g, i) => {
       const right = i % 2 === 1; // alternate header side for rhythm
       return (
-        <section aria-label={g.label} style="display: grid; grid-template-columns: repeat(12,1fr); gap: 18px; align-items: start; padding: 30px 0; border-bottom: 1px solid rgba(46,94,140,.13);">
-          <div style={`grid-column: ${right ? '11 / 13' : '1 / 3'}; text-align: ${right ? 'right' : 'left'}; order: ${right ? 2 : 0};`}>
+        <section aria-label={g.label} style="display: grid; grid-template-columns: repeat(12,1fr); gap: 18px; align-items: start; padding: 30px 0; border-bottom: 1px solid var(--color-crease-line);">
+          <div class={right ? 'mg-head-right' : 'mg-head-left'} style={`grid-column: ${right ? '11 / 13' : '1 / 3'}; text-align: ${right ? 'right' : 'left'}; order: ${right ? 2 : 0};`}>
             {g.kind === 'series' && <span class="grp-eyebrow">series · {g.notes.length} parts</span>}
-            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.15; letter-spacing: -.01em; color: #1B2A33; margin: 0;">{g.label}</h3>
-            <span style="font-family: var(--font-mono); font-size: 12px; color: rgba(27,42,51,.4); display: block; margin-top: 4px;">{g.notes.length} {g.notes.length === 1 ? 'note' : 'notes'}</span>
+            <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.15; letter-spacing: -.01em; color: var(--color-graphite); margin: 0;">{g.label}</h3>
+            <span style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40); display: block; margin-top: 4px;">{g.notes.length} {g.notes.length === 1 ? 'note' : 'notes'}</span>
           </div>
-          <div style={`grid-column: ${right ? '2 / 11' : '3 / 11'}; order: 1;`}>
+          <div class={right ? 'mg-notes-right' : 'mg-notes-left'} style={`grid-column: ${right ? '2 / 11' : '3 / 11'}; order: 1;`}>
             {g.notes.map(n => (
               <a class="note-row" href={`/marginalia/${n.id}`}>
-                <h4 style="font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 1.2; letter-spacing: -.01em; color: #1B2A33; margin: 0 0 5px;">
+                <h4 style="font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 1.2; letter-spacing: -.01em; color: var(--color-graphite); margin: 0 0 5px;">
                   {g.kind === 'series' && <span class="ser-num">{String(n.data.seriesOrder).padStart(2, '0')}</span>}{n.data.title}
                 </h4>
-                <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.5; color: rgba(27,42,51,.6); margin: 0 0 7px; max-width: 54ch;">{n.data.summary}</p>
-                <span style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(27,42,51,.4);">{iso(n.data.date)} · <span style="color: #D9A521;">{n.data.tags.join(' · ')}</span></span>
+                <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.5; color: var(--color-graphite-60); margin: 0 0 7px; max-width: 54ch;">{n.data.summary}</p>
+                <span style="font-family: var(--font-mono); font-size: 11.5px; color: var(--color-graphite-40);">{iso(n.data.date)} · <span style="color: var(--color-sax);">{n.data.tags.join(' · ')}</span></span>
               </a>
             ))}
           </div>

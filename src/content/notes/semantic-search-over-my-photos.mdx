@@ -5,17 +5,15 @@ series: "discofin-server"
 seriesOrder: 8
 tags: ["ml", "homelab"]
 summary: "I can search my self-hosted photo library for 'red bicycle in the snow' and it finds the shot, with no caption and no tag. It works because the photo and the words end up in the same space, and the database just measures a distance."
-draft: true
+draft: false
 ---
+import NoteFigure from '../../components/NoteFigure.astro';
 
 I can type *red bicycle in the snow* into my self-hosted photo library and it pulls up the photo. No caption on it, no tag, nothing in the metadata that says bicycle or red or snow. The first time it worked I sat there a little stunned, because I knew I'd never told it any of those words. It works because the photo and my query end up in the same space, and "search" turns into measuring how far apart they are.
 
 Here's the machine. The photo server runs a small machine-learning container. When a photo comes in, it runs the image through a CLIP-style model[^clip] that turns the picture into an embedding, a few hundred numbers, trained so that an image and a sentence describing it land in nearly the same place. Those vectors go into Postgres next to the usual rows, using a vector extension (pgvecto-rs), so a photo isn't only EXIF and a file path anymore. It has a column that's a point in space.
 
-<figure>
-  <img src="/marginalia/embedding-space.svg" alt="A text query and a photo are each encoded into the same vector space; search returns the photo whose vector has the smallest angle (cosine distance) to the query." />
-  <figcaption>Words and photos land in one space; search is just the smallest angle.</figcaption>
-</figure>
+<NoteFigure src="/marginalia/embedding-space.svg" alt="A text query and a photo are each encoded into the same vector space; search returns the photo whose vector has the smallest angle (cosine distance) to the query.">Words and photos land in one space; search is just the smallest angle.</NoteFigure>
 
 At search time, the words I typed run through the same model into the same space. So "find me matching photos" becomes, literally, "find the stored vectors nearest this query vector." Nearness is cosine similarity, the cosine of the angle between two vectors:
 
@@ -27,7 +25,7 @@ You compare direction, not length, because direction is where the meaning lives.
 
 There's one engineering wrinkle I'll be honest about. Finding the true nearest neighbours means scoring the query against every stored vector, $O(N)$ per search, which is fine until it very much isn't. So the extension builds an approximate-nearest-neighbour index (an HNSW-style navigable graph, it supports a couple of index types) that makes lookups sublinear by trading a sliver of recall for a big speedup. You never notice the one neighbour it occasionally misses. You'd absolutely notice the full scan.
 
-The part that genuinely delights me is that there's no taxonomy anywhere in this. I never defined "snow." I never tagged "bicycle." Tagging was always us trying to pin discrete labels onto something that's really continuous similarity, and it falls apart the instant you search for a word you didn't think to add three years ago. Embeddings skip the labels and keep the similarity as geometry. The model hands you a space where being close means being alike, and the database does the one thing databases are genuinely great at, which is go find the nearby points.
+The part that genuinely delights me is that there's no taxonomy anywhere in this. I never defined "snow." I never tagged "bicycle." I have never tagged anything in my life, and this is the first time that paid off. Tagging was always us trying to pin discrete labels onto something that's really continuous similarity, and it falls apart the instant you search for a word you didn't think to add three years ago. Embeddings skip the labels and keep the similarity as geometry. The model hands you a space where being close means being alike, and the database does the one thing databases are genuinely great at, which is go find the nearby points.
 
 Under the hood it's the same trick as basically all modern retrieval: put two different things, pixels and words, into one shared space and let distance stand in for meaning. It just happens that mine is running on a box in my closet, indexing my own photos, with the entire "AI" of it amounting to one container and one Postgres extension. I find that ratio of magic to machinery lovely.
 

@@ -5,14 +5,14 @@ series: "discofin-server"
 seriesOrder: 6
 tags: ["homelab", "engineering"]
 summary: "Almost everything on this box self-heals. The reboot stays half-manual, not because it's hard to script, but because a reboot destroys the one thing that could tell me it worked."
-draft: true
+draft: false
 ---
 
 Almost everything on this box takes care of itself. Security patches land on their own. Containers restart when they fall over. A boot-time check waits for the storage mount and the container runtime, then tells me if anything came back wrong. The one operation I won't fully hand off is the reboot. Scripting it is trivial. What you can't script is the part that matters, because a reboot can't confirm its own success.
 
 The setup is deliberately dull. OS updates are limited to the security origin, since I don't want feature updates showing up unannounced, and if one needs a reboot there's a window for it to happen. A small unit waits at boot for the filesystem and Docker to genuinely be up, then reports the state of the stack. That's the "did it come back?" layer, the part a human can read.
 
-What can't be closed is the validation, and the reason is almost a riddle. A reboot I trigger from my SSH or agent session kills that session on the way down. Whatever I'd written to check "are we okay on the other side" died with the connection it would have run over. The act of rebooting destroys the observer that was supposed to watch the reboot. You can't watch a thing through the exact moment it stops existing, not from inside it. Nothing can.
+What can't be closed is the validation, and the reason is almost a riddle. A reboot I trigger from my SSH or agent session kills that session on the way down. Whatever I'd written to check "are we okay on the other side" died with the connection it would have run over. The act of rebooting destroys the observer that was supposed to watch the reboot. You can't livestream your own anesthesia. You can't watch a thing through the exact moment it stops existing, not from inside it. Nothing can.
 
 So the confirmation has to come from outside the reboot. A separate notifier that pings me from the far shore, or me, looking after the fact. The loop only closes with a witness that didn't go down with the box.
 

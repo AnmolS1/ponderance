@@ -5,12 +5,12 @@ series: "discofin-server"
 seriesOrder: 3
 tags: ["security", "homelab"]
 summary: "The reflex advice for any exposed service is 'put SSO in front of it.' Twice I started to, and stopped, because the gate would have broken the thing without making it any safer. More auth doesn't automatically mean more secure, and learning that took unlearning the reflex."
-draft: true
+draft: false
 ---
 
 If you show anyone a self-hosted service reachable from the internet, the first thing they'll tell you is to put an authentication gate in front of it. SSO, an identity proxy, something with a login page. It's good advice often enough that people give it without thinking, and I was one of them for a while. Then twice I went to actually do it. I looked at a service, agreed it felt under-guarded, started wiring up the gate, and backed out, because in both cases the gate would have broken the service while doing almost nothing for its security. Sitting with the reason was the most useful security thing I did all year.
 
-Both cases are the same shape, so here it is with the names filed off.
+Both cases are the same shape, so here it is with the names filed off, like I'm describing a crime.
 
 **A service whose only clients are apps.** Picture an end-to-end-encrypted store, the kind where the server holds ciphertext it has no key to read. Its real clients aren't browsers. They're a browser extension and a mobile app that talk to fixed API endpoints with their own token flow. An interactive auth gate assumes a human who can be bounced to a login page and click through a challenge, and an app hitting an API can't do that dance. So the gate would guard the one path nobody's clients use, the human login page, while breaking sync on every path they actually use. And it would be standing guard over a server that already can't read its own data. The protection that fits here is the encryption that's already there, plus closing signups and putting a second factor on the account. Bolting SSO on would trade working sync for a login screen nobody visits.
 

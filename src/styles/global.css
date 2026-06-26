@@ -52,22 +52,25 @@
   /* — surface colors — */
   --color-graph: #EEF0EC;
   --color-graph-card: #F6F7F4;
+  --color-inset: #FFFFFF;            /* small "white" insets: pills, math/figure bg */
 
   /* — ink — */
   --color-graphite: #1B2A33;
-  --color-graphite-60: rgba(27, 42, 51, 0.6);
+  --color-graphite-60: rgba(27, 42, 51, 0.72);
   --color-graphite-40: rgba(27, 42, 51, 0.4);
 
   /* — structure — */
   --color-crease: #2E5E8C;
   --color-crease-line: rgba(46, 94, 140, 0.13);
   --color-crease-line-bold: rgba(46, 94, 140, 0.28);
+  --color-grid-line: rgba(46, 94, 140, 0.07);   /* the blueprint graph-paper ground */
 
   /* — accents — */
   --color-crane: #E84A27;
   --color-crane-dark: #C23A1C;
   --color-sax: #D9A521;
-  --color-orbit: #2A2A6E;
+  --color-orbit: #2A2A6E;           /* indigo PANEL surface (terminal/console/aside) */
+  --color-orbit-ink: #2A2A6E;       /* indigo used as TEXT on light bg ("deep space") */
 
   /* — typography — */
   --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
@@ -81,16 +84,62 @@
 :root {
   --color-graph: #EEF0EC;
   --color-graph-card: #F6F7F4;
+  --color-inset: #FFFFFF;
   --color-graphite: #1B2A33;
-  --color-graphite-60: rgba(27, 42, 51, 0.6);
+  --color-graphite-60: rgba(27, 42, 51, 0.72);
   --color-graphite-40: rgba(27, 42, 51, 0.4);
   --color-crease: #2E5E8C;
   --color-crease-line: rgba(46, 94, 140, 0.13);
   --color-crease-line-bold: rgba(46, 94, 140, 0.28);
+  --color-grid-line: rgba(46, 94, 140, 0.07);
   --color-crane: #E84A27;
   --color-crane-dark: #C23A1C;
   --color-sax: #D9A521;
   --color-orbit: #2A2A6E;
+  --color-orbit-ink: #2A2A6E;
+
+  /* Accent ink for inlined SVG labels (covers / marginalia figures). Theme-aware
+     so the warm emphasis stays AA as text in BOTH themes: crane-dark reads on the
+     light ground, but is too dark on the night ground — there it lifts to crane. */
+  --art-accent: var(--color-crane-dark);
+
+  /* Always-dark panel ink — light-on-indigo text that lives on the
+     --color-orbit surface in BOTH themes (terminal/console/aside/skill
+     panels), so it is theme-invariant by design. */
+  --panel-ink: #E7E7F5;
+  --panel-ink-60: #C7C9EC;
+  --panel-muted: #9092C8;
+  --panel-line: rgba(255, 255, 255, 0.10);
+
+  --shadow-card: 0 8px 22px rgba(27, 42, 51, 0.10);
+  color-scheme: light;
+}
+
+/* ── Dark theme — "the blueprint at night" ──────────────────────
+   Attribute-driven override (so the toggle can force it); seeded pre-paint
+   from localStorage → prefers-color-scheme. Values lifted from the design
+   package's crease.css; contrast audited in Foundations.dc.html (clears AA
+   everywhere, most pairings AAA). */
+[data-theme="dark"] {
+  --color-graph: #0E1A24;
+  --color-graph-card: #182530;
+  --color-inset: #1E2C38;
+  --color-graphite: #E9ECE7;
+  --color-graphite-60: rgba(233, 236, 231, 0.66);
+  --color-graphite-40: rgba(233, 236, 231, 0.50);
+  --color-crease: #82A9CE;
+  --color-crease-line: rgba(130, 169, 206, 0.15);
+  --color-crease-line-bold: rgba(130, 169, 206, 0.30);
+  --color-grid-line: rgba(122, 162, 200, 0.07);
+  --color-crane: #F5613C;
+  --color-crane-dark: #C23A1C;
+  --color-sax: #E0B43F;
+  --color-orbit: #212146;
+  --color-orbit-ink: #A6A8DC;
+  --art-accent: var(--color-crane);
+  --panel-line: rgba(255, 255, 255, 0.12);
+  --shadow-card: 0 10px 26px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
 }
 
 /* ── Base resets & global styles ────────────────────────────── */
@@ -109,12 +158,13 @@ body {
 body {
   background-color: var(--color-graph);
   background-image:
-    linear-gradient(rgba(46, 94, 140, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(46, 94, 140, 0.07) 1px, transparent 1px);
+    linear-gradient(var(--color-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid-line) 1px, transparent 1px);
   background-size: 32px 32px;
   background-position: -1px -1px;
   font-family: var(--font-body);
   color: var(--color-graphite);
+  transition: background-color 0.35s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -123,35 +173,93 @@ body {
   background: rgba(232, 74, 39, 0.18);
 }
 
+[data-theme="dark"] ::selection {
+  background: rgba(245, 97, 60, 0.26);
+}
+
 a {
   color: inherit;
   text-decoration: none;
 }
 
-/* ── Skip link ──────────────────────────────────────────────── */
-.skip-link {
+/* ── Header / nav / footer chrome ────────────────────────────────
+   Lifted from the design package's crease.css (already tokenized + themed).
+   The .cp-* classes carry the shared chrome in Base.astro: brand, nav, the
+   theme toggle, the hamburger, the fold-out mobile menu, and the footer. */
+.cp-skip {
   position: absolute;
-  top: -100%;
   left: 8px;
+  top: -100%;
   z-index: 999;
   background: var(--color-graphite);
-  color: #fff;
-  padding: 10px 18px;
+  color: var(--color-graph);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 10px 16px;
   border-radius: 3px;
-  font-family: var(--font-body);
-  font-size: 15px;
-  font-weight: 500;
   outline: 2px solid var(--color-crane);
   outline-offset: 2px;
-  transition: top 0.1s;
+  transition: top 0.12s;
 }
-
-.skip-link:focus {
+.cp-skip:focus {
   top: 8px;
 }
 
-/* ── Nav link active indicator ──────────────────────────────── */
-.nav-link {
+.cp-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--color-crease-line-bold);
+  background-color: var(--color-graph);
+  background-image:
+    linear-gradient(var(--color-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid-line) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: -1px -1px;
+  transition: background-color 0.35s ease;
+}
+/* Desktop header padding matches the shipped ground truth (26/22). */
+.cp-header-in {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 26px 32px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+.cp-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex: none;
+}
+.cp-brand img {
+  display: block;
+  border-radius: 50%;
+  flex: none;
+}
+.cp-brand-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  color: var(--color-graphite);
+}
+.cp-brand-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--color-crease);
+  text-transform: uppercase;
+}
+
+.cp-nav {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+.cp-nav-link {
   position: relative;
   color: var(--color-graphite-60);
   font-family: var(--font-body);
@@ -161,14 +269,293 @@ a {
   border-bottom: 2px solid transparent;
   transition: color 0.15s ease, border-color 0.15s ease;
 }
+.cp-nav-link:hover {
+  color: var(--color-graphite);
+}
+.cp-nav-link[aria-current="page"] {
+  color: var(--color-graphite);
+  border-bottom-color: var(--color-crane);
+}
 
-.nav-link:hover {
+.cp-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: none;
+}
+
+/* Theme toggle — a folded-paper "chip" (the turned corner shows the sheet's
+   other side). Hit area bumped to 44px min so it clears the tap-target gate
+   at every width. */
+.cp-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--color-crease-line-bold);
+  border-radius: 999px;
+  padding: 6px 14px;
+  min-height: 44px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-graphite-60);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.cp-toggle:hover {
+  border-color: var(--color-crease);
+  color: var(--color-graphite);
+}
+.cp-toggle:focus-visible {
+  outline: 2px solid var(--color-crane);
+  outline-offset: 2px;
+}
+.cp-chip {
+  position: relative;
+  width: 17px;
+  height: 17px;
+  border-radius: 3px;
+  border: 1px solid var(--color-crease-line-bold);
+  overflow: hidden;
+  flex: none;
+  background: var(--color-inset);
+}
+.cp-chip::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 9px;
+  height: 9px;
+  background: var(--color-graphite);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+}
+.cp-chip::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 13px;
+  height: 13px;
+  border-bottom: 1px solid var(--color-crease);
+  transform: rotate(45deg);
+  transform-origin: top right;
+  opacity: 0.5;
+}
+[data-theme="dark"] .cp-chip {
+  background: var(--color-graphite);
+}
+[data-theme="dark"] .cp-chip::before {
+  background: var(--color-graph);
+}
+.cp-toggle .cp-toggle-label::after {
+  content: "Dark";
+}
+[data-theme="dark"] .cp-toggle .cp-toggle-label::after {
+  content: "Light";
+}
+
+/* Hamburger — three creases that fold into an X on open */
+.cp-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 11px;
+  background: transparent;
+  border: 1px solid var(--color-crease-line-bold);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.cp-burger:focus-visible {
+  outline: 2px solid var(--color-crane);
+  outline-offset: 2px;
+}
+.cp-burger span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--color-graphite);
+  border-radius: 2px;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+}
+[data-cp-menu-open] .cp-burger span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+[data-cp-menu-open] .cp-burger span:nth-child(2) {
+  opacity: 0;
+}
+[data-cp-menu-open] .cp-burger span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Fold-out mobile menu — a full sheet that unfolds down from the header,
+   pivoting on its top crease (rotateX). Reduced-motion → plain fade. */
+.cp-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 48;
+  display: flex;
+  flex-direction: column;
+  padding: 96px 28px 32px;
+  background-color: var(--color-graph);
+  background-image:
+    linear-gradient(var(--color-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid-line) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: -1px -1px;
+  transform-origin: top center;
+  transform: perspective(1400px) rotateX(-92deg);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.42s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.28s ease, visibility 0s linear 0.42s;
+}
+[data-cp-menu-open] .cp-menu {
+  transform: perspective(1400px) rotateX(0deg);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: transform 0.46s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.26s ease;
+}
+.cp-menu-links {
+  display: flex;
+  flex-direction: column;
+}
+.cp-menu-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 4px;
+  border-top: 1px solid var(--color-crease-line);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  color: var(--color-graphite);
+  min-height: 44px;
+}
+.cp-menu-link:last-child {
+  border-bottom: 1px solid var(--color-crease-line);
+}
+.cp-menu-link .cp-mk {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  background: var(--color-crease-line-bold);
+  transform: rotate(45deg);
+  transition: background 0.15s ease;
+}
+.cp-menu-link[aria-current="page"] .cp-mk,
+.cp-menu-link:active .cp-mk,
+.cp-menu-link:hover .cp-mk {
+  background: var(--color-crane);
+}
+.cp-menu-num {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-graphite-40);
+  letter-spacing: 0.1em;
+}
+.cp-menu-foot {
+  margin-top: auto;
+  padding-top: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.cp-menu-foot a {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-crane);
+  border-bottom: 1px solid var(--color-crane);
+  padding-bottom: 1px;
+}
+
+/* Footer (simple default — overridden by the expanded home footer slot) */
+.cp-foot {
+  border-top: 1px solid var(--color-crease-line-bold);
+}
+.cp-foot-in {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 22px 32px 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--color-graphite-40);
+}
+.cp-foot-in a {
+  color: var(--color-crease);
+  transition: color 0.15s;
+}
+.cp-foot-in a:hover {
   color: var(--color-graphite);
 }
 
-.nav-link[aria-current="page"] {
-  color: var(--color-graphite);
-  border-bottom-color: var(--color-crane);
+/* ── Chrome responsive (real viewport @media) ────────────────── */
+@media (max-width: 1024px) {
+  .cp-header-in,
+  .cp-foot-in {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+  .cp-nav {
+    gap: 24px;
+  }
+}
+@media (max-width: 860px) {
+  /* nav folds into the sheet menu */
+  .cp-nav {
+    display: none;
+  }
+  .cp-burger {
+    display: flex;
+  }
+}
+@media (max-width: 768px) {
+  .cp-header-in,
+  .cp-foot-in {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+  .cp-header-in {
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+}
+@media (max-width: 480px) {
+  .cp-header-in,
+  .cp-foot-in {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .cp-brand-sub {
+    display: none;
+  }
+  .cp-menu-link {
+    font-size: 26px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cp-menu {
+    transition: opacity 0.2s ease, visibility 0s !important;
+    transform: none !important;
+  }
+  [data-cp-menu-open] .cp-menu {
+    transform: none !important;
+  }
 }
 
 /* ── Animations ─────────────────────────────────────────────── */
