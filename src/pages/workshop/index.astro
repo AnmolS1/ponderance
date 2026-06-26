@@ -104,7 +104,7 @@ const tokenLink = (url: string) => (url ? new URL(url).host.replace(/^www\./, ''
           </div>
           <div style="position: relative; border-left: 1px solid rgba(46,94,140,.28); min-height: 360px; background: #eef0ea;">
             {lead.data.cover
-              ? <img src={lead.data.cover} alt={`${lead.data.title} cover`} style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+              ? <img src={lead.data.cover} alt={`${lead.data.title} cover`} style="width: 100%; height: 100%; object-fit: contain; display: block;" />
               : <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#e3e6e0,#e3e6e0 11px,#dde1da 11px,#dde1da 22px);"></div>}
           </div>
         </div>
