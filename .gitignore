@@ -34,3 +34,6 @@ design_handoff_ponderance_dev/
 .vscode
 TASKS.md
 docs/
+
+# private LLC / legal drafts — keep out of version control
+llc-formation/
