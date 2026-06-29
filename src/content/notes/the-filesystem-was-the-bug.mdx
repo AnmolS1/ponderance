@@ -1,0 +1,32 @@
+---
+title: "The filesystem was the bug"
+date: 2026-06-29
+series: "discofin-server"
+seriesOrder: 12
+tags: ["homelab", "engineering"]
+summary: "A null byte in my .env finally made me look at the filesystem under the whole stack: exFAT, fine for six terabytes of write-once movies and quietly hostile to a directory of small databases rewritten every few seconds. Moving just that hot little part off it, without touching the media on the same disk, came down to two traps, a volume rename hiding inside the folder name and Docker's habit of inventing an empty config directory when you point it at the wrong path."
+draft: false
+---
+
+For months the whole homelab ran off one big external drive, and I edited its config the lazy way, over a network share from my Mac. One evening a secret I appended to my `.env` came back as a run of null bytes, seventy-nine `0x00` in a row where a token was supposed to be. The service that read it just failed, quiet and total, in the way that eats a whole night. I went looking for the bug in the container, then in the loader, then in my own fingers, and it wasn't in any of them. It was the floor. The `.env` lived on an exFAT drive that I was writing to over SMB, and that whole arrangement, an external filesystem with a network share stacked on top, mangles small writes on its way through. It had been the wrong place to keep anything that mattered the entire time, and I'd never once thought about it.
+
+Here's the part that took me embarrassingly long to see. That same drive holds about six terabytes of movies and photos, and they are completely fine. They always have been. A movie gets written once, in one long sequential pour, and then read back the same way for years, and a torn write barely has a surface to land on. My config directory is the opposite animal: a dozen little SQLite databases that Sonarr and Radarr and the rest rewrite every few seconds, plus that `.env` I kept poking at by hand, all of it small and hot and constantly rewritten. exFAT has no journaling and no real Unix ownership and is slow and clumsy with lots of small files, and a write-heavy pile of tiny databases is the exact thing it's worst at. Same disk, same day, two kinds of data that wanted opposite things from the ground under them.
+
+So the fix was never "move everything." It was "move the eight gigabytes that care, and leave the six terabytes that don't." Which sounds trivial, copy a folder onto the SSD and point the stack at the new path, and there are two ways that quietly ruins your night.
+
+The first I would never have guessed. Compose names your project after the directory it sits in, and then bolts that name onto the front of every volume it makes. My Immich database lived in a volume called `docker_pgdata` for one reason only: the folder was called `docker`. Move the stack somewhere new and Compose goes looking for `home_pgdata` instead, doesn't find it, shrugs, and makes you a fresh empty one. The containers come up green. The database is "gone." It isn't gone, it's sitting safe in the old volume under the old name, but for one cold minute you do not know that. The fix is a single line that pins the project name so it stops being a function of the folder:
+
+```yaml
+# docker-compose.yml
+# pin the name so volumes aren't named after whatever
+# directory the stack happens to live in
+name: docker
+```
+
+After that the directory can move anywhere and `docker_pgdata` stays exactly `docker_pgdata`.
+
+The second trap is Docker trying to help. Point a bind mount at a path that doesn't exist and it won't error, it'll create the path for you, an empty directory owned by root, and mount that instead. So one fat-fingered path doesn't crash the container. It boots it, healthy, with nothing inside, which looks exactly like every byte of your history just evaporated. The guard is boring and it is the entire game: before you bring anything up, check that every directory you mean to mount is actually there and not empty, and copy instead of move so the originals are still sitting in the old place when you're wrong. Not if. When.
+
+None of this touched the media. The movies are still on the slow exFAT drive where they belong, because hauling them off would buy nothing and there's nowhere to put them anyway. Six terabytes don't fit in the few hundred gigabytes free on the SSD, and they wouldn't be one bit safer if they did. The only thing that ever needed rescuing was the small, busy, fragile part, the part I'd been treating as an afterthought precisely because it was small.
+
+The filesystem under your stuff is a dependency you picked once and then stopped seeing. The move that fixed this wasn't really a move. It was finally asking which of my data had been quietly counting on the ground holding still, and which of it had never cared at all.
