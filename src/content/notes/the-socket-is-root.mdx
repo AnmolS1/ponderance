@@ -1,0 +1,34 @@
+---
+title: "The socket is root"
+date: 2026-06-29
+series: "discofin-server"
+seriesOrder: 13
+tags: ["security", "homelab"]
+summary: "I wanted a button in my phone app that restarts a wedged container, and the obvious way to build it, handing the app the Docker socket, quietly hands a public-facing web app root on the host. The version I trust instead is built out of refusals: a proxy that forwards only the verbs I name, a write key that never travels with the read key, and a short list of containers the control plane is forbidden from ever touching, starting with its own plumbing."
+draft: false
+---
+
+The Docker socket is root. Not "kind of like root," not "root if you're careless." Anything that can talk to `/var/run/docker.sock` can start a container that mounts the whole host filesystem and walk out with everything on it. So when I wanted a little button in my phone app that restarts a wedged service, the obvious move, mount the socket into the thing that serves the button, was the one move I wasn't going to make. Handing a public-facing web app the socket is handing it root on the box it runs on, with extra steps that don't change the ending.
+
+What I actually wanted was narrow: list my containers, show their state, and restart, stop, or start a specific one. What the socket offers is all of it, including "build an image from this Dockerfile" and "exec a shell inside that container." The distance between those two lists is the entire problem, and the fix is to put something in the middle that only forwards the verbs I asked for and silently refuses the rest.
+
+That something is a socket proxy. It holds the real socket and stands a thin HTTP API in front of it, and you switch capabilities on one environment variable at a time. Everything is off by default. You allow `GET` so the app can read state. You allow `POST` so it can act. And then you find out, the way I did, that allowing `POST` doesn't let you restart anything.
+
+That was an afternoon. Reads worked, the container list came back clean, and every restart came back `403`, from the proxy, not from my app, while I sat there certain that `POST=1` was the switch for "allowed to change things." It isn't. The proxy gates each lifecycle verb behind its own flag. `POST` is the master tap, but `restart` and `start` and `stop` each need their own line turned on beside it:
+
+```yaml
+# the socket proxy, env
+- POST=1            # master tap for any write
+- ALLOW_RESTARTS=1  # and each verb, separately
+- ALLOW_START=1
+- ALLOW_STOP=1
+- EXEC=0            # never. this is the shell-in-a-container one
+```
+
+The part that cost me the most time wasn't finding those flags, it was that they only take effect when the proxy container is recreated, not when I saved the file. I kept editing the config and restarting the wrong thing, reading my own new setting back out of a container still running the old one, wondering why the box wouldn't listen.
+
+Past the proxy, there's the access split. Reading state and changing state are not the same risk, so they don't share a key. A read needs one token. A write needs that token plus a second one the app only sends on a call that actually changes something. The whole point is blast radius. The token baked into the widget that polls every few seconds, the one most likely to leak off a phone, can list my containers and do precisely nothing else. The key that can restart a service lives in one place and never travels with the read path.
+
+And the last refusal is the one I'd defend hardest. The app keeps a short list of containers it will not touch no matter what you ask it: the socket proxy, the reverse proxy, the tunnel that exposes any of this to the internet, and the aggregator that serves the control API itself. That's the plumbing. If a bug, or a malformed request, or me at 2am, could tell the control plane to stop the tunnel or bounce the proxy it speaks through, it could saw off the branch it's sitting on, and the way you fix a control plane that just severed its own control path is by walking to the machine. The thing holding the leash doesn't get to drop it.
+
+None of this makes the app trusted, and that's the point. It can see everything and break almost nothing. Every dangerous verb is off until I turn it on by name, the dangerous key never rides along with the cheap one, and the handful of containers that would brick the whole arrangement aren't on the menu at all. The button works. It just can't quietly become a skeleton key, because at no point does anything I expose to the network ever actually hold the socket.
