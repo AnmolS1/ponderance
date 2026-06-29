@@ -4,7 +4,7 @@
 // no_bundle: true, assets binding, etc.). CI always deploys that generated
 // file — this file is never passed directly to `wrangler deploy`.
 {
-  "name": "ponderance-dev",
+  "name": "ponderance-preview",
   "compatibility_date": "2026-06-23",
   "compatibility_flags": ["nodejs_compat"],
   // Adapter sets main, directory, and the ASSETS binding. We own not_found_handling.
