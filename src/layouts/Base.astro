@@ -130,7 +130,9 @@ function isActive(href: string) {
         ))}
       </nav>
       <div class="cp-menu-foot">
-        <a href="mailto:hello@ponderance.dev">hello@ponderance.dev</a>
+        <a href="mailto:anmol@ponderance.dev">anmol@ponderance.dev</a>
+        <a href="/privacy" data-cp-menu-close>Privacy</a>
+        <a href="/terms" data-cp-menu-close>Terms</a>
         <a href="/colophon" data-cp-menu-close>Colophon →</a>
         <button class="cp-toggle" type="button" data-cp-toggle aria-label="Switch to dark theme" aria-pressed="false">
           <span class="cp-chip" aria-hidden="true"></span>
@@ -149,9 +151,13 @@ function isActive(href: string) {
       <footer class="cp-foot">
         <div class="cp-foot-in">
           <span>© 2026 Anmol · ponderance.dev</span>
-          {footerLink && (
-            <a href={footerLink.href}>{footerLink.label}</a>
-          )}
+          <span style="display: inline-flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Terms</a>
+            {footerLink && (
+              <a href={footerLink.href}>{footerLink.label}</a>
+            )}
+          </span>
         </div>
       </footer>
     </slot>
