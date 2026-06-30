@@ -1,0 +1,323 @@
+---
+import Base from '../layouts/Base.astro';
+import { listedServices, type AuthProvider } from '../data/legal-services';
+
+const listed = listedServices();
+
+const AUTH_LABEL: Record<AuthProvider, string> = {
+  none: 'No account needed',
+  local: 'An account (username & password) on the app itself',
+  google: 'Google sign-in (OAuth)',
+  spotify: 'Spotify sign-in (OAuth)',
+  'cloudflare-access': 'Cloudflare Access identity',
+  oidc: 'OpenID Connect sign-in',
+};
+
+// A light, service-specific terms note derived from the registry flags (never the raw TODO notes).
+function termsNote(s: (typeof listed)[number]): string {
+  if (s.publicSharing) return 'Public pieces may be remixed by other users; keep that in mind before you publish.';
+  if (s.audience === 'invited' && s.hosting === 'self-hosted') return 'Shared for invited personal use; the libraries are not yours to redistribute.';
+  if (s.userContent) return 'You keep ownership of what you upload; saving grants us a licence to host and show it (see §03).';
+  return 'Provided free of charge and offered as-is.';
+}
+
+const clauses = [
+  {
+    id: 'the-services',
+    n: '01',
+    title: 'The services',
+    gloss: 'a personal portfolio and a family of small, free apps.',
+    body: `ponderance.dev is a personal portfolio that also hosts a set of small apps and services — some public, some shared only with invited friends and family. Each is described in the Services section. They are provided free of charge and offered as-is.`,
+  },
+  {
+    id: 'eligibility',
+    n: '02',
+    title: 'Eligibility and accounts',
+    gloss: 'be old enough; your sign-in is you.',
+    body: `You must be at least 13 (or the minimum age where you live) to use the services. Some services require signing in — with a third-party provider (such as Google) or with an account on that app; you're responsible for activity under your account and for keeping your credentials secure. We may suspend or close accounts that break these Terms.`,
+  },
+  {
+    id: 'content',
+    n: '03',
+    title: 'Your content is yours',
+    gloss: 'you keep ownership; saving lets us host and show it; public means public.',
+    body: `You keep all rights to the content you create or upload. By saving or uploading to a service, you grant us a non-exclusive, worldwide, royalty-free licence to store, reproduce, and display it solely to operate that service. If you mark something public or unlisted, you also grant the right to show it (including a preview) at its shareable link and, where a service supports it, to let other users remix it. Deleting content ends that licence going forward, apart from copies already cached or already remixed by others.`,
+  },
+  {
+    id: 'acceptable',
+    n: '04',
+    title: 'Acceptable use',
+    gloss: "don't post illegal or abusive content; don't attack the services.",
+    body: `You agree not to upload or share content that is illegal, infringing, hateful, harassing, sexually exploitative, or that depicts or endangers minors; not to impersonate others; and not to attack, overload, scrape, reverse-engineer, or circumvent the limits or security of any service. We may remove content and suspend access for violations, at our discretion.`,
+  },
+  {
+    id: 'specific',
+    n: '05',
+    title: 'Service-specific terms',
+    gloss: 'each toy adds a little fine print of its own.',
+    body: `Some services add their own rules — for example, public Kaleidoscope pieces may be remixed by others; the self-hosted media and photo services (Jellyfin, Immich) are for invited personal use and their libraries aren't yours to redistribute. Those specifics live in the Services section and apply alongside these Terms.`,
+  },
+  {
+    id: 'ip',
+    n: '06',
+    title: 'Intellectual property',
+    gloss: "the site's code and brand are mine; your content is yours.",
+    body: `The site's design, branding, and code are owned by Anmol Saxena (the source is on GitHub under its repository licence). These Terms grant you no rights to the ponderance name or marks beyond using the services normally.`,
+  },
+  {
+    id: 'third-party',
+    n: '07',
+    title: 'Third-party services',
+    gloss: 'Google, Spotify, Cloudflare and the like have their own terms.',
+    body: `The services use third-party infrastructure and sign-in providers (such as Google, Spotify, and Cloudflare); your use of those is also governed by their respective terms and policies.`,
+  },
+  {
+    id: 'disclaimers',
+    n: '08',
+    title: 'Disclaimers',
+    gloss: 'free hobby projects, no guarantees.',
+    body: `The services are provided "as is" and "as available", without warranties of any kind. We don't guarantee they'll be uninterrupted, error-free, or that saved content will be preserved indefinitely — keep your own copies of anything you care about. We may change, suspend, or discontinue any part at any time.`,
+  },
+  {
+    id: 'liability',
+    n: '09',
+    title: 'Limitation of liability',
+    gloss: 'to the extent the law allows, damages are limited.',
+    body: `To the fullest extent permitted by law, Anmol Saxena won't be liable for any indirect, incidental, or consequential damages, or for loss of data or content, arising from your use of the services. Because they're free, total liability is limited to the maximum extent allowed by law.`,
+  },
+  {
+    id: 'termination',
+    n: '10',
+    title: 'Termination',
+    gloss: 'either of us can walk away.',
+    body: `You can stop using the services and delete your account at any time. We may suspend or terminate access if you breach these Terms or to protect the services.`,
+  },
+  {
+    id: 'law',
+    n: '11',
+    title: 'Governing law',
+    gloss: 'Texas law governs.',
+    body: `These Terms are governed by the laws of the State of Texas, USA, without regard to its conflict-of-law rules.`,
+  },
+  {
+    id: 'changes',
+    n: '12',
+    title: 'Changes',
+    gloss: 'updated terms post here with a new date.',
+    body: `We may update these Terms. The "last updated" date will change, and continued use after a change means you accept it.`,
+  },
+  {
+    id: 'contact',
+    n: '13',
+    title: 'Contact',
+    gloss: 'one inbox.',
+    body: `Questions: <a href="mailto:anmol@ponderance.dev">anmol@ponderance.dev</a>.`,
+  },
+];
+
+const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })), { id: 'services', n: '§', label: 'Services' }];
+---
+
+<Base
+  title="Terms of Service — ponderance"
+  description="The short version is in the margin. The binding version is the column. Terms of service for ponderance.dev and the apps it hosts."
+  footerLink={{ href: '/privacy', label: 'Privacy Policy →' }}
+>
+  <style>
+    html { scroll-behavior: smooth; }
+
+    .lg-readbar { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--color-crane); transform: scaleX(0); transform-origin: 0 50%; z-index: 90; }
+    @keyframes lgGrowY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+    @supports (animation-timeline: scroll()) {
+      .lg-readbar { animation: growBar linear both; animation-timeline: scroll(root block); }
+      .lg-ruler-fill { animation: lgGrowY linear both; animation-timeline: scroll(root block); }
+    }
+    @supports not (animation-timeline: scroll()) { .lg-readbar { display: none; } }
+
+    .lg-reveal { opacity: 1; }
+    @supports (animation-timeline: view()) {
+      .lg-reveal { opacity: 0; animation: creaseIn .9s cubic-bezier(.34,1.56,.64,1) both; animation-timeline: view(); animation-range: entry 2% cover 26%; transform-origin: top; }
+    }
+
+    .lg-rosette { animation: rosetteSpin 26s linear infinite; transform-origin: 50% 50%; }
+    .lg-stamp { animation: stampIn .6s both; }
+
+    .clause { position: relative; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 6px; padding: 26px 28px; overflow: hidden; margin: 0 0 18px; display: flex; flex-direction: column; gap: 10px; scroll-margin-top: 80px; }
+    .clause-corner { position: absolute; top: 0; right: 0; width: 34px; height: 34px; background: linear-gradient(135deg, transparent 50%, var(--color-crease-line) 50%); border-left: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold); }
+    .clause-ghost { position: absolute; top: 6px; right: 16px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: var(--color-crease-line); pointer-events: none; }
+    .clause-eye { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-crane); margin: 0; }
+    .clause-title { font-family: var(--font-display); font-weight: 600; font-size: 23px; letter-spacing: -.015em; color: var(--color-graphite); margin: 0; }
+    .clause-prose { font-family: var(--font-body); font-size: 16px; line-height: 1.62; color: var(--color-graphite); margin: 0; }
+    .clause-prose a { color: var(--color-crane); text-decoration: none; border-bottom: 1px solid var(--color-crane); }
+    .clause-gloss { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5; color: var(--color-graphite-60); border-left: 2px solid var(--color-crane); padding: 2px 0 2px 12px; margin: 0; }
+    .clause-gloss b { color: var(--color-crane); font-weight: 600; }
+    .clause:target { box-shadow: inset 3px 0 0 var(--color-crane); }
+
+    .lg-layout { display: block; }
+    .lg-aside { display: none; }
+    .lg-chips { display: none; }
+    .lg-jump { display: block; margin: 0 0 26px; }
+
+    .lg-jump summary { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); cursor: pointer; padding: 12px 14px; border: 1px solid var(--color-crease-line-bold); border-radius: 5px; background: var(--color-graph-card); list-style: none; min-height: 44px; display: flex; align-items: center; }
+    .lg-jump summary::-webkit-details-marker { display: none; }
+    .lg-jump nav { display: flex; flex-direction: column; gap: 2px; margin: 8px 0 0; padding: 6px; border: 1px solid var(--color-crease-line); border-radius: 5px; }
+    .lg-jump nav a { font-family: var(--font-body); font-size: 15px; color: var(--color-graphite-60); text-decoration: none; padding: 10px 12px; border-radius: 4px; min-height: 44px; display: flex; align-items: center; gap: 8px; }
+
+    .lg-idx-num { font-family: var(--font-mono); font-size: 11px; color: var(--color-graphite-40); flex: none; width: 1.6em; }
+    .lg-idx a.is-active, .lg-jump nav a.is-active, .lg-chips a.is-active { color: var(--color-crane); }
+    .lg-idx a.is-active .lg-idx-num { color: var(--color-crane); }
+
+    @media (min-width: 768px) {
+      .lg-jump { display: none; }
+      .lg-chips { display: flex; position: sticky; top: 0; z-index: 50; flex-wrap: wrap; gap: 8px; padding: 12px 0; margin: 0 0 22px; background: var(--color-graph); border-bottom: 1px solid var(--color-crease-line-bold); }
+      .lg-chips a { font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-60); text-decoration: none; padding: 7px 11px; border: 1px solid var(--color-crease-line-bold); border-radius: 999px; }
+      .lg-chips a.is-active { color: var(--color-crane); border-color: var(--color-crane); }
+    }
+
+    @media (min-width: 1024px) {
+      .lg-chips { display: none; }
+      .lg-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; align-items: start; }
+      .lg-aside { display: block; position: sticky; top: 24px; align-self: start; }
+      .lg-railbody { display: grid; grid-template-columns: 3px 1fr; gap: 16px; margin: 20px 0 0; }
+      .lg-ruler { position: relative; width: 3px; background: var(--color-crease-line); border-radius: 2px; }
+      .lg-ruler-fill { position: absolute; inset: 0; background: var(--color-crane); transform: scaleY(0); transform-origin: 0 0; border-radius: 2px; }
+      .lg-idx { display: flex; flex-direction: column; gap: 3px; }
+      .lg-idx a { font-family: var(--font-body); font-size: 14px; color: var(--color-graphite-60); text-decoration: none; padding: 4px 0; display: flex; gap: 6px; }
+
+      .clause { display: grid; grid-template-columns: minmax(0, 1fr) 200px; column-gap: 28px; grid-template-areas: "eye gloss" "title gloss" "prose gloss"; align-items: start; }
+      .clause-eye { grid-area: eye; }
+      .clause-title { grid-area: title; }
+      .clause-prose { grid-area: prose; }
+      .clause-gloss { grid-area: gloss; align-self: start; }
+      .clause-ghost { right: 228px; }
+    }
+
+    @media (max-width: 880px) {
+      .lg-hero { grid-template-columns: 1fr !important; gap: 26px !important; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .lg-readbar, .lg-ruler { display: none !important; }
+      .lg-rosette { animation: none !important; }
+      .lg-reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .lg-stamp { animation: none !important; }
+    }
+
+    @media print {
+      .lg-readbar, .lg-aside, .lg-chips, .lg-jump, .lg-rosette { display: none !important; }
+      .lg-layout { display: block !important; }
+      .clause { display: block !important; break-inside: avoid; border: 1px solid #ccc; background: #fff; color: #000; }
+      .clause-ghost, .clause-corner { display: none !important; }
+      .clause-gloss { border: 0 !important; padding: 0 !important; font-style: italic; font-family: serif; }
+      .clause-gloss::before { content: "In short — "; font-weight: 700; }
+    }
+  </style>
+
+  <div aria-hidden="true" class="lg-readbar"></div>
+
+  <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
+
+    <header style="display: grid; grid-template-columns: 1.45fr .9fr; gap: 36px; align-items: end; padding: 52px 0 36px; border-bottom: 1px solid var(--color-crease-line-bold);" class="lg-hero">
+      <div style="position: relative;">
+        <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); margin: 0 0 16px;">ponderance.dev · legal</p>
+        <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(36px,4.4vw,56px); line-height: 1.04; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; max-width: 16ch;">Terms of Service</h1>
+        <p style="font-family: var(--font-body); font-size: 19px; line-height: 1.6; color: var(--color-graphite-60); max-width: 40rem; margin: 18px 0 0;">The short version is in the margin. The binding version is the column.</p>
+        <span class="lg-stamp" style="display: inline-block; margin: 18px 0 0; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 4px 9px; transform: rotate(-3deg);">updated · 29 Jun 2026</span>
+      </div>
+      <div style="position: relative; border: 1px solid var(--color-crease); border-radius: 3px; overflow: hidden; background: var(--color-graph-card);">
+        <div style="background: var(--color-crease); padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-graph);">title block</span>
+          <span style="font-family: var(--font-mono); font-size: 11px; color: var(--color-graph); opacity: .7;">⌖</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr;">
+          <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">doc no.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">PNDR-TERMS</p></div>
+          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">rev.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2026.06.29</p></div>
+          <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">jurisdiction</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">TX · US</p></div>
+          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">sheet</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2 of 2</p></div>
+          <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">medium</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">woff2 · edge</p></div>
+          <div style="padding: 11px 14px;"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">drawn by</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-crane); margin: 0;">Anmol Saxena</p></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="lg-layout" style="padding: 32px 0 56px;">
+
+      <aside class="lg-aside">
+        <svg class="lg-rosette" viewBox="0 0 100 100" width="86" height="86" aria-hidden="true" fill="none">
+          {[0, 60, 120, 180, 240, 300].map((deg, i) => (
+            <path d="M50 50 C40 32 40 14 50 6 C60 14 60 32 50 50 Z" transform={`rotate(${deg} 50 50)`} stroke={['var(--color-crane)', 'var(--color-sax)', 'var(--color-crease)'][i % 3]} stroke-width="1.5" />
+          ))}
+          <circle cx="50" cy="50" r="3.2" fill="var(--color-crane)" />
+        </svg>
+        <div class="lg-railbody">
+          <div class="lg-ruler"><div aria-hidden="true" class="lg-ruler-fill"></div></div>
+          <nav class="lg-idx" aria-label="Clauses">
+            {indexItems.map((it) => (
+              <a href={`#${it.id}`} data-spy-link={it.id}><span class="lg-idx-num">{it.n}</span>{it.label}</a>
+            ))}
+          </nav>
+        </div>
+      </aside>
+
+      <div>
+        <p style="font-family: var(--font-body); font-size: 17px; line-height: 1.65; color: var(--color-graphite); margin: 0 0 26px; max-width: 64ch;">
+          ponderance.dev and the apps and services it hosts (each a "service", listed in the Services
+          section below) are operated by <strong>Anmol Saxena</strong>, an individual based in Texas, USA
+          ("we", "us", "our"). By using the site or any service, you agree to these Terms. Contact:
+          <a href="mailto:anmol@ponderance.dev" style="color: var(--color-crane); text-decoration: none; border-bottom: 1px solid var(--color-crane);">anmol@ponderance.dev</a>.
+        </p>
+
+        <nav class="lg-chips" aria-label="Clauses">
+          {indexItems.map((it) => (
+            <a href={`#${it.id}`} data-spy-link={it.id}>{it.n === '§' ? '§ Services' : `§${it.n}`}</a>
+          ))}
+        </nav>
+
+        <details class="lg-jump">
+          <summary>Jump to clause ▾</summary>
+          <nav aria-label="Clauses">
+            {indexItems.map((it) => (
+              <a href={`#${it.id}`} data-spy-link={it.id}><span class="lg-idx-num">{it.n}</span>{it.label}</a>
+            ))}
+          </nav>
+        </details>
+
+        {clauses.map((c) => (
+          <section class="clause lg-reveal" id={c.id}>
+            <span class="clause-corner" aria-hidden="true"></span>
+            <span class="clause-ghost" aria-hidden="true">{c.n}</span>
+            <p class="clause-eye">§{c.n}</p>
+            <h2 class="clause-title">{c.title}</h2>
+            <p class="clause-gloss"><b>In short —</b> {c.gloss}</p>
+            <div class="clause-prose" set:html={c.body}></div>
+          </section>
+        ))}
+
+        <section id="services" style="scroll-margin-top: 80px; margin: 34px 0 0;">
+          <div style="display: flex; align-items: baseline; gap: 14px; margin: 0 0 6px;">
+            <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0;">Services</h2>
+            <span style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40);">rendered from the registry</span>
+          </div>
+          <p class="clause-gloss" style="max-width: 64ch; margin: 0 0 22px;"><b>In short —</b> what each service is and any rules specific to it.</p>
+
+          {listed.map((s) => (
+            <div class="lg-reveal" style="position: relative; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 6px; padding: 20px 24px; overflow: hidden; margin: 0 0 14px;">
+              <span class="clause-corner" aria-hidden="true"></span>
+              <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 0 8px;">
+                <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 20px; color: var(--color-graphite); margin: 0;">{s.url ? <a href={s.url} style="color: inherit; text-decoration: none;">{s.name}</a> : s.name}</h3>
+                <span style="font-family: var(--font-mono); font-size: 9.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 2px 7px; transform: rotate(-4deg);">{s.status}</span>
+              </div>
+              <p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.55; color: var(--color-graphite-60); margin: 0 0 12px;">{s.summary}</p>
+              <p style="font-family: var(--font-mono); font-size: 13px; color: var(--color-graphite-60); margin: 0 0 10px;">Sign in: <span style="color: var(--color-graphite);">{AUTH_LABEL[s.auth]}</span></p>
+              <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.55; color: var(--color-graphite); margin: 0; border-left: 2px solid var(--color-crane); padding: 2px 0 2px 12px;">{termsNote(s)}</p>
+            </div>
+          ))}
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll-spy — external file, CSP-clean under script-src 'self' -->
+  <script is:inline type="module" src="/scripts/legal.js"></script>
+</Base>

@@ -1,0 +1,398 @@
+---
+import Base from '../layouts/Base.astro';
+import { listedServices, SUBPROCESSORS, PROVIDER_DISCLOSURES, type AuthProvider } from '../data/legal-services';
+
+const listed = listedServices();
+
+// Sub-processors shown = union across listed services, PLUS resend (always-on contact form).
+const subKeys = [...new Set([...listed.flatMap((s) => s.subprocessors), 'resend'])].filter(
+  (k) => k in SUBPROCESSORS,
+);
+
+// Plain-English sign-in line per auth method (never render the registry's raw TODO notes).
+const AUTH_LABEL: Record<AuthProvider, string> = {
+  none: 'No account needed',
+  local: 'An account (username & password) on the app itself',
+  google: 'Google sign-in (OAuth)',
+  spotify: 'Spotify sign-in (OAuth)',
+  'cloudflare-access': 'Cloudflare Access identity',
+  oidc: 'OpenID Connect sign-in',
+};
+
+// Numbered common clauses. `body` is HTML (bold spans). `id` is the anchor + scroll-spy key.
+const clauses = [
+  {
+    id: 'collect',
+    n: '01',
+    title: 'What we collect',
+    gloss: 'only what each toy needs; the per-service list below is the specifics.',
+    body: `Across the services we may collect: <strong>identity</strong> when you sign in (for a service that uses a third-party login like Google or Spotify, the provider shares basic profile fields such as your name, email, profile picture, and an account identifier — never a password; for a service with its own accounts, the username and password you set, stored hashed by that app); <strong>content you create or upload</strong> (for example artwork you save, or photos you add), kept on your device until you choose to save it; <strong>contact-form submissions</strong> (the name, email, and message you send, delivered to us by email through Resend); and <strong>technical metadata</strong> — your IP address and basic request data — for security, abuse-prevention, and rate-limiting, plus a Cloudflare Turnstile bot-check where a service uses one. Site traffic is measured with Cloudflare Web Analytics, which is cookieless. The only cookie we set is a strictly-necessary one that keeps you signed in; there are no advertising or cross-site tracking cookies. <strong>See the Services section for exactly what each service collects.</strong>`,
+  },
+  {
+    id: 'use',
+    n: '02',
+    title: 'How we use it',
+    gloss: 'to run the services and keep bots out. No ads, no selling, no AI training.',
+    body: `We use this information to authenticate you, to store and show the content you save, to display anything you choose to make public (and at its shareable link), to reply to inquiries you send, and to keep the services working and safe — preventing abuse and spam, enforcing limits, debugging, and protecting against fraud or attack. We do not sell your personal information or use it for advertising. <strong>Where a service uses a third-party sign-in, our use of the data that provider shares with us follows that provider's developer and data policies</strong> — set out for each live provider in the Services section below (today: the Google API Services User Data Policy, including its Limited Use requirements; and, when the Audio Visualizer goes live, the Spotify Developer Policy).`,
+  },
+  {
+    id: 'share',
+    n: '03',
+    title: 'Who sees it',
+    gloss: 'a few infrastructure providers, plus anyone you publish to on purpose.',
+    body: `We rely on a small set of processors to run the services; the ones in use are listed (with their role and privacy policy) in the Services section — today Google (sign-in), Cloudflare (hosting, database, file storage, CDN/tunnel, bot-protection, and analytics), and Resend (contact-form email), with Spotify joining when the Audio Visualizer launches. They handle data on our behalf under their own terms. We may disclose information if required by law. When you mark something public, that content — along with the display name and avatar on your profile — is visible to anyone by design.`,
+  },
+  {
+    id: 'rights',
+    n: '04',
+    title: 'Your choices and rights',
+    gloss: 'change or delete your content, or your whole account, whenever you like.',
+    body: `You can change the visibility of, or delete, content you've saved at any time, and you can delete your account for a given service, which removes your profile and the content tied to it there. Depending on where you live (for example the EEA, the UK, or California), you may have rights to access, correct, export, or erase your personal data and to object to certain processing. To exercise any of these, email <a href="mailto:anmol@ponderance.dev">anmol@ponderance.dev</a>.`,
+  },
+  {
+    id: 'retention',
+    n: '05',
+    title: 'Data retention',
+    gloss: 'kept while your account exists, gone shortly after you delete it.',
+    body: `Your account and saved content are kept until you delete them or close your account for that service. After deletion they're removed from active storage promptly, though cached or backup copies may linger briefly. Contact-form emails are kept only as long as needed to handle your inquiry. Security logs are short-lived.`,
+  },
+  {
+    id: 'children',
+    n: '06',
+    title: 'Children',
+    gloss: 'not for young kids.',
+    body: `The services aren't directed to children under 13 (or the minimum age in your country, such as 16 in parts of the EEA), and they shouldn't use them or sign in.`,
+  },
+  {
+    id: 'security',
+    n: '07',
+    title: 'Security',
+    gloss: 'encrypted in transit; passwords are never ours to lose when you sign in with a provider; still, nothing is bulletproof.',
+    body: `For services with third-party sign-in, a provider handles your login and we never see or store a password; for services with their own accounts, passwords are stored hashed by that app. Sessions can be revoked. Traffic is encrypted in transit and served through Cloudflare's edge. No method of storage or transmission is completely secure, so we can't promise absolute security.`,
+  },
+  {
+    id: 'processing',
+    n: '08',
+    title: "Where it's processed",
+    gloss: 'served globally, so processed abroad.',
+    body: `The services run on Cloudflare's global network (and, for self-hosted services, on our own hardware reached through it), so your information may be processed in countries other than your own.`,
+  },
+  {
+    id: 'changes',
+    n: '09',
+    title: 'Changes',
+    gloss: 'if this changes, the date at the top changes too.',
+    body: `We may update this policy. The "last updated" date will change, and significant changes will be noted on the page.`,
+  },
+  {
+    id: 'contact',
+    n: '10',
+    title: 'Contact',
+    gloss: 'one inbox.',
+    body: `Questions or requests: <a href="mailto:anmol@ponderance.dev">anmol@ponderance.dev</a>.`,
+  },
+];
+
+// Index entries = the numbered clauses + the Services appendix.
+const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })), { id: 'services', n: '§', label: 'Services' }];
+---
+
+<Base
+  title="Privacy Policy — ponderance"
+  description="What the toys keep, why, and how to make them forget. The privacy policy for ponderance.dev and the apps it hosts."
+  footerLink={{ href: '/terms', label: 'Terms of Service →' }}
+>
+  <style>
+    html { scroll-behavior: smooth; }
+
+    /* Reading-progress fold-line. Top hairline (tablet/mobile); a vertical ruler in the
+       desktop rail. Both scroll-driven, CSS-only, hidden where unsupported. */
+    .lg-readbar { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--color-crane); transform: scaleX(0); transform-origin: 0 50%; z-index: 90; }
+    @keyframes lgGrowY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+    @supports (animation-timeline: scroll()) {
+      .lg-readbar { animation: growBar linear both; animation-timeline: scroll(root block); }
+      .lg-ruler-fill { animation: lgGrowY linear both; animation-timeline: scroll(root block); }
+    }
+    @supports not (animation-timeline: scroll()) { .lg-readbar { display: none; } }
+
+    /* Clause + service-card unfold on scroll — gentle rotateX, CSS-only, gated. */
+    .lg-reveal { opacity: 1; }
+    @supports (animation-timeline: view()) {
+      .lg-reveal { opacity: 0; animation: creaseIn .9s cubic-bezier(.34,1.56,.64,1) both; animation-timeline: view(); animation-range: entry 2% cover 26%; transform-origin: top; }
+    }
+
+    /* Rosette mark — one slow turn; frozen automatically under reduced-motion. */
+    .lg-rosette { animation: rosetteSpin 26s linear infinite; transform-origin: 50% 50%; }
+
+    /* Revision stamp */
+    .lg-stamp { animation: stampIn .6s both; }
+
+    /* ── Clause cards ───────────────────────────────────────────────────────── */
+    .clause { position: relative; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 6px; padding: 26px 28px; overflow: hidden; margin: 0 0 18px; display: flex; flex-direction: column; gap: 10px; scroll-margin-top: 80px; }
+    .clause-corner { position: absolute; top: 0; right: 0; width: 34px; height: 34px; background: linear-gradient(135deg, transparent 50%, var(--color-crease-line) 50%); border-left: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold); }
+    .clause-ghost { position: absolute; top: 6px; right: 16px; font-family: var(--font-display); font-weight: 700; font-size: 74px; line-height: 1; color: var(--color-crease-line); pointer-events: none; }
+    .clause-eye { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-crane); margin: 0; }
+    .clause-title { font-family: var(--font-display); font-weight: 600; font-size: 23px; letter-spacing: -.015em; color: var(--color-graphite); margin: 0; }
+    .clause-prose { font-family: var(--font-body); font-size: 16px; line-height: 1.62; color: var(--color-graphite); margin: 0; }
+    .clause-prose a { color: var(--color-crane); text-decoration: none; border-bottom: 1px solid var(--color-crane); }
+    /* Plain-English margin gloss — crane-accented, 2px crane left-border. */
+    .clause-gloss { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5; color: var(--color-graphite-60); border-left: 2px solid var(--color-crane); padding: 2px 0 2px 12px; margin: 0; }
+    .clause-gloss b { color: var(--color-crane); font-weight: 600; }
+    /* Deep-link flash */
+    .clause:target { box-shadow: inset 3px 0 0 var(--color-crane); }
+
+    /* ── Layout: desktop two-column rail + reading column ───────────────────── */
+    .lg-layout { display: block; }
+    .lg-aside { display: none; }
+    .lg-chips { display: none; }
+    .lg-jump { display: block; margin: 0 0 26px; }
+
+    .lg-jump summary { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); cursor: pointer; padding: 12px 14px; border: 1px solid var(--color-crease-line-bold); border-radius: 5px; background: var(--color-graph-card); list-style: none; min-height: 44px; display: flex; align-items: center; }
+    .lg-jump summary::-webkit-details-marker { display: none; }
+    .lg-jump nav { display: flex; flex-direction: column; gap: 2px; margin: 8px 0 0; padding: 6px; border: 1px solid var(--color-crease-line); border-radius: 5px; }
+    .lg-jump nav a { font-family: var(--font-body); font-size: 15px; color: var(--color-graphite-60); text-decoration: none; padding: 10px 12px; border-radius: 4px; min-height: 44px; display: flex; align-items: center; gap: 8px; }
+
+    .lg-idx-num { font-family: var(--font-mono); font-size: 11px; color: var(--color-graphite-40); flex: none; width: 1.6em; }
+    .lg-idx a.is-active, .lg-jump nav a.is-active, .lg-chips a.is-active { color: var(--color-crane); }
+    .lg-idx a.is-active .lg-idx-num { color: var(--color-crane); }
+
+    @media (min-width: 768px) {
+      .lg-jump { display: none; }
+      .lg-chips { display: flex; position: sticky; top: 0; z-index: 50; flex-wrap: wrap; gap: 8px; padding: 12px 0; margin: 0 0 22px; background: var(--color-graph); border-bottom: 1px solid var(--color-crease-line-bold); }
+      .lg-chips a { font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-60); text-decoration: none; padding: 7px 11px; border: 1px solid var(--color-crease-line-bold); border-radius: 999px; }
+      .lg-chips a.is-active { color: var(--color-crane); border-color: var(--color-crane); }
+    }
+
+    @media (min-width: 1024px) {
+      .lg-chips { display: none; }
+      .lg-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; align-items: start; }
+      .lg-aside { display: block; position: sticky; top: 24px; align-self: start; }
+      .lg-railbody { display: grid; grid-template-columns: 3px 1fr; gap: 16px; margin: 20px 0 0; }
+      .lg-ruler { position: relative; width: 3px; background: var(--color-crease-line); border-radius: 2px; }
+      .lg-ruler-fill { position: absolute; inset: 0; background: var(--color-crane); transform: scaleY(0); transform-origin: 0 0; border-radius: 2px; }
+      .lg-idx { display: flex; flex-direction: column; gap: 3px; }
+      .lg-idx a { font-family: var(--font-body); font-size: 14px; color: var(--color-graphite-60); text-decoration: none; padding: 4px 0; display: flex; gap: 6px; }
+
+      /* gloss lifts into the right gutter on desktop */
+      .clause { display: grid; grid-template-columns: minmax(0, 1fr) 200px; column-gap: 28px; grid-template-areas: "eye gloss" "title gloss" "prose gloss"; align-items: start; }
+      .clause-eye { grid-area: eye; }
+      .clause-title { grid-area: title; }
+      .clause-prose { grid-area: prose; }
+      .clause-gloss { grid-area: gloss; align-self: start; }
+      .clause-ghost { right: 228px; }
+    }
+
+    /* Hero + panel reflow on narrow screens. */
+    @media (max-width: 880px) {
+      .lg-hero { grid-template-columns: 1fr !important; gap: 26px !important; }
+    }
+    @media (max-width: 600px) {
+      .lg-knows-grid { grid-template-columns: 1fr 1fr !important; }
+    }
+
+    /* Motion is opt-out everywhere. */
+    @media (prefers-reduced-motion: reduce) {
+      .lg-readbar, .lg-ruler { display: none !important; }
+      .lg-rosette { animation: none !important; }
+      .lg-reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .lg-stamp { animation: none !important; }
+    }
+
+    /* Print: drop chrome, fold the gloss inline as an italic lead, ink-on-white. */
+    @media print {
+      .lg-readbar, .lg-aside, .lg-chips, .lg-jump, .lg-rosette, .lg-knows { display: none !important; }
+      .lg-layout { display: block !important; }
+      .clause { display: block !important; break-inside: avoid; border: 1px solid #ccc; background: #fff; color: #000; }
+      .clause-ghost, .clause-corner { display: none !important; }
+      .clause-gloss { border: 0 !important; padding: 0 !important; font-style: italic; font-family: serif; }
+      .clause-gloss::before { content: "In short — "; font-weight: 700; }
+    }
+  </style>
+
+  <div aria-hidden="true" class="lg-readbar"></div>
+
+  <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
+
+    <!-- ── Title block + heading ─────────────────────────────────────────── -->
+    <header style="display: grid; grid-template-columns: 1.45fr .9fr; gap: 36px; align-items: end; padding: 52px 0 36px; border-bottom: 1px solid var(--color-crease-line-bold);" class="lg-hero">
+      <div style="position: relative;">
+        <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); margin: 0 0 16px;">ponderance.dev · legal</p>
+        <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(36px,4.4vw,56px); line-height: 1.04; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; max-width: 16ch;">Privacy Policy</h1>
+        <p style="font-family: var(--font-body); font-size: 19px; line-height: 1.6; color: var(--color-graphite-60); max-width: 40rem; margin: 18px 0 0;">What the toys keep, why, and how to make them forget.</p>
+        <span class="lg-stamp" style="display: inline-block; margin: 18px 0 0; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 4px 9px; transform: rotate(-3deg);">updated · 29 Jun 2026</span>
+      </div>
+      <!-- Engineering title block -->
+      <div style="position: relative; border: 1px solid var(--color-crease); border-radius: 3px; overflow: hidden; background: var(--color-graph-card);">
+        <div style="background: var(--color-crease); padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-graph);">title block</span>
+          <span style="font-family: var(--font-mono); font-size: 11px; color: var(--color-graph); opacity: .7;">⌖</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr;">
+          <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">doc no.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">PNDR-PRIV</p></div>
+          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">rev.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2026.06.29</p></div>
+          <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">jurisdiction</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">TX · US</p></div>
+          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">sheet</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">1 of 2</p></div>
+          <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">medium</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">woff2 · edge</p></div>
+          <div style="padding: 11px 14px;"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">drawn by</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-crane); margin: 0;">Anmol Saxena</p></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="lg-layout" style="padding: 32px 0 56px;">
+
+      <!-- ── Desktop rail: rosette + progress ruler + clause index ────────── -->
+      <aside class="lg-aside">
+        <svg class="lg-rosette" viewBox="0 0 100 100" width="86" height="86" aria-hidden="true" fill="none">
+          {[0, 60, 120, 180, 240, 300].map((deg, i) => (
+            <path d="M50 50 C40 32 40 14 50 6 C60 14 60 32 50 50 Z" transform={`rotate(${deg} 50 50)`} stroke={['var(--color-crane)', 'var(--color-sax)', 'var(--color-crease)'][i % 3]} stroke-width="1.5" />
+          ))}
+          <circle cx="50" cy="50" r="3.2" fill="var(--color-crane)" />
+        </svg>
+        <div class="lg-railbody">
+          <div class="lg-ruler"><div aria-hidden="true" class="lg-ruler-fill"></div></div>
+          <nav class="lg-idx" aria-label="Clauses">
+            {indexItems.map((it) => (
+              <a href={`#${it.id}`} data-spy-link={it.id}><span class="lg-idx-num">{it.n}</span>{it.label}</a>
+            ))}
+          </nav>
+        </div>
+      </aside>
+
+      <!-- ── Reading column ───────────────────────────────────────────────── -->
+      <div>
+        <!-- intro (not a numbered clause) -->
+        <p style="font-family: var(--font-body); font-size: 17px; line-height: 1.65; color: var(--color-graphite); margin: 0 0 26px; max-width: 64ch;">
+          ponderance.dev and the apps and services it hosts (each a "service", listed in the Services
+          section below) are operated by <strong>Anmol Saxena</strong>, an individual based in Texas, USA
+          ("we", "us", "our"). This policy covers the portfolio's contact form and every listed service.
+          Exactly what each one collects is spelled out in the Services section; the clauses below are the
+          rules common to all of them. Questions or privacy requests:
+          <a href="mailto:anmol@ponderance.dev" style="color: var(--color-crane); text-decoration: none; border-bottom: 1px solid var(--color-crane);">anmol@ponderance.dev</a>.
+        </p>
+
+        <!-- tablet chips -->
+        <nav class="lg-chips" aria-label="Clauses">
+          {indexItems.map((it) => (
+            <a href={`#${it.id}`} data-spy-link={it.id}>{it.n === '§' ? '§ Services' : `§${it.n}`}</a>
+          ))}
+        </nav>
+
+        <!-- mobile jump menu -->
+        <details class="lg-jump">
+          <summary>Jump to clause ▾</summary>
+          <nav aria-label="Clauses">
+            {indexItems.map((it) => (
+              <a href={`#${it.id}`} data-spy-link={it.id}><span class="lg-idx-num">{it.n}</span>{it.label}</a>
+            ))}
+          </nav>
+        </details>
+
+        <!-- numbered clauses -->
+        {clauses.map((c) => (
+          <section class="clause lg-reveal" id={c.id}>
+            <span class="clause-corner" aria-hidden="true"></span>
+            <span class="clause-ghost" aria-hidden="true">{c.n}</span>
+            <p class="clause-eye">§{c.n}</p>
+            <h2 class="clause-title">{c.title}</h2>
+            <p class="clause-gloss"><b>In short —</b> {c.gloss}</p>
+            <div class="clause-prose" set:html={c.body}></div>
+          </section>
+        ))}
+
+        <!-- ── Services appendix (registry-driven) ───────────────────────── -->
+        <section id="services" style="scroll-margin-top: 80px; margin: 34px 0 0;">
+          <div style="display: flex; align-items: baseline; gap: 14px; margin: 0 0 6px;">
+            <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 28px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0;">Services</h2>
+            <span style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-40);">rendered from the registry</span>
+          </div>
+          <p class="clause-gloss" style="max-width: 64ch; margin: 0 0 22px;"><b>In short —</b> the per-service detail: what each one is, how you sign in, and what it keeps.</p>
+
+          {listed.map((s) => (
+            <div class="lg-reveal" style="position: relative; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 6px; padding: 22px 24px; overflow: hidden; margin: 0 0 16px;">
+              <span class="clause-corner" aria-hidden="true"></span>
+              <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 0 8px;">
+                <h3 style="font-family: var(--font-display); font-weight: 600; font-size: 20px; color: var(--color-graphite); margin: 0;">{s.url ? <a href={s.url} style="color: inherit; text-decoration: none;">{s.name}</a> : s.name}</h3>
+                <span style="font-family: var(--font-mono); font-size: 9.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 2px 7px; transform: rotate(-4deg);">{s.status}</span>
+              </div>
+              <p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.55; color: var(--color-graphite-60); margin: 0 0 14px;">{s.summary}</p>
+
+              <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 4px;">how you sign in</p>
+              <p style="font-family: var(--font-body); font-size: 15px; color: var(--color-graphite); margin: 0 0 14px;">{AUTH_LABEL[s.auth]}</p>
+
+              <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 4px;">what it collects</p>
+              <ul style="font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: var(--color-graphite); margin: 0 0 14px; padding: 0 0 0 18px;">
+                {s.collects.map((c) => <li style="margin: 0 0 4px;">{c}</li>)}
+              </ul>
+
+              <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 4px;">who processes it</p>
+              <p style="font-family: var(--font-body); font-size: 15px; color: var(--color-graphite); margin: 0 0 4px;">
+                {s.subprocessors.filter((k) => k in SUBPROCESSORS).map((k, i) => (
+                  <>{i > 0 ? ', ' : ''}<a href={SUBPROCESSORS[k].privacy} style="color: var(--color-crane); text-decoration: none; border-bottom: 1px solid var(--color-crane);">{SUBPROCESSORS[k].name}</a></>
+                ))}
+              </p>
+
+              {s.hosting === 'self-hosted' && (
+                <p style="font-family: var(--font-body); font-size: 14px; line-height: 1.5; color: var(--color-graphite-60); margin: 12px 0 0;">
+                  Runs on Anmol's own hardware; Cloudflare only carries traffic (tunnel / CDN).
+                  {s.id === 'immich' ? ' Face-grouping and search features are computed locally on that server and are never sent to any third party.' : ''}
+                </p>
+              )}
+
+              {(PROVIDER_DISCLOSURES[s.auth]) && (
+                <div style="margin: 14px 0 0; border-left: 2px solid var(--color-crane); padding: 4px 0 4px 14px;">
+                  <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-crane); margin: 0 0 5px;">{PROVIDER_DISCLOSURES[s.auth]!.label}</p>
+                  <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.55; color: var(--color-graphite); margin: 0;">{PROVIDER_DISCLOSURES[s.auth]!.body} <a href={PROVIDER_DISCLOSURES[s.auth]!.link} style="color: var(--color-crane); text-decoration: none; border-bottom: 1px solid var(--color-crane);">Read the policy →</a></p>
+                </div>
+              )}
+            </div>
+          ))}
+
+          <!-- sub-processor summary (union of listed services + resend) -->
+          <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 24px 0 10px;">all sub-processors</p>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            {subKeys.map((k) => (
+              <div style="background: var(--color-graph-card); border: 1px solid var(--color-crease-line); border-radius: 5px; padding: 12px 16px;">
+                <p style="font-family: var(--font-body); font-weight: 600; font-size: 15px; color: var(--color-graphite); margin: 0 0 2px;">
+                  <a href={SUBPROCESSORS[k].privacy} style="color: var(--color-graphite); text-decoration: none;">{SUBPROCESSORS[k].name}</a>
+                </p>
+                <p style="font-family: var(--font-body); font-size: 14px; line-height: 1.5; color: var(--color-graphite-60); margin: 0;">
+                  {SUBPROCESSORS[k].role}. <a href={SUBPROCESSORS[k].privacy} style="color: var(--color-crane); text-decoration: none; border-bottom: 1px solid var(--color-crane);">Privacy policy</a>{SUBPROCESSORS[k].dataPolicy ? <> · <a href={SUBPROCESSORS[k].dataPolicy} style="color: var(--color-crane); text-decoration: none; border-bottom: 1px solid var(--color-crane);">Data policy</a></> : ''}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <!-- ── "What this page knows about you" — measured locally, never sent ─ -->
+        <section class="lg-knows" aria-label="What this page knows about you" style="margin: 38px 0 0;">
+          <div style="position: relative; background: var(--color-orbit); border-radius: 6px; overflow: hidden; padding: 28px 30px 30px;">
+            <h2 style="font-family: var(--font-display); font-weight: 600; font-size: 22px; letter-spacing: -.015em; color: var(--panel-ink); margin: 0 0 6px;">What this page knows about you</h2>
+            <p style="font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: var(--panel-ink-60); margin: 0 0 22px; max-width: 44rem;">Computed in your browser, right now, and sent nowhere — the policy, demonstrated rather than asserted.</p>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--panel-line); border: 1px solid var(--panel-line); border-radius: 4px; overflow: hidden;" class="lg-knows-grid">
+              <div style="background: var(--color-orbit); padding: 18px 20px;">
+                <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--panel-muted); margin: 0 0 10px;">cookies this page set</p>
+                <p id="legal-cookies" style="font-family: var(--font-mono); font-weight: 600; font-size: 28px; color: var(--color-sax); margin: 0; line-height: 1;">0</p>
+              </div>
+              <div style="background: var(--color-orbit); padding: 18px 20px;">
+                <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--panel-muted); margin: 0 0 10px;">trackers</p>
+                <p id="legal-trackers" style="font-family: var(--font-mono); font-weight: 600; font-size: 28px; color: var(--color-sax); margin: 0; line-height: 1;">0</p>
+              </div>
+              <div style="background: var(--color-orbit); padding: 18px 20px;">
+                <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--panel-muted); margin: 0 0 10px;">analytics</p>
+                <p id="legal-analytics" style="font-family: var(--font-mono); font-weight: 600; font-size: 17px; color: var(--panel-ink); margin: 0; line-height: 1.2;">cookieless</p>
+              </div>
+              <div style="background: var(--color-orbit); padding: 18px 20px;">
+                <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--panel-muted); margin: 0 0 10px;">your approx. region</p>
+                <p id="legal-region" style="font-family: var(--font-mono); font-weight: 600; font-size: 15px; color: var(--panel-ink); margin: 0; line-height: 1.2;">—</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll-spy + live panel — external file, CSP-clean under script-src 'self' -->
+  <script is:inline type="module" src="/scripts/legal.js"></script>
+</Base>
