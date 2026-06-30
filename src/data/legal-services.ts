@@ -90,14 +90,14 @@ export const SERVICES: LegalService[] = [
     subprocessors: ['cloudflare'],
     userContent: true,
     notes:
-      'TODO confirm before publish. Sensitive: face recognition + photo location. All ML runs locally on Anmol’s server and is not sent to any third party; Cloudflare only carries traffic.',
+      'Sensitive: face recognition + photo location. All ML runs locally on Anmol’s server and is not sent to any third party; Cloudflare only carries traffic.',
   },
   {
     id: 'ntfy',
     name: 'ntfy',
     url: 'https://ntfy.ponderance.dev',
     status: 'live',
-    audience: 'invited',
+    audience: 'household',
     hosting: 'self-hosted',
     summary: 'A lightweight push-notification service.',
     auth: 'local',
@@ -108,7 +108,7 @@ export const SERVICES: LegalService[] = [
     ],
     subprocessors: ['cloudflare'],
     notes:
-      'TODO confirm what ntfy actually stores and whether topics are auth’d or open; if it ends up personal-only, set audience to "household" to drop it from the public pages.',
+      'ntfy is personal-only, audience is "household" to drop it from the public pages.',
   },
 
   // ── Coming online (auth being added) — kept here so launch is just `status: 'live'`. ──
@@ -126,7 +126,7 @@ export const SERVICES: LegalService[] = [
       'your currently-playing track and playback position (read in real time, not stored)',
     ],
     subprocessors: ['spotify', 'cloudflare'],
-    notes: 'TODO confirm scopes + whether anything is persisted before going live.',
+    notes: 'no secure scopes needed',
   },
   {
     id: 'sister-isles',
@@ -147,11 +147,11 @@ export const SERVICES: LegalService[] = [
     audience: 'public',
     hosting: 'self-hosted',
     summary: 'A web service that repairs broken 3D-print STL meshes.',
-    auth: 'oidc', // TODO confirm provider (likely Google) when sign-in is added
+    auth: 'google',
     collects: ['account/identity once sign-in is added', 'STL files you upload and the repair-job metadata'],
     subprocessors: ['cloudflare'],
     userContent: true,
-    notes: 'TODO confirm auth provider + storage (uses an S3-compatible store + Postgres job queue).',
+    notes: 'uses an S3-compatible store + Postgres job queue.',
   },
   {
     id: 'clowder',
