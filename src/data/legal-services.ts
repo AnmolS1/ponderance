@@ -17,6 +17,8 @@ export type AuthProvider =
   | 'oidc'; // generic OpenID Connect
 
 export type Audience = 'public' | 'invited' | 'household';
+// 'device' = a native client app that runs entirely on the user's device and has no
+// backend of ours; it talks only to a server the user themselves runs.
 export type Status = 'live' | 'beta' | 'planned';
 
 export interface LegalService {
@@ -25,7 +27,7 @@ export interface LegalService {
   url?: string;
   status: Status;
   audience: Audience;
-  hosting: 'cloudflare' | 'self-hosted' | 'desktop';
+  hosting: 'cloudflare' | 'self-hosted' | 'desktop' | 'device';
   /** One plain-English line for the per-service block heading. */
   summary: string;
   auth: AuthProvider;
@@ -78,6 +80,44 @@ export const SERVICES: LegalService[] = [
     subprocessors: ['google', 'gemini', 'apple', 'lemonsqueezy', 'cloudflare'],
     notes:
       'Operated by Anmol Saxena (sole operator, pre-LLC). Web app on Cloudflare plus a native iOS app. Calendar images go to Gemini only for OCR and are deleted within 24h; extracted event content is never stored server-side. Sign-in via Google and Apple. Payments via Lemon Squeezy (web) and Apple In-App Purchase (iOS).',
+  },
+  {
+    id: 'homelab-glance',
+    name: 'Homelab Glance',
+    url: 'https://github.com/AnmolS1/homelab-glance',
+    status: 'beta',
+    audience: 'public',
+    hosting: 'device',
+    summary:
+      'An iOS & macOS dashboard for the open-source “glance” aggregator you run on your own server — cards, widgets, Live Activities, and container start/stop/restart. No account with us.',
+    auth: 'none',
+    collects: [
+      'Nothing reaches us — Homelab Glance has no server of ours, no analytics, and no tracking.',
+      'On your device only: the server address and access/control tokens you enter (kept in the system Keychain) and your card/widget layout, shared with the app’s widgets through a private App Group.',
+      'The app connects only to the glance server you run; that traffic goes straight to your own machine.',
+    ],
+    subprocessors: [],
+    notes:
+      'Native client app; no backend of ours. The aggregator it talks to is open-source and self-hosted by you. Ships with a demo mode so every screen works with sample data and never needs a server.',
+  },
+  {
+    id: 'foldlight',
+    name: 'FoldLight',
+    url: 'https://github.com/AnmolS1/FoldLight',
+    status: 'beta',
+    audience: 'public',
+    hosting: 'device',
+    summary:
+      'A widget-first iOS & macOS app that controls the lights on your own Home Assistant server. No account with us.',
+    auth: 'none',
+    collects: [
+      'Nothing reaches us — FoldLight has no server of ours, no analytics, and no tracking.',
+      'On your device only: the Home Assistant address and access token you enter (token kept in the system Keychain) and your widget/preset preferences, shared with the app’s widgets through a private App Group.',
+      'The app connects only to the Home Assistant server you point it at; that traffic goes straight to your own machine.',
+    ],
+    subprocessors: [],
+    notes:
+      'Native client app; no backend of ours. Ships with a demo mode so every screen and widget works with sample lights and never needs a server.',
   },
   {
     id: 'jellyfin',
