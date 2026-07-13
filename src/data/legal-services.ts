@@ -57,6 +57,29 @@ export const SERVICES: LegalService[] = [
     publicSharing: true,
   },
   {
+    id: 'calque',
+    name: 'Calque',
+    url: 'https://calque.ponderance.dev',
+    status: 'live',
+    audience: 'public',
+    hosting: 'cloudflare',
+    summary: 'Turn a photo of a paper calendar into device calendar events — on the web and as an iOS app.',
+    // Two sign-in providers (Google + Apple); the registry's `auth` is single-valued, so it is set to
+    // 'google' to render the required Google Limited-Use disclosure, and Apple sign-in is disclosed in
+    // `collects` and in the `apple` sub-processor. `userContent` is intentionally left unset: extracted
+    // events are never stored on our servers, so the "licence to host your content" terms note must not apply.
+    auth: 'google',
+    collects: [
+      'account: your Google or Apple sign-in — the provider shares basic profile fields such as name, email, and an account identifier; no password reaches us',
+      'Plus-tier scans: the calendar image you upload is sent to Google Gemini for text recognition (OCR) and is deleted from our servers within 24 hours',
+      'extracted events (titles, dates, and times) are never stored on our servers — they live only on your device or in your browser',
+      'payments: subscription billing is handled by Lemon Squeezy on the web and by Apple In-App Purchase on iOS; we receive only the confirmation and status needed to unlock Plus, never your card details',
+    ],
+    subprocessors: ['google', 'gemini', 'apple', 'lemonsqueezy', 'cloudflare'],
+    notes:
+      'Operated by Anmol Saxena (sole operator, pre-LLC). Web app on Cloudflare plus a native iOS app. Calendar images go to Gemini only for OCR and are deleted within 24h; extracted event content is never stored server-side. Sign-in via Google and Apple. Payments via Lemon Squeezy (web) and Apple In-App Purchase (iOS).',
+  },
+  {
     id: 'jellyfin',
     name: 'Jellyfin',
     url: 'https://jellyfin.ponderance.dev',
@@ -214,6 +237,25 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
     name: 'Resend',
     role: 'Delivers contact-form email',
     privacy: 'https://resend.com/legal/privacy-policy',
+  },
+  gemini: {
+    id: 'gemini',
+    name: 'Google (Gemini API)',
+    role: 'Text recognition (OCR) on Plus-tier calendar images for Calque; images are deleted within 24 hours and are not used to train models on the paid API',
+    privacy: 'https://policies.google.com/privacy',
+    dataPolicy: 'https://ai.google.dev/gemini-api/terms',
+  },
+  apple: {
+    id: 'apple',
+    name: 'Apple Inc.',
+    role: 'Sign in with Apple and In-App Purchase billing on iOS for Calque',
+    privacy: 'https://www.apple.com/legal/privacy/',
+  },
+  lemonsqueezy: {
+    id: 'lemonsqueezy',
+    name: 'Lemon Squeezy',
+    role: 'Merchant of record and payment processor for Calque’s web (Plus) subscriptions',
+    privacy: 'https://www.lemonsqueezy.com/privacy',
   },
 };
 
