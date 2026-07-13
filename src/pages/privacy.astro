@@ -325,16 +325,26 @@ const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })
               </ul>
 
               <p style="font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-crease); margin: 0 0 4px;">who processes it</p>
-              <p style="font-family: var(--font-body); font-size: 15px; color: var(--color-graphite); margin: 0 0 4px;">
-                {s.subprocessors.filter((k) => k in SUBPROCESSORS).map((k, i) => (
-                  <>{i > 0 ? ', ' : ''}<a href={SUBPROCESSORS[k].privacy} style="color: var(--color-crane); text-decoration: none; border-bottom: 1px solid var(--color-crane);">{SUBPROCESSORS[k].name}</a></>
-                ))}
-              </p>
+              {s.subprocessors.filter((k) => k in SUBPROCESSORS).length > 0 ? (
+                <p style="font-family: var(--font-body); font-size: 15px; color: var(--color-graphite); margin: 0 0 4px;">
+                  {s.subprocessors.filter((k) => k in SUBPROCESSORS).map((k, i) => (
+                    <>{i > 0 ? ', ' : ''}<a href={SUBPROCESSORS[k].privacy} style="color: var(--color-crane); text-decoration: none; border-bottom: 1px solid var(--color-crane);">{SUBPROCESSORS[k].name}</a></>
+                  ))}
+                </p>
+              ) : (
+                <p style="font-family: var(--font-body); font-size: 15px; color: var(--color-graphite); margin: 0 0 4px;">No third parties — this app has no backend of ours; it talks only to the server you run.</p>
+              )}
 
               {s.hosting === 'self-hosted' && (
                 <p style="font-family: var(--font-body); font-size: 14px; line-height: 1.5; color: var(--color-graphite-60); margin: 12px 0 0;">
                   Runs on Anmol's own hardware; Cloudflare only carries traffic (tunnel / CDN).
                   {s.id === 'immich' ? ' Face-grouping and search features are computed locally on that server and are never sent to any third party.' : ''}
+                </p>
+              )}
+
+              {s.hosting === 'device' && (
+                <p style="font-family: var(--font-body); font-size: 14px; line-height: 1.5; color: var(--color-graphite-60); margin: 12px 0 0;">
+                  Runs entirely on your device. The server address and tokens you enter live in the system Keychain and are shared with the app’s widgets through a private App Group; none of it is sent to us.
                 </p>
               )}
 
