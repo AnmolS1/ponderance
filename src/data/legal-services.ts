@@ -75,11 +75,12 @@ export const SERVICES: LegalService[] = [
       'account: your Google or Apple sign-in — the provider shares basic profile fields such as name, email, and an account identifier; no password reaches us',
       'Plus-tier scans: the calendar image you upload is sent to Google Gemini for text recognition (OCR) and is deleted from our servers within 24 hours',
       'extracted events (titles, dates, and times) are never stored on our servers — they live only on your device or in your browser',
+      'optional Google Calendar connection: if you choose to add events straight to Google Calendar, we store an OAuth token scoped only to calendar.events (never a password) so events can be written on your behalf; you can revoke it any time in the app or at myaccount.google.com, and the events are written directly to your calendar, never stored on our servers',
       'payments: subscription billing is handled by Lemon Squeezy on the web and by Apple In-App Purchase on iOS; we receive only the confirmation and status needed to unlock Plus, never your card details',
     ],
     subprocessors: ['google', 'gemini', 'apple', 'lemonsqueezy', 'cloudflare'],
     notes:
-      'Operated by Anmol Saxena (sole operator, pre-LLC). Web app on Cloudflare plus a native iOS app. Calendar images go to Gemini only for OCR and are deleted within 24h; extracted event content is never stored server-side. Sign-in via Google and Apple. Payments via Lemon Squeezy (web) and Apple In-App Purchase (iOS).',
+      'Operated by Anmol Saxena (sole operator, pre-LLC). Web app on Cloudflare plus a native iOS app. Calendar images go to Gemini only for OCR and are deleted within 24h; extracted event content is never stored server-side. Sign-in via Google and Apple. Optional Google Calendar export stores a calendar.events-scoped OAuth token (revocable in-app or at myaccount.google.com); events are inserted directly and never stored server-side. Payments via Lemon Squeezy (web) and Apple In-App Purchase (iOS).',
   },
   {
     id: 'homelab-glance',
