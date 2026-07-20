@@ -241,6 +241,31 @@ export const SERVICES: LegalService[] = [
     notes:
       'household-only → excluded from the public pages by the render rule. Listed for completeness; flip audience to "invited" only if it’s ever opened beyond family.',
   },
+  {
+    id: 'flatfold',
+    name: 'FlatFold',
+    url: 'https://flatfold.ponderance.dev',
+    status: 'live',
+    audience: 'public',
+    hosting: 'cloudflare',
+    summary: 'An end-to-end encrypted messenger. The server stores no messages it can read.',
+    auth: 'local',
+    // Deliberately specific: for an E2EE product the substantive claim is what
+    // is NOT here. No message plaintext, no contact lists, no IP logs.
+    collects: [
+      'account: your username, a verifier derived from your password (never the password itself), and when the account was made',
+      'the public keys you publish, so other people can start an encrypted conversation with you',
+      'messages waiting to be delivered, as ciphertext nobody here can read. Deleted once your device confirms it got them, and in every case within 14 days',
+      'attachments, encrypted, under random ids. Deleted once the recipient fetches them',
+      'a push subscription from your browser, if you turn notifications on. The notification carries no message content',
+      'the time a waiting message arrived, rounded to the minute',
+    ],
+    subprocessors: ['cloudflare'],
+    userContent: true,
+    publicSharing: false,
+    notes:
+      'Your messages, your contact list and your history are encrypted on your device with a key derived from your password, and they never leave it. The server cannot read them, and neither can Anmol. The honest cost of that: forget your password and it is gone, because there is no key escrow, no backup and no reset. You add people by typing their exact username, so there is no directory to browse. IPs are never logged. The /transparency page and docs/THREAT_MODEL.md in the public repo spell out what this design gives up in exchange.',
+  },
 ];
 
 export interface SubProcessor {
