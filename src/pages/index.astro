@@ -204,6 +204,12 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
             <a href="/commissions" style="text-decoration: none; color: inherit;">Commissions</a>
             <a href="/marginalia" style="text-decoration: none; color: inherit;">Marginalia</a>
             <a href="/colophon" style="text-decoration: none; color: inherit;">Colophon</a>
+            {/* Support sits before Privacy/Terms to match the default footer in
+                Base.astro, which this page's footer slot overrides. It was the
+                only one of the three the override dropped, so the home page —
+                the most-linked page on a site backing five App Store products —
+                was the one place with no route to Support. */}
+            <a href="/support" style="text-decoration: none; color: inherit;">Support</a>
             <a href="/privacy" style="text-decoration: none; color: inherit;">Privacy</a>
             <a href="/terms" style="text-decoration: none; color: inherit;">Terms</a>
           </div>
