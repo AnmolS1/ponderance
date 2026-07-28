@@ -122,8 +122,15 @@ export const POST: APIRoute = async ({ request }) => {
     }),
   });
 
-  if (!resendRes.ok)
-    return json({ error: 'send_failed' }, 502);
+  // Same lesson as the Turnstile codes: a bare `send_failed` cannot tell a bad API key
+  // (401) from an unverified sending domain (403) from a rejected to/from (422), which
+  // is the whole question when mail stops arriving. Log the provider's body, and return
+  // just its numeric status — a status code carries no secret.
+  if (!resendRes.ok) {
+    const detail = await resendRes.text().catch(() => '');
+    console.error(`[inquiry] resend ${resendRes.status}: ${detail.slice(0, 300)}`);
+    return json({ error: 'send_failed', status: resendRes.status }, 502);
+  }
 
   return json({ ok: true });
 };
