@@ -88,7 +88,7 @@ export const POST: APIRoute = async ({ request }) => {
   if (!tsData.success) {
     const codes = tsData['error-codes'] ?? [];
     console.warn(`[inquiry] turnstile verify failed: ${codes.join(',') || 'no codes'}`);
-    return json({ error: 'captcha_failed', codes, diag: { keys: Object.keys(env), tsLen: String(env.TURNSTILE_SECRET_KEY ?? '').length, reLen: String(env.RESEND_API_KEY ?? '').length, kv: typeof env.RATE_LIMIT } }, 403);
+    return json({ error: 'captcha_failed', codes }, 403);
   }
 
   // KV rate limiting: 5 per IP per hour
