@@ -47,13 +47,17 @@
             missing_captcha: '# security check incomplete',
             captcha_failed:  '# security check failed — please try again',
             rate_limited:    '# too many submissions — try again in an hour',
-            send_failed:     '# something went wrong on our end — email hello@ponderance.dev',
+            send_failed:     '# something went wrong on our end — email anmol@ponderance.dev',
           }[result.body.error] || '# an unexpected error occurred';
           setStatus(msg, '#E84A27');
           if (btn) {
             btn.disabled = false;
             btn.textContent = 'RUN →';
           }
+          // Reset on failure too, not just success: a Turnstile token is single-use, so
+          // retrying after ANY error (a typo'd email, say) would resubmit the spent token
+          // and fail as captcha_failed forever — a form that can never recover.
+          if (window.turnstile) window.turnstile.reset();
         }
       })
       .catch(function () {
@@ -62,6 +66,7 @@
           btn.disabled = false;
           btn.textContent = 'RUN →';
         }
+        if (window.turnstile) window.turnstile.reset();
       });
   });
 })();

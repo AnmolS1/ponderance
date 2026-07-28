@@ -21,6 +21,25 @@ export type Audience = 'public' | 'invited' | 'household';
 // backend of ours; it talks only to a server the user themselves runs.
 export type Status = 'live' | 'beta' | 'planned';
 
+/** Where money is taken for a paid tier. Drives the per-storefront cancel/refund prose. */
+export type Storefront = 'apple' | 'lemonsqueezy';
+
+/**
+ * A paid tier, as data rather than prose. /terms derives its subscriptions clause from
+ * this, and /support interpolates `price` — so the number lives in exactly one place.
+ * Adding a second paid product is an entry here, not an edit to either page.
+ */
+export interface Commercial {
+  /** e.g. 'Calque Plus' */
+  plan: string;
+  /** Human price line, both terms: '$2.99/month or $23.99/year'. */
+  price: string;
+  /** What the paid tier actually provides, one line. */
+  provides: string;
+  /** Where money is taken, and therefore who handles refunds. */
+  storefronts: Storefront[];
+}
+
 export interface LegalService {
   id: string;
   name: string;
@@ -37,6 +56,15 @@ export interface LegalService {
   subprocessors: string[];
   userContent?: boolean; // user creates/uploads/stores content
   publicSharing?: boolean; // public gallery / shareable links / remix
+  /** Set only on a service with a paid tier. Absent === free. */
+  commercial?: Commercial;
+  /**
+   * End-to-end encrypted: the server holds ciphertext it cannot read. A flag rather than
+   * an inference from `notes`, because /terms has to branch on it — the standard
+   * "licence to display your content" grant is impossible for an E2EE service, and
+   * asserting it would contradict the product's whole claim.
+   */
+  e2ee?: boolean;
   notes?: string; // anything special (e.g. Immich face data)
 }
 
@@ -85,6 +113,12 @@ export const SERVICES: LegalService[] = [
       'payments: subscription billing is handled by Lemon Squeezy on the web and by Apple In-App Purchase on iOS; we receive only the confirmation and status needed to unlock Plus, never your card details',
     ],
     subprocessors: ['google', 'gemini', 'apple', 'lemonsqueezy', 'cloudflare'],
+    commercial: {
+      plan: 'Calque Plus',
+      price: '$2.99/month or $23.99/year',
+      provides: 'cloud text recognition, with 200 scans a month',
+      storefronts: ['apple', 'lemonsqueezy'],
+    },
     notes:
       'Operated by Anmol Saxena (sole operator, pre-LLC). Web app on Cloudflare plus a native iOS app. Calendar images go to Gemini only for OCR and are deleted within 24h; extracted event content is never stored server-side. Sign-in via Google and Apple. Optional Google Calendar export stores a calendar.events-scoped OAuth token (revocable in-app or at myaccount.google.com); events are inserted directly and never stored server-side. Payments via Lemon Squeezy (web) and Apple In-App Purchase (iOS).',
   },
@@ -272,6 +306,7 @@ export const SERVICES: LegalService[] = [
     subprocessors: ['cloudflare'],
     userContent: true,
     publicSharing: false,
+    e2ee: true,
     notes:
       'Your messages, your contact list and your history are encrypted on your device with a key derived from your password, and they never leave it. The server cannot read them, and neither can Anmol. The honest cost of that: forget your password and it is gone, because there is no key escrow, no backup and no reset. You add people by typing their exact username, so there is no directory to browse. IPs are never logged. The /transparency page and docs/THREAT_MODEL.md in the public repo spell out what this design gives up in exchange.',
   },
@@ -279,7 +314,14 @@ export const SERVICES: LegalService[] = [
 
 export interface SubProcessor {
   id: string;
+  /** Legal entity name, shown in the Services table. */
   name: string;
+  /**
+   * Name for running prose, where the legal entity reads badly — a comma-separated
+   * sentence containing "Cloudflare, Inc." is ambiguous about where the list breaks.
+   * Falls back to `name`.
+   */
+  short?: string;
   role: string;
   privacy: string;
   dataPolicy?: string;
@@ -289,6 +331,7 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
   google: {
     id: 'google',
     name: 'Google LLC',
+    short: 'Google',
     role: 'Sign-in (OAuth) for services that offer Google login',
     privacy: 'https://policies.google.com/privacy',
     dataPolicy: 'https://developers.google.com/terms/api-services-user-data-policy',
@@ -296,6 +339,7 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
   spotify: {
     id: 'spotify',
     name: 'Spotify AB',
+    short: 'Spotify',
     role: 'Sign-in and playback metadata for Antinode',
     privacy: 'https://www.spotify.com/legal/privacy-policy/',
     dataPolicy: 'https://developer.spotify.com/policy',
@@ -303,6 +347,7 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
   cloudflare: {
     id: 'cloudflare',
     name: 'Cloudflare, Inc.',
+    short: 'Cloudflare',
     role: 'Hosting, database (D1), object storage (R2), CDN/tunnel, bot-protection (Turnstile), and cookieless Web Analytics',
     privacy: 'https://www.cloudflare.com/privacypolicy/',
   },
@@ -315,6 +360,7 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
   gemini: {
     id: 'gemini',
     name: 'Google (Gemini API)',
+    short: 'Google Gemini',
     role: 'Text recognition (OCR) on Plus-tier calendar images for Calque; images are deleted within 24 hours and are not used to train models on the paid API',
     privacy: 'https://policies.google.com/privacy',
     dataPolicy: 'https://ai.google.dev/gemini-api/terms',
@@ -322,6 +368,7 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
   apple: {
     id: 'apple',
     name: 'Apple Inc.',
+    short: 'Apple',
     role: 'Sign in with Apple in the iOS apps (Calque, Kaleidoscope), and In-App Purchase billing on iOS for Calque',
     privacy: 'https://www.apple.com/legal/privacy/',
   },

@@ -10,7 +10,22 @@
 // that button exists today. App Review guideline 1.5 rejects a support page that sends a
 // reviewer to a control that isn't there.
 
-import { SERVICES, type LegalService } from './legal-services';
+import { SERVICES, type Commercial, type LegalService } from './legal-services';
+
+/**
+ * Paid-tier facts are read from legal-services.ts, never retyped. /terms has to state the
+ * price verbatim for App Review guideline 3.1.2, so a second copy here is a copy that can
+ * disagree with the binding one — and the support page is where a confused subscriber looks
+ * first. Throws rather than falling back: a missing tier should fail the build, not render
+ * a page that quietly omits the price.
+ */
+const commercialOf = (id: string): Commercial => {
+  const c = SERVICES.find((s) => s.id === id)?.commercial;
+  if (!c) throw new Error(`support.ts: service "${id}" has no commercial tier to quote`);
+  return c;
+};
+
+const CALQUE_PLUS = commercialOf('calque');
 
 export type Platform = 'ios' | 'ipados' | 'macos' | 'watchos' | 'web';
 
@@ -190,8 +205,7 @@ export const SUPPORT: SupportEntry[] = [
       },
     ],
     billing: {
-      tiers:
-        'The free tier scans entirely on your device, with no account and no limit. Calque Plus is $2.99 a month or $23.99 a year and adds the cloud text-recognition engine, capped at 200 scans a month.',
+      tiers: `The free tier scans entirely on your device, with no account and no limit. ${CALQUE_PLUS.plan} is ${CALQUE_PLUS.price} and adds ${CALQUE_PLUS.provides}.`,
       manage: [
         {
           title: 'On iPhone or iPad',

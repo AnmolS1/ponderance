@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { listedServices, type AuthProvider } from '../data/legal-services';
+import { listedServices, SUBPROCESSORS, type AuthProvider, type Storefront } from '../data/legal-services';
 
 const listed = listedServices();
 
@@ -13,21 +13,93 @@ const AUTH_LABEL: Record<AuthProvider, string> = {
   oidc: 'OpenID Connect sign-in',
 };
 
+const oxford = (xs: string[]): string =>
+  xs.length <= 1 ? (xs[0] ?? '') : xs.length === 2 ? `${xs[0]} and ${xs[1]}` : `${xs.slice(0, -1).join(', ')}, and ${xs[xs.length - 1]}`;
+
+// Services with a paid tier, and services whose content is end-to-end encrypted. Both drive
+// prose below, so that adding a second paid or encrypted product is a registry edit.
+const paid = listed.filter((s) => s.commercial);
+const encrypted = listed.filter((s) => s.e2ee);
+
+// The subscriptions clause's own number, referenced from three other clauses and from
+// termsNote(). Kept as a constant so an inserted clause can't leave a dangling "see §04".
+const SUBSCRIPTIONS_N = '04';
+
+// What a storefront means for the person paying. The registry says only WHERE money is taken;
+// who charges, who cancels, and who can refund is prose, so it lives here.
+//
+// Guideline 3.1.1: both storefronts are described in the same shape and at the same length,
+// App Store first, with no language steering an iOS reader toward the web purchase.
+const STOREFRONT: Record<Storefront, { name: string; charges: string; manage: string; refunds: string }> = {
+  apple: {
+    name: 'App Store',
+    charges: 'Apple bills your Apple Account',
+    manage: 'you manage and cancel it in Settings → tap your name → Subscriptions',
+    refunds: 'refunds are Apple’s to give, through reportaproblem.apple.com',
+  },
+  lemonsqueezy: {
+    name: 'Web',
+    charges: 'Lemon Squeezy is the merchant of record and takes the payment',
+    manage: 'you manage and cancel it in the customer portal linked from your Account page',
+    refunds: 'refunds are ours to give, so email us',
+  },
+};
+
+// Third-party providers actually in use, from the registry union — the same fix as the privacy
+// page's processor list. A hand-kept list here is what went stale and named a dead product.
+const thirdParties = oxford(
+  [...new Set(listed.flatMap((s) => s.subprocessors))]
+    .filter((k) => k in SUBPROCESSORS)
+    .map((k) => SUBPROCESSORS[k].short ?? SUBPROCESSORS[k].name),
+);
+
 // A light, service-specific terms note derived from the registry flags (never the raw TODO notes).
+// Order matters and is deliberately most-specific-first: `commercial` and `e2ee` are narrower
+// claims than `userContent`, and FlatFold is both `userContent` and `e2ee` — under the old order
+// it drew the "saving grants us a licence to host and show it" note, asserting a licence to
+// display message content the server provably cannot read.
 function termsNote(s: (typeof listed)[number]): string {
+  if (s.commercial)
+    return `${s.commercial.plan} is a paid subscription (${s.commercial.price}) that renews until you cancel it — see §${SUBSCRIPTIONS_N}.`;
+  if (s.e2ee)
+    return 'Encrypted on your device before it reaches us. We hold ciphertext we cannot read, so no licence to display your content applies, and none is possible (see §03).';
   if (s.publicSharing) return 'Public pieces may be remixed by other users; keep that in mind before you publish.';
   if (s.audience === 'invited' && s.hosting === 'self-hosted') return 'Shared for invited personal use; the libraries are not yours to redistribute.';
   if (s.userContent) return 'You keep ownership of what you upload; saving grants us a licence to host and show it (see §03).';
   return 'Provided free of charge and offered as-is.';
 }
 
+// "Free" is no longer true across the board, so the sentence is derived rather than asserted.
+const freeSentence = paid.length
+  ? `Most are free to use; ${oxford(
+      paid.map((s) => `<strong>${s.name}</strong> also offers a paid ${s.commercial!.plan} tier, set out in §${SUBSCRIPTIONS_N}`),
+    )}. Everything here is offered as-is.`
+  : `They are provided free of charge and offered as-is.`;
+
+// The subscriptions clause is generated per paid product, then per storefront within it, so a
+// second paid product needs no edit here. Guideline 3.1.2 wants the renewal term, that it
+// continues until cancelled, what the period buys, the actual charge, and how to cancel.
+const subscriptionsBody = `${paid
+  .map((s) => {
+    const c = s.commercial!;
+    const plan = `<strong>${c.plan}</strong> is an optional paid tier for ${s.name}, which is otherwise free to use. It costs ${c.price} and adds ${c.provides}. Whichever term you choose, <strong>it renews automatically until you cancel it</strong>. Cancelling stops the next renewal rather than ending your access immediately — you keep the paid features until the period you have already paid for runs out.`;
+    const stores = c.storefronts
+      .map((sf) => {
+        const f = STOREFRONT[sf];
+        return `<strong>${f.name}</strong> — ${f.charges}, ${f.manage}, and ${f.refunds}.`;
+      })
+      .join(' ');
+    return `${plan} Where you subscribed decides who charges you and who can refund you. ${stores}`;
+  })
+  .join(' ')} If a price ever changes, we will tell you before the change takes effect, and it never applies retroactively to a period you have already paid for.`;
+
 const clauses = [
   {
     id: 'the-services',
     n: '01',
     title: 'The services',
-    gloss: 'a personal portfolio and a family of small, free apps.',
-    body: `ponderance.dev is a personal portfolio that also hosts a set of small apps and services — some public, some shared only with invited friends and family. Each is described in the Services section. They are provided free of charge and offered as-is.`,
+    gloss: 'a personal portfolio and a family of small apps — most free, one with a paid tier.',
+    body: `ponderance.dev is a personal portfolio that also hosts a set of small apps and services — some public, some shared only with invited friends and family. Each is described in the Services section. ${freeSentence}`,
   },
   {
     id: 'eligibility',
@@ -41,74 +113,87 @@ const clauses = [
     n: '03',
     title: 'Your content is yours',
     gloss: 'you keep ownership; saving lets us host and show it; public means public.',
-    body: `You keep all rights to the content you create or upload. By saving or uploading to a service, you grant us a non-exclusive, worldwide, royalty-free licence to store, reproduce, and display it solely to operate that service. If you mark something public or unlisted, you also grant the right to show it (including a preview) at its shareable link and, where a service supports it, to let other users remix it. Deleting content ends that licence going forward, apart from copies already cached or already remixed by others.`,
+    body: `You keep all rights to the content you create or upload. By saving or uploading to a service, you grant us a non-exclusive, worldwide, royalty-free licence to store, reproduce, and display it solely to operate that service. If you mark something public or unlisted, you also grant the right to show it (including a preview) at its shareable link and, where a service supports it, to let other users remix it. Deleting content ends that licence going forward, apart from copies already cached or already remixed by others.${
+      encrypted.length
+        ? ` <strong>End-to-end encrypted services work differently.</strong> For ${oxford(
+            encrypted.map((s) => s.name),
+          )}, your content is encrypted on your device before it reaches us, so what you grant is the narrow licence needed to store and transmit ciphertext — nothing more. No licence to read, display, or reproduce the content itself is granted, and none would be possible: we cannot read it.`
+        : ''
+    }`,
+  },
+  {
+    id: 'subscriptions',
+    n: SUBSCRIPTIONS_N,
+    title: 'Subscriptions and billing',
+    gloss: 'one optional paid tier; it renews until you cancel, and the storefront you bought it from handles refunds.',
+    body: subscriptionsBody,
   },
   {
     id: 'acceptable',
-    n: '04',
+    n: '05',
     title: 'Acceptable use',
-    gloss: "don't post illegal or abusive content; don't attack the services.",
-    body: `You agree not to upload or share content that is illegal, infringing, hateful, harassing, sexually exploitative, or that depicts or endangers minors; not to impersonate others; and not to attack, overload, scrape, reverse-engineer, or circumvent the limits or security of any service. We may remove content and suspend access for violations, at our discretion.`,
+    gloss: "don't post illegal or abusive content; don't attack the services. Report anything that does.",
+    body: `You agree not to upload or share content that is illegal, infringing, hateful, harassing, sexually exploitative, or that depicts or endangers minors; not to impersonate others; and not to attack, overload, scrape, reverse-engineer, or circumvent the limits or security of any service. We may remove content and suspend access for violations, at our discretion. <strong>To report content that breaks these rules</strong>, email <a href="mailto:anmol@ponderance.dev">anmol@ponderance.dev</a> — reports get a reply, and content or accounts that break these rules are removed. Where a service supports blocking, you can also block another user yourself, without waiting on us.`,
   },
   {
     id: 'specific',
-    n: '05',
+    n: '06',
     title: 'Service-specific terms',
     gloss: 'each toy adds a little fine print of its own.',
-    body: `Some services add their own rules — for example, public Kaleidoscope pieces may be remixed by others; the self-hosted media and photo services (Jellyfin, Immich) are for invited personal use and their libraries aren't yours to redistribute. Those specifics live in the Services section and apply alongside these Terms.`,
+    body: `Some services add their own rules — for example, public Kaleidoscope pieces may be remixed by others; Calque has an optional paid tier (§${SUBSCRIPTIONS_N}), and the events it extracts from your photo are yours and are never stored on our servers; FlatFold is end-to-end encrypted, which means that if you lose your password neither it nor the history it protected can be recovered by anyone, including us, and you add people by typing their exact username rather than browsing a directory; the self-hosted media and photo services (Jellyfin, Immich) are for invited personal use and their libraries aren't yours to redistribute. Those specifics live in the Services section and apply alongside these Terms.`,
   },
   {
     id: 'ip',
-    n: '06',
+    n: '07',
     title: 'Intellectual property',
     gloss: "the site's code and brand are mine; your content is yours.",
     body: `The site's design, branding, and code are owned by Anmol Saxena (the source is on GitHub under its repository licence). These Terms grant you no rights to the ponderance name or marks beyond using the services normally.`,
   },
   {
     id: 'third-party',
-    n: '07',
+    n: '08',
     title: 'Third-party services',
-    gloss: 'Google, Spotify, Cloudflare and the like have their own terms.',
-    body: `The services use third-party infrastructure and sign-in providers (such as Google, Spotify, and Cloudflare); your use of those is also governed by their respective terms and policies.`,
+    gloss: 'the infrastructure, sign-in, and payment providers behind the services have their own terms.',
+    body: `The services use third-party infrastructure, sign-in, and payment providers (today ${thirdParties}); your use of those is also governed by their respective terms and policies. Each one, and what it does, is listed in the Services section of the <a href="/privacy">Privacy Policy</a>.`,
   },
   {
     id: 'disclaimers',
-    n: '08',
+    n: '09',
     title: 'Disclaimers',
-    gloss: 'free hobby projects, no guarantees.',
+    gloss: 'small hobby projects, no guarantees.',
     body: `The services are provided "as is" and "as available", without warranties of any kind. We don't guarantee they'll be uninterrupted, error-free, or that saved content will be preserved indefinitely — keep your own copies of anything you care about. We may change, suspend, or discontinue any part at any time.`,
   },
   {
     id: 'liability',
-    n: '09',
+    n: '10',
     title: 'Limitation of liability',
     gloss: 'to the extent the law allows, damages are limited.',
-    body: `To the fullest extent permitted by law, Anmol Saxena won't be liable for any indirect, incidental, or consequential damages, or for loss of data or content, arising from your use of the services. Because they're free, total liability is limited to the maximum extent allowed by law.`,
+    body: `To the fullest extent permitted by law, Anmol Saxena won't be liable for any indirect, incidental, or consequential damages, or for loss of data or content, arising from your use of the services. Total direct liability is limited to the greater of the amounts you paid for the service in question in the twelve months before the claim, or US$50.`,
   },
   {
     id: 'termination',
-    n: '10',
+    n: '11',
     title: 'Termination',
     gloss: 'either of us can walk away.',
     body: `You can stop using the services and delete your account at any time. We may suspend or terminate access if you breach these Terms or to protect the services.`,
   },
   {
     id: 'law',
-    n: '11',
+    n: '12',
     title: 'Governing law',
     gloss: 'Texas law governs.',
     body: `These Terms are governed by the laws of the State of Texas, USA, without regard to its conflict-of-law rules.`,
   },
   {
     id: 'changes',
-    n: '12',
+    n: '13',
     title: 'Changes',
     gloss: 'updated terms post here with a new date.',
     body: `We may update these Terms. The "last updated" date will change, and continued use after a change means you accept it.`,
   },
   {
     id: 'contact',
-    n: '13',
+    n: '14',
     title: 'Contact',
     gloss: 'one inbox.',
     body: `Questions: <a href="mailto:anmol@ponderance.dev">anmol@ponderance.dev</a>.`,
@@ -222,7 +307,7 @@ const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })
         <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); margin: 0 0 16px;">ponderance.dev · legal</p>
         <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(36px,4.4vw,56px); line-height: 1.04; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; max-width: 16ch;">Terms of Service</h1>
         <p style="font-family: var(--font-body); font-size: 19px; line-height: 1.6; color: var(--color-graphite-60); max-width: 40rem; margin: 18px 0 0;">The short version is in the margin. The binding version is the column.</p>
-        <span class="lg-stamp" style="display: inline-block; margin: 18px 0 0; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 4px 9px; transform: rotate(-3deg);">updated · 29 Jun 2026</span>
+        <span class="lg-stamp" style="display: inline-block; margin: 18px 0 0; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 4px 9px; transform: rotate(-3deg);">updated · 28 Jul 2026</span>
       </div>
       <div style="position: relative; border: 1px solid var(--color-crease); border-radius: 3px; overflow: hidden; background: var(--color-graph-card);">
         <div style="background: var(--color-crease); padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
@@ -231,7 +316,7 @@ const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr;">
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">doc no.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">PNDR-TERMS</p></div>
-          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">rev.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2026.06.29</p></div>
+          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">rev.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2026.07.28</p></div>
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">jurisdiction</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">TX · US</p></div>
           <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">sheet</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2 of 2</p></div>
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">medium</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">woff2 · edge</p></div>

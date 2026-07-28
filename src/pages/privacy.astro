@@ -9,6 +9,15 @@ const subKeys = [...new Set([...listed.flatMap((s) => s.subprocessors), 'resend'
   (k) => k in SUBPROCESSORS,
 );
 
+const oxford = (xs: string[]): string =>
+  xs.length <= 1 ? (xs[0] ?? '') : xs.length === 2 ? `${xs[0]} and ${xs[1]}` : `${xs.slice(0, -1).join(', ')}, and ${xs[xs.length - 1]}`;
+
+// Clause 03's processor list, generated from the SAME `subKeys` the Services table renders.
+// It used to be hand-typed, and by the time anyone noticed it was naming three processors out
+// of six and referring to a product that had been renamed. A prose list that can drift from
+// the table below it is the one inaccuracy in a privacy policy that actually carries risk.
+const processorList = oxford(subKeys.map((k) => SUBPROCESSORS[k].short ?? SUBPROCESSORS[k].name));
+
 // Plain-English sign-in line per auth method (never render the registry's raw TODO notes).
 const AUTH_LABEL: Record<AuthProvider, string> = {
   none: 'No account needed',
@@ -26,7 +35,7 @@ const clauses = [
     n: '01',
     title: 'What we collect',
     gloss: 'only what each toy needs; the per-service list below is the specifics.',
-    body: `Across the services we may collect: <strong>identity</strong> when you sign in (for a service that uses a third-party login like Google or Spotify, the provider shares basic profile fields such as your name, email, profile picture, and an account identifier — never a password; for a service with its own accounts, the username and password you set, stored hashed by that app); <strong>content you create or upload</strong> (for example artwork you save, or photos you add), kept on your device until you choose to save it; <strong>contact-form submissions</strong> (the name, email, and message you send, delivered to us by email through Resend); and <strong>technical metadata</strong> — your IP address and basic request data — for security, abuse-prevention, and rate-limiting, plus a Cloudflare Turnstile bot-check where a service uses one. Site traffic is measured with Cloudflare Web Analytics, which is cookieless. The only cookie we set is a strictly-necessary one that keeps you signed in; there are no advertising or cross-site tracking cookies. <strong>See the Services section for exactly what each service collects.</strong>`,
+    body: `Across the services we may collect: <strong>identity</strong> when you sign in (for a service that uses a third-party login like Google or Spotify, the provider shares basic profile fields such as your name, email, profile picture, and an account identifier — never a password; for a service with its own accounts, the username and password you set, stored hashed by that app); <strong>content you create or upload</strong> (for example artwork you save, or photos you add) — most of it stays on your device unless you choose to save it, but a few services send it onward to do the thing you asked for, such as a Calque Plus scan going to Google Gemini for text recognition, and the Services section says exactly which ones and what happens to it; <strong>payments and subscription status</strong> where a service has a paid tier — the storefront takes the money and tells us only what's needed to unlock it, namely that a subscription is active and when it renews or lapses; your card details never reach us; <strong>contact-form submissions</strong> (the name, email, and message you send, delivered to us by email through Resend); and <strong>technical metadata</strong> — your IP address and basic request data — for security, abuse-prevention, and rate-limiting, plus a Cloudflare Turnstile bot-check where a service uses one. Site traffic is measured with Cloudflare Web Analytics, which is cookieless. The only cookie we set is a strictly-necessary one that keeps you signed in; there are no advertising or cross-site tracking cookies. <strong>See the Services section for exactly what each service collects.</strong>`,
   },
   {
     id: 'use',
@@ -40,7 +49,7 @@ const clauses = [
     n: '03',
     title: 'Who sees it',
     gloss: 'a few infrastructure providers, plus anyone you publish to on purpose.',
-    body: `We rely on a small set of processors to run the services; the ones in use are listed (with their role and privacy policy) in the Services section — today Google (sign-in), Cloudflare (hosting, database, file storage, CDN/tunnel, bot-protection, and analytics), and Resend (contact-form email), with Spotify joining when Antinode launches. They handle data on our behalf under their own terms. We may disclose information if required by law. When you mark something public, that content — along with the display name and avatar on your profile — is visible to anyone by design.`,
+    body: `We rely on a small set of processors to run the services; the ones in use are listed (with their role and privacy policy) in the Services section — today ${processorList}, with Spotify joining when Antinode launches. They handle data on our behalf under their own terms. We may disclose information if required by law. When you mark something public, that content — along with the display name and avatar on your profile — is visible to anyone by design.`,
   },
   {
     id: 'rights',
@@ -54,7 +63,7 @@ const clauses = [
     n: '05',
     title: 'Data retention',
     gloss: 'kept while your account exists, gone shortly after you delete it.',
-    body: `Your account and saved content are kept until you delete them or close your account for that service. After deletion they're removed from active storage promptly, though cached or backup copies may linger briefly. Contact-form emails are kept only as long as needed to handle your inquiry. Security logs are short-lived.`,
+    body: `Your account and saved content are kept until you delete them or close your account for that service. After deletion they're removed from active storage promptly, though cached or backup copies may linger briefly. Some services delete data on a fixed clock regardless of what you do — a calendar image sent to Gemini for a Calque Plus scan is deleted within 24 hours, and a FlatFold message still waiting to be delivered is dropped within 14 days — with the specifics for each in the Services section. Contact-form emails are kept only as long as needed to handle your inquiry. Security logs are short-lived.`,
   },
   {
     id: 'children',
@@ -219,7 +228,7 @@ const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })
         <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); margin: 0 0 16px;">ponderance.dev · legal</p>
         <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(36px,4.4vw,56px); line-height: 1.04; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; max-width: 16ch;">Privacy Policy</h1>
         <p style="font-family: var(--font-body); font-size: 19px; line-height: 1.6; color: var(--color-graphite-60); max-width: 40rem; margin: 18px 0 0;">What the toys keep, why, and how to make them forget.</p>
-        <span class="lg-stamp" style="display: inline-block; margin: 18px 0 0; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 4px 9px; transform: rotate(-3deg);">updated · 29 Jun 2026</span>
+        <span class="lg-stamp" style="display: inline-block; margin: 18px 0 0; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 4px 9px; transform: rotate(-3deg);">updated · 28 Jul 2026</span>
       </div>
       <!-- Engineering title block -->
       <div style="position: relative; border: 1px solid var(--color-crease); border-radius: 3px; overflow: hidden; background: var(--color-graph-card);">
@@ -229,7 +238,7 @@ const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr;">
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">doc no.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">PNDR-PRIV</p></div>
-          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">rev.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2026.06.29</p></div>
+          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">rev.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2026.07.28</p></div>
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">jurisdiction</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">TX · US</p></div>
           <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">sheet</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">1 of 2</p></div>
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">medium</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">woff2 · edge</p></div>
