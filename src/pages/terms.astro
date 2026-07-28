@@ -63,7 +63,7 @@ const thirdParties = oxford(
 // display message content the server provably cannot read.
 function termsNote(s: (typeof listed)[number]): string {
   if (s.commercial)
-    return `${s.commercial.plan} is a paid subscription (${s.commercial.price}) that renews until you cancel it — see §${SUBSCRIPTIONS_N}.`;
+    return `Free to download and use. ${s.commercial.plan} is an optional auto-renewable subscription on top (${s.commercial.price}) that renews until you cancel it — see §${SUBSCRIPTIONS_N}.`;
   if (s.e2ee)
     return 'Encrypted on your device before it reaches us. We hold ciphertext we cannot read, so no licence to display your content applies, and none is possible (see §03).';
   if (s.publicSharing) return 'Public pieces may be remixed by other users; keep that in mind before you publish.';
@@ -72,11 +72,14 @@ function termsNote(s: (typeof listed)[number]): string {
   return 'Provided free of charge and offered as-is.';
 }
 
-// "Free" is no longer true across the board, so the sentence is derived rather than asserted.
+// Every service is free to use; some additionally OFFER a subscription. The distinction is
+// the whole point of the sentence — an earlier draft read "Most are free to use; Calque also
+// offers a paid tier", which implies Calque is not one of the free ones. It is: the App Store
+// price is $0.00 and there are no non-subscription in-app purchases.
 const freeSentence = paid.length
-  ? `Most are free to use; ${oxford(
-      paid.map((s) => `<strong>${s.name}</strong> also offers a paid ${s.commercial!.plan} tier, set out in §${SUBSCRIPTIONS_N}`),
-    )}. Everything here is offered as-is.`
+  ? `All of them are free to download and use. ${oxford(
+      paid.map((s) => `<strong>${s.name}</strong> additionally offers an optional ${s.commercial!.plan} subscription`),
+    )}, which is set out in §${SUBSCRIPTIONS_N} — nothing else here costs anything. Everything is offered as-is.`
   : `They are provided free of charge and offered as-is.`;
 
 // The subscriptions clause is generated per paid product, then per storefront within it, so a
@@ -85,7 +88,7 @@ const freeSentence = paid.length
 const subscriptionsBody = `${paid
   .map((s) => {
     const c = s.commercial!;
-    const plan = `<strong>${c.plan}</strong> is an optional paid tier for ${s.name}, which is otherwise free to use. It costs ${c.price} and adds ${c.provides}. Whichever term you choose, <strong>it renews automatically until you cancel it</strong>. Cancelling stops the next renewal rather than ending your access immediately — you keep the paid features until the period you have already paid for runs out.`;
+    const plan = `<strong>${s.name} is free to download and use</strong>, and nothing in it expires or nags. <strong>${c.plan}</strong> is an optional auto-renewable subscription on top of that, which adds ${c.provides}. It is sold in two lengths — ${c.price} — and they differ only in how often you are billed. Whichever you choose, <strong>it renews automatically until you cancel it</strong>. Cancelling stops the next renewal rather than ending your access immediately: you keep the paid features until the period you have already paid for runs out, and then the app returns to its free form rather than locking you out.`;
     const stores = c.storefronts
       .map((sf) => {
         const f = STOREFRONT[sf];
@@ -101,7 +104,7 @@ const clauses = [
     id: 'the-services',
     n: '01',
     title: 'The services',
-    gloss: 'a personal portfolio and a family of small apps — most free, one with a paid tier.',
+    gloss: 'a personal portfolio and a family of small apps — all free to use; one offers an optional subscription.',
     body: `ponderance.dev is a personal portfolio that also hosts a set of small apps and services — some public, some shared only with invited friends and family. Each is described in the Services section. ${freeSentence}`,
   },
   {
@@ -128,7 +131,7 @@ const clauses = [
     id: 'subscriptions',
     n: SUBSCRIPTIONS_N,
     title: 'Subscriptions and billing',
-    gloss: 'one optional paid tier; it renews until you cancel, and the storefront you bought it from handles refunds.',
+    gloss: 'the apps are free; one offers an optional subscription. It renews until you cancel, and whichever storefront you bought it from handles refunds.',
     body: subscriptionsBody,
   },
   {

@@ -25,14 +25,24 @@ export type Status = 'live' | 'beta' | 'planned';
 export type Storefront = 'apple' | 'lemonsqueezy';
 
 /**
- * A paid tier, as data rather than prose. /terms derives its subscriptions clause from
- * this, and /support interpolates `price` — so the number lives in exactly one place.
+ * An OPTIONAL paid tier, as data rather than prose. /terms derives its subscriptions clause
+ * from this, and /support interpolates `price` — so the number lives in exactly one place.
  * Adding a second paid product is an entry here, not an edit to either page.
+ *
+ * IMPORTANT: the presence of this field means the service *offers* a subscription, NOT that
+ * the service costs money. Every service here is free to use; Calque is free to download
+ * (App Store price $0.00, no non-subscription in-app purchases — checked against App Store
+ * Connect 2026-07-28) and Plus is an add-on. Prose derived from this must not imply
+ * otherwise, which is exactly the mistake the first draft of §01 made.
  */
 export interface Commercial {
   /** e.g. 'Calque Plus' */
   plan: string;
-  /** Human price line, both terms: '$2.99/month or $23.99/year'. */
+  /**
+   * Human price line covering every length the subscription is sold in:
+   * '$2.99/month or $23.99/year'. Mirrors the ASC subscription group — Calque Plus is one
+   * group with two auto-renewable SKUs (calque_plus_monthly, calque_plus_yearly).
+   */
   price: string;
   /** What the paid tier actually provides, one line. */
   provides: string;
