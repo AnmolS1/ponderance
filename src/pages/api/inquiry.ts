@@ -78,9 +78,18 @@ export const POST: APIRoute = async ({ request }) => {
     method: 'POST',
     body: tsForm,
   });
-  const tsData = await tsRes.json() as { success: boolean };
-  if (!tsData.success)
-    return json({ error: 'captcha_failed' }, 403);
+  // Keep the error codes. They are the only thing that distinguishes a misconfigured
+  // secret (`invalid-input-secret`) from an expired/reused token (`timeout-or-duplicate`)
+  // from a genuinely bad one (`invalid-input-response`) — and without them a support
+  // form that rejects everyone looks identical to one working as intended. The codes are
+  // documented, non-sensitive values; returning them costs nothing and makes this
+  // diagnosable from the browser instead of requiring a deploy to find out.
+  const tsData = await tsRes.json() as { success: boolean; 'error-codes'?: string[] };
+  if (!tsData.success) {
+    const codes = tsData['error-codes'] ?? [];
+    console.warn(`[inquiry] turnstile verify failed: ${codes.join(',') || 'no codes'}`);
+    return json({ error: 'captcha_failed', codes }, 403);
+  }
 
   // KV rate limiting: 5 per IP per hour
   const rateKey = `ip:${ip || 'unknown'}`;
