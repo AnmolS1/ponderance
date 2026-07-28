@@ -60,11 +60,16 @@
           if (window.turnstile) window.turnstile.reset();
         } else {
           setStatus(ERRORS[result.body.error] || 'Something went wrong. Please email anmol@ponderance.dev.', 'error');
+          // Reset on failure too, not just success: a Turnstile token is single-use, so
+          // retrying after ANY error (a typo'd email, say) would resubmit the spent token
+          // and fail as captcha_failed forever — a form that can never recover.
+          if (window.turnstile) window.turnstile.reset();
         }
       })
       .catch(function () {
         setBusy(false);
         setStatus('Network error — check your connection, or email anmol@ponderance.dev.', 'error');
+        if (window.turnstile) window.turnstile.reset();
       });
   });
 })();
