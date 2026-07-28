@@ -47,8 +47,11 @@ const STOREFRONT: Record<Storefront, { name: string; charges: string; manage: st
 
 // Third-party providers actually in use, from the registry union — the same fix as the privacy
 // page's processor list. A hand-kept list here is what went stale and named a dead product.
+// `resend` is appended for the same reason /privacy's subKeys does it: it is always on (the
+// contact form), belongs to no single service, and the sentence below points the reader at the
+// Privacy Policy's list — which includes it. The two lists have to name the same six.
 const thirdParties = oxford(
-  [...new Set(listed.flatMap((s) => s.subprocessors))]
+  [...new Set([...listed.flatMap((s) => s.subprocessors), 'resend'])]
     .filter((k) => k in SUBPROCESSORS)
     .map((k) => SUBPROCESSORS[k].short ?? SUBPROCESSORS[k].name),
 );
@@ -233,7 +236,17 @@ const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })
     .clause-eye { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-crane); margin: 0; }
     .clause-title { font-family: var(--font-display); font-weight: 600; font-size: 23px; letter-spacing: -.015em; color: var(--color-graphite); margin: 0; }
     .clause-prose { font-family: var(--font-body); font-size: 16px; line-height: 1.62; color: var(--color-graphite); margin: 0; }
-    .clause-prose a { color: var(--color-crane); text-decoration: none; border-bottom: 1px solid var(--color-crane); }
+    /* Links inside a clause body arrive via `set:html`, so they carry no data-astro-cid-*
+       and a scoped `.clause-prose a` compiles to `a[data-astro-cid-…]` — dead. It matched
+       nothing: the anchors rendered as plain graphite body text with no underline, i.e. not
+       visibly links at all. `:global(a)` is what makes the rule apply.
+       Colour is a page-local --accent-ink (the pattern /support already ships) because raw
+       crane as TEXT is only ~3.4:1 on the light card; crane-dark clears AA in light, crane in
+       dark. Deliberately scoped to .clause-prose only — clause-eye, `In short —` and the title
+       block still use raw crane and remain the open site-wide token question. */
+    .clause-prose { --accent-ink: var(--color-crane-dark); }
+    :global(html[data-theme="dark"]) .clause-prose { --accent-ink: var(--color-crane); }
+    .clause-prose :global(a) { color: var(--accent-ink); text-decoration: none; border-bottom: 1px solid var(--accent-ink); }
     .clause-gloss { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5; color: var(--color-graphite-60); border-left: 2px solid var(--color-crane); padding: 2px 0 2px 12px; margin: 0; }
     .clause-gloss b { color: var(--color-crane); font-weight: 600; }
     .clause:target { box-shadow: inset 3px 0 0 var(--color-crane); }
