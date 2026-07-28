@@ -1,0 +1,125 @@
+---
+import Base from '../../layouts/Base.astro';
+import { supportGroups, PLATFORM_LABEL } from '../../data/support';
+
+const groups = supportGroups();
+const count = groups.reduce((n, g) => n + g.items.length, 0);
+---
+
+<Base
+  title="Support — ponderance"
+  description="Help for every ponderance app and service: a page per product, and one inbox that a person actually reads."
+  canonical="https://ponderance.dev/support"
+  footerLink={{ href: '/privacy', label: 'Privacy Policy →' }}
+>
+  <style>
+    /* Same card language as /privacy and /terms — tokens only, both themes. */
+    .sh-wrap { --accent-ink: var(--color-crane-dark); }
+    :global(html[data-theme="dark"]) .sh-wrap { --accent-ink: var(--color-crane); }
+
+    .sh-wrap { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+    @media (min-width: 700px) { .sh-wrap { padding: 0 32px; } }
+
+    .sh-head { padding: 48px 0 30px; border-bottom: 1px solid var(--color-crease-line-bold); }
+    .sh-eye { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); margin: 0 0 14px; }
+    .sh-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(34px, 5.6vw, 54px); line-height: 1.04; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; }
+    .sh-lede { font-family: var(--font-body); font-size: 18px; line-height: 1.6; color: var(--color-graphite-60); max-width: 46rem; margin: 16px 0 0; }
+
+    /* Contact, above the fold: a reviewer must reach a human without scrolling. */
+    .sh-contact { position: relative; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 6px; padding: 22px 20px; overflow: hidden; margin: 26px 0 0; }
+    @media (min-width: 700px) { .sh-contact { padding: 24px 26px; } }
+    .sh-corner { position: absolute; top: 0; right: 0; width: 30px; height: 30px; background: linear-gradient(135deg, transparent 50%, var(--color-crease-line) 50%); border-left: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold); }
+    .sh-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); margin: 0 0 8px; }
+    .sh-mailto { font-family: var(--font-mono); font-size: clamp(17px, 3.6vw, 22px); color: var(--accent-ink); text-decoration: none; border-bottom: 2px solid var(--accent-ink); display: inline-flex; align-items: center; min-height: 44px; word-break: break-all; }
+    .sh-note { font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: var(--color-graphite-60); margin: 10px 0 0; max-width: 52ch; }
+
+    /* Product groups */
+    .sh-group { margin: 40px 0 0; scroll-margin-top: 80px; }
+    .sh-group-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 0 0 4px; }
+    .sh-h2 { font-family: var(--font-display); font-weight: 600; font-size: 26px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0; }
+    .sh-h2-note { font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-60); }
+    .sh-group-blurb { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5; color: var(--color-graphite-60); border-left: 2px solid var(--accent-ink); padding: 2px 0 2px 12px; margin: 0 0 18px; }
+
+    .sh-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 760px) { .sh-grid { grid-template-columns: 1fr 1fr; } }
+
+    .sh-card { position: relative; display: flex; flex-direction: column; gap: 10px; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 6px; padding: 20px 20px 18px; overflow: hidden; }
+    .sh-card-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .sh-name { font-family: var(--font-display); font-weight: 600; font-size: 21px; color: var(--color-graphite); margin: 0; }
+    .sh-pill { font-family: var(--font-mono); font-size: 9.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-ink); border: 1.5px solid var(--accent-ink); border-radius: 3px; padding: 2px 7px; transform: rotate(-4deg); }
+    .sh-blurb { font-family: var(--font-body); font-size: 15.5px; line-height: 1.55; color: var(--color-graphite-60); margin: 0; }
+    .sh-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+    .sh-chip { font-family: var(--font-mono); font-size: 11px; color: var(--color-graphite); border: 1px solid var(--color-crease-line-bold); border-radius: 999px; padding: 4px 10px; }
+    .sh-go { font-family: var(--font-body); font-weight: 600; font-size: 15px; color: var(--accent-ink); text-decoration: none; margin-top: auto; display: inline-flex; align-items: center; min-height: 44px; }
+    /* Whole-card hit area, keyboard focus still lands on the real link. */
+    .sh-go::after { content: ""; position: absolute; inset: 0; }
+    .sh-card:focus-within { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+
+    .sh-foot { margin: 44px 0 60px; font-family: var(--font-body); font-size: 15px; line-height: 1.6; color: var(--color-graphite-60); }
+    .sh-foot a { color: var(--accent-ink); text-decoration: none; border-bottom: 1px solid var(--accent-ink); }
+
+    /* Reveal on scroll — CSS-only, @supports-gated; unsupported = plain document. */
+    .sh-reveal { opacity: 1; }
+    @supports (animation-timeline: view()) {
+      .sh-reveal { opacity: 0; animation: creaseIn .9s cubic-bezier(.34,1.56,.64,1) both; animation-timeline: view(); animation-range: entry 2% cover 26%; transform-origin: top; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sh-reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+    }
+  </style>
+
+  <div class="sh-wrap">
+
+    <header class="sh-head">
+      <p class="sh-eye">ponderance.dev · support</p>
+      <h1 class="sh-title">Support</h1>
+      <p class="sh-lede">
+        Every app and service here has its own page: what it needs, what usually goes wrong,
+        and how to make it forget you. If none of it helps, the email below is read by a person.
+      </p>
+
+      <div class="sh-contact">
+        <span class="sh-corner" aria-hidden="true"></span>
+        <p class="sh-label">contact</p>
+        <p style="margin: 0;"><a class="sh-mailto" href="mailto:anmol@ponderance.dev">anmol@ponderance.dev</a></p>
+        <p class="sh-note">
+          A first reply within two business days. Tell me which app, what you did, and what happened
+          instead — none of these apps report anything about your setup back to me, so your description
+          is all I have to go on.
+        </p>
+      </div>
+    </header>
+
+    {groups.map((g) => (
+      <section class="sh-group" id={g.id} aria-labelledby={`${g.id}-h`}>
+        <div class="sh-group-head">
+          <h2 class="sh-h2" id={`${g.id}-h`}>{g.title}</h2>
+          <span class="sh-h2-note">{g.items.length}</span>
+        </div>
+        <p class="sh-group-blurb">{g.blurb}</p>
+        <div class="sh-grid">
+          {g.items.map(({ entry, service }) => (
+            <article class="sh-card sh-reveal">
+              <span class="sh-corner" aria-hidden="true"></span>
+              <div class="sh-card-top">
+                <h3 class="sh-name">{service.name}</h3>
+                <span class="sh-pill">{service.status}</span>
+              </div>
+              <p class="sh-blurb">{entry.blurb}</p>
+              <ul class="sh-chips">
+                {entry.platforms.map((p) => <li class="sh-chip">{PLATFORM_LABEL[p]}</li>)}
+              </ul>
+              <a class="sh-go" href={`/support/${entry.id}`}>Get help with {service.name} →</a>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <p class="sh-foot">
+      {count} products, one inbox. The policies behind them:
+      <a href="/privacy">privacy</a> · <a href="/terms">terms</a>.
+    </p>
+
+  </div>
+</Base>

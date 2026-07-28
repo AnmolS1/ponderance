@@ -1,6 +1,7 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
+import { SUPPORT_IDS } from '../../data/support';
 
 interface Env {
   RATE_LIMIT: KVNamespace;
@@ -38,6 +39,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const project = String(body.get('project') ?? '').trim();
   const message = String(body.get('message') ?? '').trim();
   const token   = String(body.get('cf-turnstile-response') ?? '');
+
+  // A /support/<app> page posts its product id here so the mail is labelled with the
+  // app it is about. Membership in the registry is the test: anything else — absent,
+  // garbage, or invented by a bot — falls through to the commissions path untouched,
+  // so this field can never become a new way to make the endpoint 400.
+  const app = String(body.get('app') ?? '').trim();
+  const isSupport = SUPPORT_IDS.includes(app);
 
   // Field validation
   if (!name || name.length > 200)
@@ -84,8 +92,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
       from: 'ponderance.dev <noreply@ponderance.dev>',
       to: [env.INQUIRY_DEST_EMAIL],
       reply_to: email,
-      subject: `Commission inquiry from ${name}`,
+      subject: isSupport ? `Support · ${app} — ${name}` : `Commission inquiry from ${name}`,
       text: [
+        isSupport ? `App: ${app}` : '',
         `Name: ${name}`,
         `Email: ${email}`,
         project ? `Project: ${project}` : '',

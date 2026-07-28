@@ -17,6 +17,7 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+*.p8
 
 # wrangler local state + secrets
 .wrangler
@@ -34,6 +35,20 @@ design_handoff_ponderance_dev/
 .vscode
 TASKS.md
 docs/
+
+# ── AI/agent instruction, plan, and working docs — must never reach the remote ──
+# Blanket-ignore markdown, because that is what stray CLAUDE.md / AGENTS.md / SUBMISSION.md
+# files always are. CAREFUL: this site's CONTENT is also markdown — src/content/work/*.md are
+# the workshop case studies — so the negation below is load-bearing. Without it a NEW case
+# study would be silently unaddable (existing tracked files would keep working, which is
+# exactly what makes the failure hard to notice). .mdx notes are unaffected by *.md.
+**/*.md
+!README.md
+!src/content/**/*.md
+.cursor/
+.cursorrules
+.aider*
+.github/copilot-instructions.md
 
 # private LLC / legal drafts — keep out of version control
 llc-formation/
