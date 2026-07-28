@@ -48,15 +48,21 @@ export const SERVICES: LegalService[] = [
     status: 'live',
     audience: 'public',
     hosting: 'cloudflare',
-    summary: 'A browser drawing toy with an optional saved gallery.',
+    summary: 'A drawing toy with an optional saved gallery — in the browser and as an iPhone & iPad app.',
+    // Two sign-in providers: Google on the web, Google or Apple in the iOS app. The registry's
+    // `auth` is single-valued, so it stays 'google' to render the required Google Limited-Use
+    // disclosure; Apple sign-in is disclosed in `collects` and in the `apple` sub-processor.
     auth: 'google',
     collects: [
       'Google profile shared at sign-in: name, email, profile picture, Google account id (no password)',
+      'Sign in with Apple, offered in the iOS app: the account identifier Apple issues, plus the name and email you choose to share (Apple can relay a private address instead of your real one). No password reaches us',
       'saved pieces: stroke data, a rendered image, your title, chosen visibility, timestamps',
     ],
-    subprocessors: ['google', 'cloudflare'],
+    subprocessors: ['google', 'apple', 'cloudflare'],
     userContent: true,
     publicSharing: true,
+    notes:
+      'One account and one gallery behind both front ends: the iOS app talks to the same Cloudflare backend as the website. Signing in with Apple in the app and Google on the web creates two separate accounts.',
   },
   {
     id: 'calque',
@@ -85,7 +91,7 @@ export const SERVICES: LegalService[] = [
     id: 'homelab-glance',
     name: 'Homelab Glance',
     url: 'https://github.com/AnmolS1/homelab-glance',
-    status: 'beta',
+    status: 'live', // on sale on the App Store, iOS + macOS (id 6788969780)
     audience: 'public',
     hosting: 'device',
     summary:
@@ -104,7 +110,7 @@ export const SERVICES: LegalService[] = [
     id: 'foldlight',
     name: 'FoldLight',
     url: 'https://github.com/AnmolS1/FoldLight',
-    status: 'beta',
+    status: 'live', // on sale on the App Store, iOS + macOS (id 6789642391)
     audience: 'public',
     hosting: 'device',
     summary:
@@ -176,20 +182,22 @@ export const SERVICES: LegalService[] = [
 
   // ── Coming online (auth being added) — kept here so launch is just `status: 'live'`. ──
   {
-    id: 'audio-visualizer',
-    name: 'Audio Visualizer',
-    url: 'https://github.com/AnmolS1/audio_visualizer',
-    status: 'planned',
+    id: 'antinode',
+    name: 'Antinode',
+    url: 'https://antinode.ponderance.dev',
+    status: 'planned', // T12 in antinode-plan flips this to 'live' on launch day
     audience: 'public',
     hosting: 'cloudflare',
-    summary: 'A Spotify-aware visualizer that follows your playback in real time.',
+    summary: 'A music visualizer that listens in your browser and gives the sound a shape.',
     auth: 'spotify',
     collects: [
-      'Spotify profile shared at sign-in',
-      'your currently-playing track and playback position (read in real time, not stored)',
+      'the audio you let it hear: a dropped file, your mic, a loopback device, or a shared browser tab. Analyzed in your browser for levels and rhythm, drawn to the screen, and let go. Never recorded, never sent anywhere, there is no server to send it to',
+      'if you connect Spotify (optional, and capped by Spotify at a handful of invited accounts): the profile Spotify shares at sign-in, plus your currently-playing track and position, read about once a second to label and sync the visuals. Read and dropped, not stored',
+      'sign-in tokens live in your browser and nowhere else. There is no account with us',
     ],
     subprocessors: ['spotify', 'cloudflare'],
-    notes: 'no secure scopes needed',
+    notes:
+      'A static page on Cloudflare, nothing of yours passes through it. The visualizer needs no account and works with any audio you can route into it. Spotify connect exists so it can name what you are hearing, and Spotify limits development apps to five invited accounts, so that part is invite-only. Not our choice. Formerly listed here as Audio Visualizer.',
   },
   {
     id: 'sister-isles',
@@ -287,7 +295,7 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
   spotify: {
     id: 'spotify',
     name: 'Spotify AB',
-    role: 'Sign-in and playback data for the Audio Visualizer',
+    role: 'Sign-in and playback metadata for Antinode',
     privacy: 'https://www.spotify.com/legal/privacy-policy/',
     dataPolicy: 'https://developer.spotify.com/policy',
   },
@@ -313,7 +321,7 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
   apple: {
     id: 'apple',
     name: 'Apple Inc.',
-    role: 'Sign in with Apple and In-App Purchase billing on iOS for Calque',
+    role: 'Sign in with Apple in the iOS apps (Calque, Kaleidoscope), and In-App Purchase billing on iOS for Calque',
     privacy: 'https://www.apple.com/legal/privacy/',
   },
   lemonsqueezy: {

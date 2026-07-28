@@ -7,6 +7,8 @@ interface Props {
   ogImage?: string;
   /** Optional right-side content for the footer (e.g. contextual link) */
   footerLink?: { href: string; label: string };
+  /** Absolute canonical URL. Emitted only when a page asks for one. */
+  canonical?: string;
 }
 
 const {
@@ -14,6 +16,7 @@ const {
   description = 'Rigorous systems, folded into things that feel alive.',
   ogImage = '/og-image.png',
   footerLink,
+  canonical,
 } = Astro.props;
 
 const site = Astro.site!;
@@ -59,6 +62,7 @@ function isActive(href: string) {
     <!-- Title & description -->
     <title>{title}</title>
     <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
 
     <!-- Open Graph -->
     <meta property="og:type"        content="website" />
@@ -131,6 +135,7 @@ function isActive(href: string) {
       </nav>
       <div class="cp-menu-foot">
         <a href="mailto:anmol@ponderance.dev">anmol@ponderance.dev</a>
+        <a href="/support" data-cp-menu-close>Support</a>
         <a href="/privacy" data-cp-menu-close>Privacy</a>
         <a href="/terms" data-cp-menu-close>Terms</a>
         <a href="/colophon" data-cp-menu-close>Colophon →</a>
@@ -152,6 +157,7 @@ function isActive(href: string) {
         <div class="cp-foot-in">
           <span>© 2026 Anmol · ponderance.dev</span>
           <span style="display: inline-flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+            <a href="/support">Support</a>
             <a href="/privacy">Privacy</a>
             <a href="/terms">Terms</a>
             {footerLink && (

@@ -1,0 +1,306 @@
+---
+import Base from '../../layouts/Base.astro';
+import { supportedProducts, PLATFORM_LABEL, type SupportEntry } from '../../data/support';
+import type { LegalService } from '../../data/legal-services';
+
+// output: "static" — every support page prerenders at build time. A reviewer opening
+// /support/calque in a private window gets a plain document, no sign-in, no JS required.
+export function getStaticPaths() {
+  return supportedProducts().map(({ entry, service }) => ({
+    params: { app: entry.id },
+    props: { entry, service },
+  }));
+}
+
+type Props = { entry: SupportEntry; service: LegalService };
+
+const { entry, service } = Astro.props as Props;
+
+// Pre-filled subject so a mailto reply already says which app it is about.
+const mailto = `mailto:anmol@ponderance.dev?subject=${encodeURIComponent(`Support · ${service.name}`)}`;
+const canonical = `https://ponderance.dev/support/${entry.id}`;
+---
+
+<Base
+  title={`Support — ${service.name}`}
+  description={entry.blurb}
+  canonical={canonical}
+  footerLink={{ href: '/support', label: 'All support →' }}
+>
+  <style>
+    /* ── Shared support-page language. Same family as /privacy and /terms:
+       graph-paper card, corner fold, mono eyebrow, rotated status pill. Tokens
+       only — every colour here survives the light/dark toggle. ─────────────── */
+    /* Crane as TEXT only clears 3.4:1 on the light card — under the 4.5 bar. Same hue,
+       darker value in light (4.99:1); the dark theme's crane is already tuned for a dark
+       ground (4.95:1) and crane-dark would fail there (2.91:1). One switch, both themes. */
+    .sp-wrap { --accent-ink: var(--color-crane-dark); }
+    :global(html[data-theme="dark"]) .sp-wrap { --accent-ink: var(--color-crane); }
+
+    .sp-wrap { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+    @media (min-width: 700px) { .sp-wrap { padding: 0 32px; } }
+
+    .sp-card { position: relative; background: var(--color-graph-card); border: 1px solid var(--color-crease-line-bold); border-radius: 6px; padding: 22px 20px; overflow: hidden; margin: 0 0 16px; scroll-margin-top: 80px; }
+    @media (min-width: 700px) { .sp-card { padding: 24px 26px; } }
+    .sp-corner { position: absolute; top: 0; right: 0; width: 30px; height: 30px; background: linear-gradient(135deg, transparent 50%, var(--color-crease-line) 50%); border-left: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold); }
+
+    .sp-eye { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); margin: 0 0 6px; }
+    .sp-h2 { font-family: var(--font-display); font-weight: 600; font-size: 25px; letter-spacing: -.02em; color: var(--color-graphite); margin: 0 0 6px; }
+    .sp-h3 { font-family: var(--font-display); font-weight: 600; font-size: 18px; color: var(--color-graphite); margin: 0 0 8px; }
+    .sp-prose { font-family: var(--font-body); font-size: 16px; line-height: 1.62; color: var(--color-graphite); margin: 0; }
+    /* Registry prose is rendered with set:html, so links and <code> can appear inside ANY
+       of these containers — style them together or the FAQ/step/list anchors fall back to
+       the UA default (which fails contrast on the dark card). */
+    /* Registry prose is injected with set:html, so its <a> and <code> carry no scope
+       attribute — a plain `.sp-faq-a a` compiles to `a[data-astro-cid-…]` and matches
+       nothing. :global() on the descendant is what makes these reachable. */
+    .sp-link,
+    .sp-prose :global(a), .sp-faq-a :global(a), .sp-list :global(a), .sp-steps :global(a), .sp-req :global(a) { color: var(--accent-ink); text-decoration: none; border-bottom: 1px solid var(--accent-ink); }
+    .sp-code,
+    .sp-prose :global(code), .sp-faq-a :global(code), .sp-list :global(code), .sp-steps :global(code), .sp-req :global(code) { font-family: var(--font-mono); font-size: .92em; background: var(--color-inset); border: 1px solid var(--color-crease-line); border-radius: 3px; padding: 1px 5px; }
+    .sp-faq-a :global(strong), .sp-steps :global(strong), .sp-list :global(strong) { font-weight: 600; }
+    .sp-muted { font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: var(--color-graphite-60); margin: 0; }
+
+    .sp-section { margin: 34px 0 0; scroll-margin-top: 80px; }
+    .sp-section-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 0 0 14px; }
+
+    /* Identity band */
+    .sp-id { padding: 44px 0 26px; border-bottom: 1px solid var(--color-crease-line-bold); }
+    .sp-crumb { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); margin: 0 0 14px; }
+    .sp-crumb a { color: var(--color-crease); text-decoration: none; border-bottom: 1px solid var(--color-crease-line-bold); }
+    .sp-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(32px, 6vw, 50px); line-height: 1.05; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; }
+    .sp-blurb { font-family: var(--font-body); font-size: 18px; line-height: 1.55; color: var(--color-graphite-60); max-width: 44rem; margin: 14px 0 0; }
+    .sp-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 18px 0 0; }
+    .sp-chip { font-family: var(--font-mono); font-size: 11.5px; color: var(--color-graphite); border: 1px solid var(--color-crease-line-bold); border-radius: 999px; padding: 5px 11px; }
+    .sp-pill { font-family: var(--font-mono); font-size: 9.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-ink); border: 1.5px solid var(--accent-ink); border-radius: 3px; padding: 3px 8px; transform: rotate(-4deg); }
+    .sp-links { display: flex; flex-wrap: wrap; gap: 10px 18px; margin: 18px 0 0; padding: 0; list-style: none; }
+    .sp-links a { font-family: var(--font-body); font-size: 15px; display: inline-flex; align-items: center; min-height: 44px; }
+
+    /* Contact block — the thing a reviewer must find without scrolling */
+    .sp-contact { margin: 26px 0 0; }
+    .sp-mailto { font-family: var(--font-mono); font-size: clamp(16px, 3.4vw, 20px); color: var(--accent-ink); text-decoration: none; border-bottom: 2px solid var(--accent-ink); display: inline-flex; align-items: center; min-height: 44px; word-break: break-all; }
+
+    /* Lists */
+    .sp-list { font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: var(--color-graphite); margin: 0; padding: 0 0 0 20px; }
+    .sp-list li { margin: 0 0 8px; }
+    .sp-steps { font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: var(--color-graphite); margin: 0; padding: 0 0 0 22px; }
+    .sp-steps li { margin: 0 0 10px; padding-left: 2px; }
+    .sp-steps li::marker { font-family: var(--font-mono); font-size: 13px; color: var(--accent-ink); }
+
+    /* FAQ disclosures */
+    .sp-faq { border-bottom: 1px solid var(--color-crease-line); }
+    .sp-faq:last-of-type { border-bottom: 0; }
+    .sp-faq summary { font-family: var(--font-display); font-weight: 600; font-size: 17px; color: var(--color-graphite); cursor: pointer; list-style: none; padding: 14px 34px 14px 0; min-height: 44px; display: flex; align-items: center; position: relative; }
+    .sp-faq summary::-webkit-details-marker { display: none; }
+    .sp-faq summary::after { content: "+"; position: absolute; right: 6px; font-family: var(--font-mono); font-size: 18px; color: var(--accent-ink); }
+    .sp-faq[open] summary::after { content: "–"; }
+    .sp-faq summary:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; border-radius: 3px; }
+    .sp-faq-a { font-family: var(--font-body); font-size: 16px; line-height: 1.62; color: var(--color-graphite); margin: 0 0 16px; max-width: 62ch; }
+
+    /* Contact form — the calm cousin of the commissions console */
+    .sp-form { display: flex; flex-direction: column; gap: 14px; }
+    .sp-field { display: flex; flex-direction: column; gap: 6px; }
+    .sp-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-crease); }
+    .sp-input { font-family: var(--font-body); font-size: 16px; color: var(--color-graphite); background: var(--color-inset); border: 1px solid var(--color-crease-line-bold); border-radius: 4px; padding: 11px 12px; min-height: 44px; width: 100%; }
+    .sp-input:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 1px; }
+    .sp-submit { font-family: var(--font-mono); font-weight: 600; font-size: 14px; letter-spacing: .06em; background: var(--color-crane-dark); color: #fff; border: 1px solid var(--accent-ink); border-radius: 3px; padding: 12px 26px; min-height: 44px; cursor: pointer; }
+    .sp-submit[disabled] { opacity: .6; cursor: progress; }
+    .sp-status { font-family: var(--font-mono); font-size: 13.5px; line-height: 1.5; color: var(--color-graphite); min-height: 22px; }
+    .sp-status[data-state="error"] { color: var(--accent-ink); }
+    .hp-field { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; }
+
+    /* Requirements — small mono block at the foot of the page */
+    .sp-req { font-family: var(--font-mono); font-size: 13px; line-height: 1.6; color: var(--color-graphite-60); margin: 0; padding: 0 0 0 18px; }
+    .sp-req li { margin: 0 0 6px; }
+
+    /* Reveal on scroll — CSS-only and @supports-gated. Unsupported = plain document. */
+    .sp-reveal { opacity: 1; }
+    @supports (animation-timeline: view()) {
+      .sp-reveal { opacity: 0; animation: creaseIn .9s cubic-bezier(.34,1.56,.64,1) both; animation-timeline: view(); animation-range: entry 2% cover 26%; transform-origin: top; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sp-reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+    }
+  </style>
+
+  <div class="sp-wrap">
+
+    <!-- ── 1. Identity: this page belongs to THIS app ───────────────────────── -->
+    <header class="sp-id">
+      <p class="sp-crumb"><a href="/support">ponderance.dev · support</a></p>
+      <h1 class="sp-title">{service.name}</h1>
+      <p class="sp-blurb">{entry.blurb}</p>
+      <div class="sp-meta">
+        {entry.platforms.map((p) => <span class="sp-chip">{PLATFORM_LABEL[p]}</span>)}
+        <span class="sp-pill">{service.status}</span>
+      </div>
+      <ul class="sp-links">
+        {entry.links.map((l) => (
+          <li><a class="sp-link" href={l.href}>{l.label} →</a></li>
+        ))}
+      </ul>
+    </header>
+
+    <!-- ── 2. Contact, immediately ─────────────────────────────────────────── -->
+    <section class="sp-section sp-contact" id="contact" aria-labelledby="contact-h">
+      <p class="sp-eye">contact</p>
+      <h2 class="sp-h2" id="contact-h">Get help with {service.name}</h2>
+      <p class="sp-prose" style="max-width: 62ch; margin: 0 0 16px;">
+        Email is the fastest route, and it always works — the form below is a convenience, not the only way in.
+      </p>
+      <p style="margin: 0 0 10px;"><a class="sp-mailto" href={mailto}>anmol@ponderance.dev</a></p>
+      <p class="sp-muted" style="margin: 0 0 22px;">{entry.responseTime}</p>
+
+      <div class="sp-card">
+        <span class="sp-corner" aria-hidden="true"></span>
+        <h3 class="sp-h3">Send a message</h3>
+        <p class="sp-muted" style="margin: 0 0 16px;">It reaches the same inbox, tagged with {service.name}.</p>
+
+        <form id="support-form" class="sp-form" action="/api/inquiry" method="POST">
+          <input type="hidden" name="app" value={entry.id} />
+
+          <div class="sp-field">
+            <label class="sp-label" for="sf-name">Your name</label>
+            <input class="sp-input" id="sf-name" name="name" type="text" autocomplete="name" required />
+          </div>
+          <div class="sp-field">
+            <label class="sp-label" for="sf-email">Email to reply to</label>
+            <input class="sp-input" id="sf-email" name="email" type="email" autocomplete="email" required />
+          </div>
+          <div class="sp-field">
+            <label class="sp-label" for="sf-message">What happened</label>
+            <textarea class="sp-input" id="sf-message" name="message" rows="5" style="resize: vertical;" required></textarea>
+          </div>
+
+          <!-- Honeypot: off-screen, aria-hidden, tabindex=-1 -->
+          <div class="hp-field" aria-hidden="true">
+            <label for="sf-company">Company (leave blank)</label>
+            <input id="sf-company" name="company" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <!-- Turnstile bot-defense widget. No data-theme: it follows the page theme. -->
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADp2t7l5SIUOtCyP"></div>
+
+          <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+            <button class="sp-submit" type="submit">Send</button>
+            <p class="sp-status" id="support-status" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ── 3. Common questions ─────────────────────────────────────────────── -->
+    <section class="sp-section" id="questions" aria-labelledby="questions-h">
+      <div class="sp-section-head">
+        <h2 class="sp-h2" id="questions-h" style="margin: 0;">Common questions</h2>
+      </div>
+      <div class="sp-card sp-reveal">
+        <span class="sp-corner" aria-hidden="true"></span>
+        {entry.faqs.map((f, i) => (
+          <details class="sp-faq" open={i === 0}>
+            <summary>{f.q}</summary>
+            <p class="sp-faq-a" set:html={f.a}></p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── 4. When something goes wrong ────────────────────────────────────── -->
+    {entry.troubleshooting && entry.troubleshooting.length > 0 && (
+      <section class="sp-section" id="troubleshooting" aria-labelledby="troubleshooting-h">
+        <div class="sp-section-head">
+          <h2 class="sp-h2" id="troubleshooting-h" style="margin: 0;">When something goes wrong</h2>
+          <span style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-60);">in the order it actually fails</span>
+        </div>
+        {entry.troubleshooting.map((t) => (
+          <div class="sp-card sp-reveal">
+            <span class="sp-corner" aria-hidden="true"></span>
+            <h3 class="sp-h3">{t.title}</h3>
+            <ol class="sp-steps">
+              {t.steps.map((s) => <li set:html={s}></li>)}
+            </ol>
+          </div>
+        ))}
+      </section>
+    )}
+
+    <!-- ── 5. Subscription & billing ───────────────────────────────────────── -->
+    {entry.billing && (
+      <section class="sp-section" id="billing" aria-labelledby="billing-h">
+        <div class="sp-section-head">
+          <h2 class="sp-h2" id="billing-h" style="margin: 0;">Subscription &amp; billing</h2>
+        </div>
+        <div class="sp-card sp-reveal">
+          <span class="sp-corner" aria-hidden="true"></span>
+          <p class="sp-prose" style="max-width: 62ch;">{entry.billing.tiers}</p>
+        </div>
+        {entry.billing.manage.map((m) => (
+          <div class="sp-card sp-reveal">
+            <span class="sp-corner" aria-hidden="true"></span>
+            <p class="sp-eye">cancel or change</p>
+            <h3 class="sp-h3">{m.title}</h3>
+            <ol class="sp-steps">
+              {m.steps.map((s) => <li set:html={s}></li>)}
+            </ol>
+          </div>
+        ))}
+        <div class="sp-card sp-reveal">
+          <span class="sp-corner" aria-hidden="true"></span>
+          <p class="sp-eye">refunds</p>
+          <p class="sp-prose" style="max-width: 62ch;">{entry.billing.refunds}</p>
+        </div>
+      </section>
+    )}
+
+    <!-- ── 6. Your data ────────────────────────────────────────────────────── -->
+    <section class="sp-section" id="data" aria-labelledby="data-h">
+      <div class="sp-section-head">
+        <h2 class="sp-h2" id="data-h" style="margin: 0;">Your data</h2>
+      </div>
+      <div class="sp-card sp-reveal">
+        <span class="sp-corner" aria-hidden="true"></span>
+        <ul class="sp-list">
+          {entry.dataAndDeletion.map((d) => <li set:html={d}></li>)}
+        </ul>
+        <hr style="border: 0; border-top: 1px solid var(--color-crease-line); margin: 18px 0 14px;" />
+        <p class="sp-muted">
+          The full policy for {service.name}:
+          <a class="sp-link" href={`/privacy#svc-${entry.id}`}>privacy</a> ·
+          <a class="sp-link" href={`/terms#svc-${entry.id}`}>terms</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ── 7. Known issues ─────────────────────────────────────────────────── -->
+    {entry.knownIssues && entry.knownIssues.length > 0 && (
+      <section class="sp-section" id="known-issues" aria-labelledby="known-issues-h">
+        <div class="sp-section-head">
+          <h2 class="sp-h2" id="known-issues-h" style="margin: 0;">Known issues</h2>
+          <span style="font-family: var(--font-mono); font-size: 12px; color: var(--color-graphite-60);">said here so you don’t have to ask</span>
+        </div>
+        <div class="sp-card sp-reveal">
+          <span class="sp-corner" aria-hidden="true"></span>
+          <ul class="sp-list">
+            {entry.knownIssues.map((k) => <li set:html={k}></li>)}
+          </ul>
+        </div>
+      </section>
+    )}
+
+    <!-- ── 8. Requirements ─────────────────────────────────────────────────── -->
+    <section class="sp-section" id="requirements" aria-labelledby="requirements-h" style="padding-bottom: 60px;">
+      <p class="sp-eye">what you need</p>
+      <h2 class="sp-h2" id="requirements-h" style="font-size: 20px;">Requirements</h2>
+      <ul class="sp-req">
+        {entry.requirements.map((r) => <li set:html={r}></li>)}
+      </ul>
+    </section>
+
+  </div>
+
+  <!-- Turnstile SDK — allowed by script-src 'self' https://challenges.cloudflare.com.
+       SRI intentionally omitted: api.js is a rolling Cloudflare endpoint. -->
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <!-- Support form island — external JS, CSP-clean. With JS off, the mailto above works. -->
+  <script is:inline type="module" src="/scripts/support-form.js"></script>
+</Base>
