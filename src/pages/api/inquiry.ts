@@ -1,6 +1,13 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
+// Astro v6 REMOVED `Astro.locals.runtime.env` — it is now a getter that THROWS, so the
+// old `locals.runtime.env` line 500'd on every POST (empty body, no worker log, because
+// the throw happens on the first statement of the handler). Bindings come from the
+// runtime module now. Reproduce any regression here with:
+//   curl -X POST https://ponderance.dev/api/inquiry -H 'Origin: https://ponderance.dev' -F name=x -F email=x@y.z -F message=z
+// — without the Origin header Astro's CSRF check returns 403 and you never reach this code.
+import { env as workerEnv } from 'cloudflare:workers';
 import { SUPPORT_IDS } from '../../data/support';
 
 interface Env {
@@ -17,8 +24,10 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
-export const POST: APIRoute = async ({ request, locals }) => {
-  const env = (locals as unknown as { runtime: { env: Env } }).runtime.env;
+export const POST: APIRoute = async ({ request }) => {
+  // Cast: the generated Cloudflare.Env carries the wrangler.jsonc bindings (RATE_LIMIT)
+  // but not the secrets, which are set with `wrangler secret put`.
+  const env = workerEnv as unknown as Env;
 
   // Parse multipart or urlencoded form body
   let body: FormData;
