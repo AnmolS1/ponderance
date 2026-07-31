@@ -41,7 +41,7 @@ jobs:
           CFG=dist/server/wrangler.json
           grep -q '2b67b00d20de4e1b84db2dcb48a48980' "$CFG" \
             || { echo "FAIL: real RATE_LIMIT KV id missing in $CFG"; exit 1; }
-          grep -q '"ponderance-dev"' "$CFG" \
+          grep -q '"ponderance-prod"' "$CFG" \
             || { echo "FAIL: worker name mismatch in $CFG"; exit 1; }
           grep -q '__RATE_LIMIT_KV_ID__' "$CFG" \
             && { echo "FAIL: placeholder KV id still present in $CFG"; exit 1; }
@@ -102,7 +102,12 @@ jobs:
       # dev branch  → deploy to ponderance-preview (workers.dev URL, no custom domains)
       #               Note: secrets must be set on that worker once before /api/inquiry works:
       #               wrangler secret put <SECRET_NAME> --name ponderance-preview
-      # prod branch → deploy to ponderance-dev (custom domains managed via dashboard)
+      # prod branch → deploy to ponderance-prod (custom domains managed via dashboard)
+      #               Renamed from "ponderance-dev" on 2026-07-30. Cloudflare renamed the
+      #               Worker in place — same id, same created_on, routes and custom domains
+      #               carried over, verified by ponderance.dev still serving 200 after.
+      #               The gate above pins this name on purpose: it fails closed, so a config
+      #               that names the wrong Worker never reaches deploy.
       - name: Prepare deploy config
         run: |
           if [ "${{ github.ref }}" = "refs/heads/prod" ]; then
