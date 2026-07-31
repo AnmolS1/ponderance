@@ -54,3 +54,6 @@ docs/
 llc-formation/
 # Playwright MCP session artifacts (screenshots, traces)
 .playwright-mcp/
+
+# Build stamp — generated at build time, never committed (orrery-stamp).
+src/stamp.generated.ts

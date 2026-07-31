@@ -28,6 +28,13 @@ jobs:
       - name: Generate Worker types
         run: npx wrangler types --config wrangler.jsonc
 
+      # The build stamp is GENERATED, so it must exist before the type check —
+      # `astro check` runs before `npm run build` and would otherwise fail on
+      # the missing module. `npm run build` regenerates it; running it twice is
+      # harmless and keeps the check honest about what the build produces.
+      - name: Generate build stamp
+        run: npm run stamp
+
       - name: Type check
         run: npx astro check
 
