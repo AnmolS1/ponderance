@@ -230,7 +230,10 @@ export const SERVICES: LegalService[] = [
     id: 'antinode',
     name: 'Antinode',
     url: 'https://antinode.ponderance.dev',
-    status: 'planned', // T12 in antinode-plan flips this to 'live' on launch day
+    // T12 in antinode-plan flips this to 'live' on launch day. Flip it and a support
+    // page becomes due in the same commit: `supportedProducts()` filters 'planned', so
+    // antinode's absence from SUPPORT is correct today and a gap the moment this changes.
+    status: 'planned',
     audience: 'public',
     hosting: 'cloudflare',
     summary: 'A music visualizer that listens in your browser and gives the sound a shape.',
