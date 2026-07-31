@@ -57,3 +57,4 @@ llc-formation/
 
 # Build stamp — generated at build time, never committed (orrery-stamp).
 src/stamp.generated.ts
+public/__meta

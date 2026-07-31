@@ -7,3 +7,9 @@
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+
+# Build stamp (orrery-stamp). A cached stamp describes the previous deploy,
+# which defeats the only purpose the endpoint has.
+/__meta
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: no-store
