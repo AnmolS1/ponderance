@@ -465,9 +465,10 @@ export const SUPPORT: SupportEntry[] = [
     id: 'flatfold',
     blurb:
       'An end-to-end encrypted messenger where the server holds nothing it can read — including your history.',
-    platforms: ['web'],
+    platforms: ['ios', 'ipados', 'macos', 'web'],
     requirements: [
-      'Any modern browser.',
+      'iPhone or iPad running iOS 15 or later, or a Mac running macOS 12 or later, for the app.',
+      'Any modern browser, for the web app at flatfold.ponderance.dev.',
       'A username and a password you can remember. The password is the key — read the next section before you pick one.',
       'The exact username of anyone you want to talk to; there is no directory to search.',
     ],
