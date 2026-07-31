@@ -7,11 +7,12 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "npm run stamp && astro build",
     "preview": "astro preview",
     "lint": "eslint src/",
     "check": "astro check",
-    "astro": "astro"
+    "astro": "astro",
+    "stamp": "STAMP_PROJECT=ponderance node scripts/gen-stamp.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "13.6.1",
