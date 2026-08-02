@@ -14,6 +14,16 @@ const work = defineCollection({
     featured: z.boolean(),
     order: z.number().int().positive(),
     cover: z.string().optional(),
+    /**
+     * Social card for THIS entry, absolute-from-root (e.g. `/work/x-og.png`).
+     * Distinct from `cover`: covers are SVGs inlined into the page so they
+     * inherit the theme tokens, and link previewers render neither SVG nor CSS
+     * variables. A card must be a flat raster at exactly 1200x630 — Base.astro
+     * hardcodes those as `og:image:width`/`height`, so any other size makes the
+     * markup lie about the file. Omit and the entry falls back to the site-wide
+     * `/og-image.png`.
+     */
+    ogImage: z.string().optional(),
   }),
 });
 

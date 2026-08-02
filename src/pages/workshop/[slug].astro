@@ -12,12 +12,19 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const { title, summary, role, stack, liveUrl, repo } = entry.data;
+const { title, summary, role, stack, liveUrl, repo, ogImage } = entry.data;
+
+/*
+ * An entry may carry its own social card. Passing `undefined` is deliberate
+ * rather than guarded: Base destructures with a default, so an entry without
+ * one keeps the site-wide /og-image.png exactly as before.
+ */
 ---
 
 <Base
   title={`${title} — Workshop — ponderance`}
   description={summary}
+  ogImage={ogImage}
   footerLink={{ href: '/workshop', label: '← all work' }}
 >
   <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px;">
