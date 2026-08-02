@@ -8,6 +8,22 @@
   Cross-Origin-Resource-Policy: same-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
 
+# Social cards. The site-wide `Cross-Origin-Resource-Policy: same-origin` above
+# tells every consumer these bytes may only be loaded from a ponderance.dev
+# context — which is exactly what a link preview is NOT. iMessage, Slack and
+# Discord render the card in their own context, so a CORP-respecting client
+# refuses the image and the card renders with text and no picture. The failure
+# is silent: the page, the tags and the file are all correct and all return 200.
+#
+# `cross-origin` is what publicly embeddable assets are supposed to say (GitHub
+# sends it on githubassets.com). Nothing is weakened: these images exist to be
+# shown by other people's software, and the rest of the site keeps same-origin.
+/og-image.png
+  Cross-Origin-Resource-Policy: cross-origin
+
+/work/*
+  Cross-Origin-Resource-Policy: cross-origin
+
 # Build stamp (orrery-stamp). A cached stamp describes the previous deploy,
 # which defeats the only purpose the endpoint has.
 /__meta
