@@ -54,6 +54,18 @@ jobs:
             && { echo "FAIL: placeholder KV id still present in $CFG"; exit 1; }
           echo "PASS: deploy config has real KV id and correct worker name"
 
+      # The PLAY service binding reaches the game's backend Worker. The adapter
+      # REGENERATES dist/server/wrangler.json from wrangler.jsonc plus its own
+      # output, and a binding lost in that merge does not fail the build — it
+      # makes env.PLAY undefined at runtime, so /play/api/* 503s and nothing
+      # local catches it. Assert it survived.
+      - name: Gate — PLAY service binding survives the adapter merge
+        run: |
+          CFG=dist/server/wrangler.json
+          jq -e '.services[] | select(.binding == "PLAY" and .service == "ponderance-play")' "$CFG" > /dev/null \
+            || { echo "FAIL: PLAY service binding missing from $CFG"; exit 1; }
+          echo "PASS: PLAY -> ponderance-play service binding present"
+
       - name: Gate — design system
         run: bash scripts/validate/design-system.sh
 

@@ -16,6 +16,16 @@
   "kv_namespaces": [
     { "binding": "RATE_LIMIT", "id": "2b67b00d20de4e1b84db2dcb48a48980" }
   ],
+  // The game's backend. `ponderance-play` is a separate Worker with no route of
+  // its own, reached only from src/pages/play/api/[...path].ts. This is why the
+  // game needs no third route and no taxi.ponderance.dev — see that file.
+  //
+  // ORDERING: Cloudflare rejects a deploy whose service binding names a Worker
+  // that does not exist yet. `ponderance-play` must be deployed BEFORE this
+  // entry ships, or the site's next deploy fails. It is not a warning.
+  "services": [
+    { "binding": "PLAY", "service": "ponderance-play" }
+  ],
   // CRITICAL: exactly two entries, no wildcards, no *.ponderance.dev
   "routes": [
     { "pattern": "ponderance.dev", "custom_domain": true },
