@@ -33,6 +33,14 @@ check_header "CSP Turnstile script-src"  "https://challenges.cloudflare.com"
 check_header "CSP style-src unsafe-inline" "style-src 'self' 'unsafe-inline'"
 check_header "CSP frame-ancestors"       "frame-ancestors 'none'"
 check_header "CSP frame-src Turnstile"   "frame-src https://challenges.cloudflare.com"
+check_header "CSP connect-src self"      "connect-src 'self'"
+# worker-src: B-05. The game loads its sim in a Web Worker. This ALREADY worked via
+# the worker-src -> child-src -> script-src 'self' fallback, so the directive is not
+# a fix — it is a latch. Declaring it means a future `child-src` addition (Turnstile
+# already put frame-src in this policy) cannot silently take over worker governance.
+# Deliberately NOT adding blob:: Vite's `?worker&inline` emits a blob: worker that
+# this blocks. Use plain `?worker`, which emits a same-origin chunk.
+check_header "CSP worker-src self"       "worker-src 'self'"
 check_header "CSP upgrade-insecure"      "upgrade-insecure-requests"
 check_header "HSTS"                     "Strict-Transport-Security: max-age=31536000; includeSubDomains"
 check_header "X-Frame-Options"          "X-Frame-Options: DENY"
