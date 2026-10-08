@@ -1,6 +1,6 @@
 ---
-title: "BigStorage"
-slug: "bigstorage"
+title: "HoldFast"
+slug: "holdfast"
 cover: "/work/bigstorage-cover.svg"
 summary: "A Google Drive clone: auth, file storage, folders, sharing, and trash, on Next.js and AWS."
 role: "Solo developer"

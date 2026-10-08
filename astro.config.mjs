@@ -11,6 +11,10 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   site: "https://ponderance.dev",
   output: "static",
+  // Renamed pages keep their old URL alive. Data, not code: one line per move.
+  redirects: {
+    "/workshop/bigstorage": "/workshop/holdfast",
+  },
   // Disable auto-injected SESSION KV binding (portfolio doesn't use sessions)
   session: { driver: { entrypoint: "unstorage/drivers/null" } },
   adapter: cloudflare({
