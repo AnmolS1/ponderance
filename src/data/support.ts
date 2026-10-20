@@ -26,6 +26,7 @@ const commercialOf = (id: string): Commercial => {
 };
 
 const CALQUE_PLUS = commercialOf('calque');
+const KALEIDOSCOPE_PLUS = commercialOf('kaleidoscope');
 
 export type Platform = 'ios' | 'ipados' | 'macos' | 'watchos' | 'web';
 
@@ -68,7 +69,11 @@ export interface SupportEntry {
   faqs: SupportFAQ[];
   /** Ordered fixes for the failures that actually happen. */
   troubleshooting?: SupportProcedure[];
-  /** Paid tiers only. `manage` is a list of concrete steps per storefront. */
+  /**
+   * Paid tiers only. `manage` is a list of concrete steps per storefront — cancelling a
+   * subscription, or restoring a one-time purchase. The page picks its headings from the
+   * service's `commercial.kind`, so the words stay true to how the tier is sold.
+   */
   billing?: { tiers: string; manage: SupportProcedure[]; refunds: string };
   /** How to delete an account / clear data. Required reading for anything with sign-in. */
   dataAndDeletion: string[];
@@ -448,11 +453,34 @@ export const SUPPORT: SupportEntry[] = [
         a: 'An unsaved canvas is not kept anywhere — the refresh discarded it. Save before you leave, or download the image.',
       },
     ],
+    billing: {
+      tiers: `Kaleidoscope is free: drawing, saving, and sharing cost nothing. ${KALEIDOSCOPE_PLUS.plan} is a one-time purchase of ${KALEIDOSCOPE_PLUS.price} — not a subscription, so nothing renews and there is nothing to cancel — and adds ${KALEIDOSCOPE_PLUS.provides}. It belongs to the Kaleidoscope account you were signed in to when you bought it, so it works on the web and in the app wherever you sign in to that same account.`,
+      manage: [
+        {
+          title: 'On iPhone or iPad',
+          steps: [
+            'Sign in with the same account you bought it on, then open the You tab and tap <strong>Restore purchase</strong>.',
+            'Make sure the device is signed into the Apple Account that paid. If you bought on the web, restoring here still works — Plus comes from your Kaleidoscope account, not from Apple.',
+          ],
+        },
+        {
+          title: 'On the web',
+          steps: [
+            'Sign in at kaleidoscope.ponderance.dev with the same account you bought it on.',
+            'Open the account menu → <strong>Kaleidoscope Plus</strong> → <strong>Restore purchase</strong>.',
+            'If it says the purchase belongs to another account, sign out and sign in with that one — signing in with Apple in the app and Google on the web are two separate accounts.',
+          ],
+        },
+      ],
+      refunds:
+        'App Store purchases are refunded by Apple, at reportaproblem.apple.com — Anmol genuinely cannot issue those. For a web purchase, email anmol@ponderance.dev and the refund is started through Lemon Squeezy. A refund removes Plus from the account; nothing you have already made is deleted.',
+    },
     dataAndDeletion: [
       'Signing in with Google shares your name, email, profile picture, and Google account id; Sign in with Apple, in the app, shares an account identifier and whatever you chose to share at the prompt. No password ever reaches us.',
       'A saved piece stores its stroke data, a rendered image, your title, the visibility you chose, and timestamps.',
       'Deleting a piece removes it and its image.',
       'Deleting the account is by email today — see the question above — and takes everything saved under it with it.',
+      `If you bought ${KALEIDOSCOPE_PLUS.plan}, deleting the account ends it there. The purchase record — the store’s transaction or order id, when it was granted, and whether it was refunded — is kept, detached from any account, because a refund or support question about a real payment can still need it.`,
     ],
     responseTime: REPLY_2_DAYS,
     knownIssues: [

@@ -17,6 +17,12 @@ type Props = { entry: SupportEntry; service: LegalService };
 const { entry, service } = Astro.props as Props;
 
 // Pre-filled subject so a mailto reply already says which app it is about.
+// A one-time purchase has nothing to cancel, so its billing section must not say "subscription"
+// or "cancel or change" — the headings follow the registry's `commercial.kind`.
+const oneTimeTier = service.commercial?.kind === 'one-time';
+const billingHeading = oneTimeTier ? 'Purchase & billing' : 'Subscription & billing';
+const manageEye = oneTimeTier ? 'restore' : 'cancel or change';
+
 const mailto = `mailto:anmol@ponderance.dev?subject=${encodeURIComponent(`Support · ${service.name}`)}`;
 const canonical = `https://ponderance.dev/support/${entry.id}`;
 ---
@@ -224,11 +230,11 @@ const canonical = `https://ponderance.dev/support/${entry.id}`;
       </section>
     )}
 
-    <!-- ── 5. Subscription & billing ───────────────────────────────────────── -->
+    <!-- ── 5. Billing (subscription or one-time) ───────────────────────────────────────── -->
     {entry.billing && (
       <section class="sp-section" id="billing" aria-labelledby="billing-h">
         <div class="sp-section-head">
-          <h2 class="sp-h2" id="billing-h" style="margin: 0;">Subscription &amp; billing</h2>
+          <h2 class="sp-h2" id="billing-h" style="margin: 0;">{billingHeading}</h2>
         </div>
         <div class="sp-card sp-reveal">
           <span class="sp-corner" aria-hidden="true"></span>
@@ -237,7 +243,7 @@ const canonical = `https://ponderance.dev/support/${entry.id}`;
         {entry.billing.manage.map((m) => (
           <div class="sp-card sp-reveal">
             <span class="sp-corner" aria-hidden="true"></span>
-            <p class="sp-eye">cancel or change</p>
+            <p class="sp-eye">{manageEye}</p>
             <h3 class="sp-h3">{m.title}</h3>
             <ol class="sp-steps">
               {m.steps.map((s) => <li set:html={s}></li>)}
