@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { listedServices, SUBPROCESSORS, type AuthProvider, type Storefront } from '../data/legal-services';
+import { listedServices, SUBPROCESSORS, type AuthProvider, type Commercial, type Storefront } from '../data/legal-services';
 
 const listed = listedServices();
 
@@ -21,15 +21,40 @@ const oxford = (xs: string[]): string =>
 const paid = listed.filter((s) => s.commercial);
 const encrypted = listed.filter((s) => s.e2ee);
 
-// The subscriptions clause's own number, referenced from three other clauses and from
-// termsNote(). Kept as a constant so an inserted clause can't leave a dangling "see §04".
+// The paid-tiers clause's own number (anchor id still `subscriptions`), referenced from other
+// clauses and from termsNote(). Kept as a constant so an inserted clause can't leave a
+// dangling "see §04".
 const SUBSCRIPTIONS_N = '04';
+
+const subscriptions = paid.filter((s) => s.commercial!.kind === 'subscription');
+const oneTime = paid.filter((s) => s.commercial!.kind === 'one-time');
+
+// "an optional Calque Plus subscription" / "an optional one-time Kaleidoscope Plus purchase".
+const offerPhrase = (c: Commercial): string =>
+  c.kind === 'subscription' ? `an optional ${c.plan} subscription` : `an optional one-time ${c.plan} purchase`;
+
+// How many paid products, and of which kinds — for the two margin glosses, which used to say
+// "one offers an optional subscription" by hand and would have gone stale on the next product.
+const NUM = ['no', 'one', 'two', 'three', 'four', 'five'];
+const paidGloss = (() => {
+  const n = NUM[paid.length] ?? String(paid.length);
+  if (!paid.length) return 'all free to use.';
+  if (!oneTime.length) return `all free to use; ${n} ${paid.length === 1 ? 'offers an optional subscription' : 'offer optional subscriptions'}.`;
+  if (!subscriptions.length) return `all free to use; ${n} ${paid.length === 1 ? 'offers an optional one-time purchase' : 'offer optional one-time purchases'}.`;
+  return `all free to use; ${n} offer optional paid extras — ${oxford([
+    ...subscriptions.map((s) => `${s.name} a subscription`),
+    ...oneTime.map((s) => `${s.name} a one-time purchase`),
+  ])}.`;
+})();
 
 // What a storefront means for the person paying. The registry says only WHERE money is taken;
 // who charges, who cancels, and who can refund is prose, so it lives here.
 //
 // Guideline 3.1.1: both storefronts are described in the same shape and at the same length,
 // App Store first, with no language steering an iOS reader toward the web purchase.
+//
+// `manage` applies to subscriptions only — a one-time purchase has nothing to cancel, and its
+// restore path is the same on both storefronts, so it is stated once in the purchase prose.
 const STOREFRONT: Record<Storefront, { name: string; charges: string; manage: string; refunds: string }> = {
   apple: {
     name: 'App Store',
@@ -57,54 +82,84 @@ const thirdParties = oxford(
 );
 
 // A light, service-specific terms note derived from the registry flags (never the raw TODO notes).
-// Order matters and is deliberately most-specific-first: `commercial` and `e2ee` are narrower
-// claims than `userContent`, and FlatFold is both `userContent` and `e2ee` — under the old order
-// it drew the "saving grants us a licence to host and show it" note, asserting a licence to
-// display message content the server provably cannot read.
-function termsNote(s: (typeof listed)[number]): string {
-  if (s.commercial)
-    return `Free to download and use. ${s.commercial.plan} is an optional auto-renewable subscription on top (${s.commercial.price}) that renews until you cancel it — see §${SUBSCRIPTIONS_N}.`;
+// Two parts. The paid note (from `commercial`) comes first, then ONE content note chosen
+// most-specific-first: `e2ee` → `publicSharing` → invited self-hosted → `userContent`. FlatFold is
+// both `userContent` and `e2ee` — under the old order it drew the "saving grants us a licence to
+// host and show it" note, asserting a licence to display message content the server provably
+// cannot read. The paid note is composed rather than returned early because Kaleidoscope is both
+// `commercial` and `publicSharing`: an early return would have silently dropped its remix warning.
+// The free fallback renders only when neither part applies.
+function contentNote(s: (typeof listed)[number]): string | null {
   if (s.e2ee)
     return 'Encrypted on your device before it reaches us. We hold ciphertext we cannot read, so no licence to display your content applies, and none is possible (see §03).';
   if (s.publicSharing) return 'Public pieces may be remixed by other users; keep that in mind before you publish.';
   if (s.audience === 'invited' && s.hosting === 'self-hosted') return 'Shared for invited personal use; the libraries are not yours to redistribute.';
   if (s.userContent) return 'You keep ownership of what you upload; saving grants us a licence to host and show it (see §03).';
-  return 'Provided free of charge and offered as-is.';
+  return null;
 }
 
-// Every service is free to use; some additionally OFFER a subscription. The distinction is
+function paidNote(c: Commercial): string {
+  return c.kind === 'subscription'
+    ? `Free to download and use. ${c.plan} is an optional auto-renewable subscription on top (${c.price}) that renews until you cancel it — see §${SUBSCRIPTIONS_N}.`
+    : `Free to download and use. ${c.plan} is an optional one-time purchase on top (${c.price}) — not a subscription, so nothing renews — see §${SUBSCRIPTIONS_N}.`;
+}
+
+function termsNote(s: (typeof listed)[number]): string {
+  const parts = [s.commercial ? paidNote(s.commercial) : null, contentNote(s)].filter((x): x is string => !!x);
+  return parts.length ? parts.join(' ') : 'Provided free of charge and offered as-is.';
+}
+
+// Every service is free to use; some additionally OFFER something to buy. The distinction is
 // the whole point of the sentence — an earlier draft read "Most are free to use; Calque also
 // offers a paid tier", which implies Calque is not one of the free ones. It is: the App Store
 // price is $0.00 and there are no non-subscription in-app purchases.
 const freeSentence = paid.length
   ? `All of them are free to download and use. ${oxford(
-      paid.map((s) => `<strong>${s.name}</strong> additionally offers an optional ${s.commercial!.plan} subscription`),
-    )}, which is set out in §${SUBSCRIPTIONS_N} — nothing else here costs anything. Everything is offered as-is.`
+      paid.map((s) => `<strong>${s.name}</strong> additionally offers ${offerPhrase(s.commercial!)}`),
+    )}, ${paid.length === 1 ? 'which is' : 'which are'} set out in §${SUBSCRIPTIONS_N} — nothing else here costs anything. Everything is offered as-is.`
   : `They are provided free of charge and offered as-is.`;
 
-// The subscriptions clause is generated per paid product, then per storefront within it, so a
-// second paid product needs no edit here. Guideline 3.1.2 wants the renewal term, that it
-// continues until cancelled, what the period buys, the actual charge, and how to cancel.
+// The paid-tiers clause is generated per paid product, then per storefront within it, so another
+// paid product needs no edit here. For a subscription, guideline 3.1.2 wants the renewal term,
+// that it continues until cancelled, what the period buys, the actual charge, and how to cancel.
+// A one-time purchase gets none of the renewal language — it would be false — and instead says
+// what it is tied to, how to restore it, and what a refund does.
+const subscriptionBlock = (s: (typeof listed)[number], c: Commercial): string => {
+  const plan = `<strong>${s.name} is free to download and use</strong>, and nothing in it expires or nags. <strong>${c.plan}</strong> is an optional auto-renewable subscription on top of that, which adds ${c.provides}. It is sold in two lengths — ${c.price} — and they differ only in how often you are billed. Whichever you choose, <strong>it renews automatically until you cancel it</strong>. Cancelling stops the next renewal rather than ending your access immediately: you keep the paid features until the period you have already paid for runs out, and then the app returns to its free form rather than locking you out.`;
+  const stores = c.storefronts
+    .map((sf) => {
+      const f = STOREFRONT[sf];
+      return `<strong>${f.name}</strong> — ${f.charges}, ${f.manage}, and ${f.refunds}.`;
+    })
+    .join(' ');
+  return `${plan} Where you subscribed decides who charges you and who can refund you. ${stores}`;
+};
+
+const oneTimeBlock = (s: (typeof listed)[number], c: Commercial): string => {
+  const plan = `<strong>${s.name} is free to download and use</strong>, and drawing, saving, and sharing cost nothing. <strong>${c.plan}</strong> is an optional <strong>one-time purchase of ${c.price}</strong> that adds ${c.provides}. <strong>It is not a subscription</strong>: you pay once, nothing renews, and there is nothing to cancel. ${c.plan} belongs to the ${s.name} account you were signed in to when you bought it, not to a device, so it works on the web and in the iOS app wherever you sign in to that same account; while that account exists it cannot be moved to a different one. <strong>Restore purchase</strong>, on the ${c.plan} screen on both the web and iOS, brings it back on a new device or browser.`;
+  const stores = c.storefronts
+    .map((sf) => {
+      const f = STOREFRONT[sf];
+      return `<strong>${f.name}</strong> — ${f.charges}, and ${f.refunds}.`;
+    })
+    .join(' ');
+  return `${plan} Where you bought it decides who charges you and who can refund you. ${stores} <strong>A refund removes ${c.plan}</strong> from the account it was granted to, permanently for that purchase: the free limits apply again, and nothing you have already made is deleted.`;
+};
+
 const subscriptionsBody = `${paid
-  .map((s) => {
-    const c = s.commercial!;
-    const plan = `<strong>${s.name} is free to download and use</strong>, and nothing in it expires or nags. <strong>${c.plan}</strong> is an optional auto-renewable subscription on top of that, which adds ${c.provides}. It is sold in two lengths — ${c.price} — and they differ only in how often you are billed. Whichever you choose, <strong>it renews automatically until you cancel it</strong>. Cancelling stops the next renewal rather than ending your access immediately: you keep the paid features until the period you have already paid for runs out, and then the app returns to its free form rather than locking you out.`;
-    const stores = c.storefronts
-      .map((sf) => {
-        const f = STOREFRONT[sf];
-        return `<strong>${f.name}</strong> — ${f.charges}, ${f.manage}, and ${f.refunds}.`;
-      })
-      .join(' ');
-    return `${plan} Where you subscribed decides who charges you and who can refund you. ${stores}`;
-  })
-  .join(' ')} If a price ever changes, we will tell you before the change takes effect, and it never applies retroactively to a period you have already paid for.`;
+  .map((s) => (s.commercial!.kind === 'subscription' ? subscriptionBlock(s, s.commercial!) : oneTimeBlock(s, s.commercial!)))
+  .join(' ')}${
+  subscriptions.length
+    ? ' If a subscription price ever changes, we will tell you before the change takes effect, and it never applies retroactively to a period you have already paid for.'
+    : ''
+}${oneTime.length ? ' A one-time purchase is never charged again.' : ''}`;
 
 const clauses = [
   {
     id: 'the-services',
     n: '01',
     title: 'The services',
-    gloss: 'a personal portfolio and a family of small apps — all free to use; one offers an optional subscription.',
+    gloss: `a personal portfolio and a family of small apps — ${paidGloss}`,
     body: `ponderance.dev is a personal portfolio that also hosts a set of small apps and services — some public, some shared only with invited friends and family. Each is described in the Services section. ${freeSentence}`,
   },
   {
@@ -130,8 +185,8 @@ const clauses = [
   {
     id: 'subscriptions',
     n: SUBSCRIPTIONS_N,
-    title: 'Subscriptions and billing',
-    gloss: 'the apps are free; one offers an optional subscription. It renews until you cancel, and whichever storefront you bought it from handles refunds.',
+    title: 'Paid tiers and billing',
+    gloss: `the apps are free. ${subscriptions.length ? 'A subscription renews until you cancel it; ' : ''}${oneTime.length ? 'a one-time purchase is paid once and never renews; ' : ''}whichever storefront you bought from handles refunds.`,
     body: subscriptionsBody,
   },
   {
@@ -146,7 +201,7 @@ const clauses = [
     n: '06',
     title: 'Service-specific terms',
     gloss: 'each toy adds a little fine print of its own.',
-    body: `Some services add their own rules — for example, public Kaleidoscope pieces may be remixed by others; Calque has an optional paid tier (§${SUBSCRIPTIONS_N}), and the events it extracts from your photo are yours and are never stored on our servers; FlatFold is end-to-end encrypted, which means that if you lose your password neither it nor the history it protected can be recovered by anyone, including us, and you add people by typing their exact username rather than browsing a directory; the self-hosted media and photo services (Jellyfin, Immich) are for invited personal use and their libraries aren't yours to redistribute. Those specifics live in the Services section and apply alongside these Terms.`,
+    body: `Some services add their own rules — for example, public Kaleidoscope pieces may be remixed by others, and Kaleidoscope Plus is an optional one-time purchase (§${SUBSCRIPTIONS_N}); Calque has an optional paid tier (§${SUBSCRIPTIONS_N}), and the events it extracts from your photo are yours and are never stored on our servers; FlatFold is end-to-end encrypted, which means that if you lose your password neither it nor the history it protected can be recovered by anyone, including us, and you add people by typing their exact username rather than browsing a directory; the self-hosted media and photo services (Jellyfin, Immich) are for invited personal use and their libraries aren't yours to redistribute. Those specifics live in the Services section and apply alongside these Terms.`,
   },
   {
     id: 'ip',
@@ -323,7 +378,7 @@ const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })
         <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); margin: 0 0 16px;">ponderance.dev · legal</p>
         <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(36px,4.4vw,56px); line-height: 1.04; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; max-width: 16ch;">Terms of Service</h1>
         <p style="font-family: var(--font-body); font-size: 19px; line-height: 1.6; color: var(--color-graphite-60); max-width: 40rem; margin: 18px 0 0;">The short version is in the margin. The binding version is the column.</p>
-        <span class="lg-stamp" style="display: inline-block; margin: 18px 0 0; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 4px 9px; transform: rotate(-3deg);">updated · 28 Jul 2026</span>
+        <span class="lg-stamp" style="display: inline-block; margin: 18px 0 0; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 4px 9px; transform: rotate(-3deg);">updated · 20 Oct 2026</span>
       </div>
       <div style="position: relative; border: 1px solid var(--color-crease); border-radius: 3px; overflow: hidden; background: var(--color-graph-card);">
         <div style="background: var(--color-crease); padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
@@ -332,7 +387,7 @@ const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr;">
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">doc no.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">PNDR-TERMS</p></div>
-          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">rev.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2026.07.28</p></div>
+          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">rev.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2026.10.20</p></div>
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">jurisdiction</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">TX · US</p></div>
           <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">sheet</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2 of 2</p></div>
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">medium</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">woff2 · edge</p></div>

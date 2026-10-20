@@ -21,27 +21,36 @@ export type Audience = 'public' | 'invited' | 'household';
 // backend of ours; it talks only to a server the user themselves runs.
 export type Status = 'live' | 'beta' | 'planned';
 
-/** Where money is taken for a paid tier. Drives the per-storefront cancel/refund prose. */
+/** Where money is taken for a paid tier. Drives the per-storefront refund prose. */
 export type Storefront = 'apple' | 'lemonsqueezy';
 
 /**
- * An OPTIONAL paid tier, as data rather than prose. /terms derives its subscriptions clause
+ * How a paid tier is sold. The two shapes need different binding prose — a subscription has
+ * a renewal term and a cancel path (guideline 3.1.2); a one-time purchase has neither, and
+ * describing it as something that "renews until you cancel" would be false.
+ */
+export type CommercialKind = 'subscription' | 'one-time';
+
+/**
+ * An OPTIONAL paid tier, as data rather than prose. /terms derives its paid-tiers clause
  * from this, and /support interpolates `price` — so the number lives in exactly one place.
  * Adding a second paid product is an entry here, not an edit to either page.
  *
- * IMPORTANT: the presence of this field means the service *offers* a subscription, NOT that
+ * IMPORTANT: the presence of this field means the service *offers* something to buy, NOT that
  * the service costs money. Every service here is free to use; Calque is free to download
  * (App Store price $0.00, no non-subscription in-app purchases — checked against App Store
- * Connect 2026-07-28) and Plus is an add-on. Prose derived from this must not imply
- * otherwise, which is exactly the mistake the first draft of §01 made.
+ * Connect 2026-07-28) and Plus is an add-on; Kaleidoscope is free and Kaleidoscope Plus is a
+ * one-time unlock on top. Prose derived from this must not imply otherwise, which is exactly
+ * the mistake the first draft of §01 made.
  */
 export interface Commercial {
+  kind: CommercialKind;
   /** e.g. 'Calque Plus' */
   plan: string;
   /**
-   * Human price line covering every length the subscription is sold in:
-   * '$2.99/month or $23.99/year'. Mirrors the ASC subscription group — Calque Plus is one
-   * group with two auto-renewable SKUs (calque_plus_monthly, calque_plus_yearly).
+   * Human price line. For a subscription it covers every length it is sold in:
+   * '$2.99/month or $23.99/year' — Calque Plus is one ASC group with two auto-renewable SKUs
+   * (calque_plus_monthly, calque_plus_yearly). For a one-time purchase it is the single price.
    */
   price: string;
   /** What the paid tier actually provides, one line. */
@@ -95,10 +104,22 @@ export const SERVICES: LegalService[] = [
       'Google profile shared at sign-in: name, email, profile picture, Google account id (no password)',
       'Sign in with Apple, offered in the iOS app: the account identifier Apple issues, plus the name and email you choose to share (Apple can relay a private address instead of your real one). No password reaches us',
       'saved pieces: stroke data, a rendered image, your title, chosen visibility, timestamps',
+      'Kaleidoscope Plus, only if you buy it: the storefront’s transaction or order id (Apple’s original transaction id in the app, the Lemon Squeezy order id on the web), which storefront it came from, when Plus was granted and, if the purchase is refunded, when it was revoked — linked to your account so Plus unlocks. Your card details never reach us',
+      'if you delete your account, that purchase record is kept but detached from it (no longer linked to any account), because a refund or support question about a real payment can still need it',
     ],
-    subprocessors: ['google', 'apple', 'cloudflare'],
+    subprocessors: ['google', 'apple', 'lemonsqueezy', 'cloudflare'],
     userContent: true,
     publicSharing: true,
+    // Non-consumable IAP `dev.ponderance.kaleidoscope.plus` on iOS; a Lemon Squeezy product on
+    // the web. Stored per kaleidoscope `entitlements` (migrations 0004 + 0005): source,
+    // external_id, user_id ON DELETE SET NULL, environment, granted_at, revoked_at (tombstone).
+    commercial: {
+      kind: 'one-time',
+      plan: 'Kaleidoscope Plus',
+      price: '$4.99',
+      provides: 'eight layers instead of three, and unlimited public posts (a free account shows 10 pieces on the public wall at a time)',
+      storefronts: ['apple', 'lemonsqueezy'],
+    },
     notes:
       'One account and one gallery behind both front ends: the iOS app talks to the same Cloudflare backend as the website. Signing in with Apple in the app and Google on the web creates two separate accounts.',
   },
@@ -124,6 +145,7 @@ export const SERVICES: LegalService[] = [
     ],
     subprocessors: ['google', 'gemini', 'apple', 'lemonsqueezy', 'cloudflare'],
     commercial: {
+      kind: 'subscription',
       plan: 'Calque Plus',
       price: '$2.99/month or $23.99/year',
       provides: 'cloud text recognition, with 200 scans a month',
@@ -382,13 +404,13 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
     id: 'apple',
     name: 'Apple Inc.',
     short: 'Apple',
-    role: 'Sign in with Apple in the iOS apps (Calque, Kaleidoscope), and In-App Purchase billing on iOS for Calque',
+    role: 'Sign in with Apple in the iOS apps (Calque, Kaleidoscope), and In-App Purchase billing on iOS for Calque Plus and Kaleidoscope Plus',
     privacy: 'https://www.apple.com/legal/privacy/',
   },
   lemonsqueezy: {
     id: 'lemonsqueezy',
     name: 'Lemon Squeezy',
-    role: 'Merchant of record and payment processor for Calque’s web (Plus) subscriptions',
+    role: 'Merchant of record and payment processor for web purchases: Calque Plus subscriptions and the Kaleidoscope Plus one-time purchase',
     privacy: 'https://www.lemonsqueezy.com/privacy',
   },
 };
