@@ -304,7 +304,7 @@ export const SERVICES: LegalService[] = [
       // HoldFast RETAIN (merged on dev 708cb68): session rows deleted 1 day past expiresAt;
       // reports.reporterIpHashStable cleared 90 days after the report is resolved; holds keep both.
       // Sessions slide (updateAge 1 day), so a session in use keeps renewing — say "last used".
-      'Signed-in sessions, with the IP address and browser details of their device: deleted 1 day after the session expires. A session expires 14 days after it was last used, or when you sign out.',
+      'A session’s IP address and browser details are deleted when you sign out, or within 2 days after the session expires. A session expires about 14 days after you last used it.',
       'The keyed hash of a reporter’s network address on an abuse or copyright report: cleared 90 days after the report is resolved.',
       'For both of these, data tied to an account or file under a legal hold (including a child-safety report) is kept until the hold ends, and then the normal period applies.',
       'Rate-limit records keyed by a hash of a network address: 90 days. Wrong-password attempts on a link: deleted 24 hours after the last attempt. Per-recipient email counters: 48 hours. Records of finished uploads: 7 days.',
