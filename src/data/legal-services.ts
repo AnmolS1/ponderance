@@ -301,11 +301,12 @@ export const SERVICES: LegalService[] = [
       'Deleting your account starts a 7-day window in which you can sign in and cancel. After it, a nightly job permanently deletes your files and account records.',
       'Link activity, and sign-in and account events: 180 days.',
       'Encrypted upload IP addresses: 90 days. On an upload that is still in progress, the encrypted address is removed when the upload finishes or expires.',
-      // Pending the HoldFast RETAIN merge (ruled 2026-10-22): session rows deleted 1 day past
-      // expiresAt; reports.reporterIpHashStable cleared 90 days after the report is resolved.
+      // HoldFast RETAIN (merged on dev 708cb68): session rows deleted 1 day past expiresAt;
+      // reports.reporterIpHashStable cleared 90 days after the report is resolved; holds keep both.
       // Sessions slide (updateAge 1 day), so a session in use keeps renewing — say "last used".
       'Signed-in sessions, with the IP address and browser details of their device: deleted 1 day after the session expires. A session expires 14 days after it was last used, or when you sign out.',
       'The keyed hash of a reporter’s network address on an abuse or copyright report: cleared 90 days after the report is resolved.',
+      'For both of these, data tied to an account or file under a legal hold (including a child-safety report) is kept until the hold ends, and then the normal period applies.',
       'Rate-limit records keyed by a hash of a network address: 90 days. Wrong-password attempts on a link: deleted 24 hours after the last attempt. Per-recipient email counters: 48 hours. Records of finished uploads: 7 days.',
       'Database backups (account and file records, never file contents) expire after 35 days, so a deleted record can remain in a backup for up to 35 days after it is deleted. There are no backup copies of your files beyond the storage provider’s own redundancy, so keep your own copies.',
       'Anything under a legal hold, such as material preserved for a report the law requires, is kept for as long as the law requires, and the periods above do not apply to it.',
