@@ -69,6 +69,11 @@ export interface LegalService {
   /** One plain-English line for the per-service block heading. */
   summary: string;
   auth: AuthProvider;
+  /**
+   * Replaces the pages' one-line sign-in label when `auth` (single-valued, because it picks the
+   * provider disclosure) cannot say it alone — Holdfast has Google AND its own email + password.
+   */
+  authLabel?: string;
   /** Personal data this service actually touches — keep specific and true. */
   collects: string[];
   /** ids into SUBPROCESSORS below. */
@@ -84,6 +89,19 @@ export interface LegalService {
    * asserting it would contradict the product's whole claim.
    */
   e2ee?: boolean;
+  /**
+   * Public content can be remixed by other users. Split from `publicSharing` because a
+   * service can publish by link without any remix feature (Holdfast shares files), and
+   * /terms must not tell that service's users their files "may be remixed".
+   */
+  remix?: boolean;
+  /**
+   * How long each kind of record is kept, one line per period, rendered on /privacy under
+   * the service. Every period here is a public statement that must match the shipping code
+   * (the retention job, the purge jobs, the storage lifecycle rules) — check it there, never
+   * restate it from a plan. Absent === the general retention clause covers the service.
+   */
+  retention?: string[];
   notes?: string; // anything special (e.g. Immich face data)
 }
 
@@ -110,6 +128,7 @@ export const SERVICES: LegalService[] = [
     subprocessors: ['google', 'apple', 'lemonsqueezy', 'cloudflare'],
     userContent: true,
     publicSharing: true,
+    remix: true,
     // Non-consumable IAP `dev.ponderance.kaleidoscope.plus` on iOS; a Lemon Squeezy product on
     // the web. Stored per kaleidoscope `entitlements` (migrations 0004 + 0005): source,
     // external_id, user_id ON DELETE SET NULL, environment, granted_at, revoked_at (tombstone).
@@ -245,6 +264,52 @@ export const SERVICES: LegalService[] = [
     subprocessors: ['cloudflare'],
     notes:
       'ntfy is personal-only, audience is "household" to drop it from the public pages.',
+  },
+
+  {
+    id: 'holdfast',
+    name: 'Holdfast',
+    url: 'https://holdfast.ponderance.dev',
+    status: 'beta', // → 'live' at HoldFast Gate C
+    audience: 'invited', // → 'public' at HoldFast Gate C
+    hosting: 'cloudflare',
+    summary: 'Private file storage and sharing in the browser — upload, organise, preview, and share files and folders.',
+    // Two ways to sign in: Google, or an email and password (with optional passkeys and two-factor
+    // authentication). `auth` is single-valued, so it stays 'google' to render the Google
+    // Limited-Use disclosure; the password account is disclosed in `collects`.
+    auth: 'google',
+    authLabel: 'Google sign-in (OAuth), or an email address and password on Holdfast itself, with optional passkeys and two-factor authentication',
+    // Every line below was checked against the HoldFast `dev` branch on 2026-10-22 (schema,
+    // retention job, purge jobs, signed cookies). Change the code and this together.
+    collects: [
+      'account: your email address, display name, and a hash of your password — or, if you sign in with Google, the name, email, and account id Google shares (no password reaches us); passkeys and two-factor secrets if you turn them on; and the date and version of the Terms you accepted',
+      'the files and folders you upload: their contents, names, sizes, types, checksums, and when they were created, changed, and last opened; and, when you replace a file, its previous version',
+      'sharing: who you share with — including the email address of someone you invite who has no account yet — and your link settings (expiry, a hash of the link password, download limits)',
+      'link activity: for each of your links, how often it was opened, by day and country, recorded against a keyed hash of the visitor’s network address, never the address itself',
+      'security and abuse records: sign-in and account events, with the browser family, the approximate country, and a daily-rotating keyed hash of the network address; your signed-in sessions, which hold the IP address and browser details of the device each one belongs to; the result of the automated malware scan of every upload; and any abuse or copyright report about your content',
+      'for uploads only, the IP address the file was uploaded from, stored encrypted, so we can meet legal reporting duties',
+      'your birth month and year, checked once at sign-up to confirm you are 13 or older and not stored — only the date the check passed is kept',
+      'preferences: theme, density, view mode, time zone, and which emails you want',
+      'cookies, all strictly necessary: your sign-in session; one lasting 10 minutes that carries your age check and Terms acceptance through Google sign-up; one lasting about 70 minutes that lets the browser you signed up in finish verifying your email; and, if you use two-factor authentication, one lasting 90 days that marks a browser that has already passed it. No analytics or tracking cookies, and no third-party scripts',
+    ],
+    // Periods from HoldFast: TRASH_RETENTION_DAYS / VERSION_RETENTION_DAYS (purge job, every 6 h),
+    // DELETION_WINDOW_DAYS + the nightly user-purge, jobs/retention.ts (nightly), and the R2
+    // lifecycle rule `expire-db-backups-35d` on `b/db/` (read back from both buckets 2026-10-22).
+    retention: [
+      'Trash: a deleted file or folder stays in Trash for 30 days and is then permanently deleted. Empty trash deletes it sooner.',
+      'Previous versions of a replaced file: 30 days.',
+      'Deleting your account starts a 7-day window in which you can sign in and cancel. After it, a nightly job permanently deletes your files and account records.',
+      'Link activity, and sign-in and account events: 180 days.',
+      'Encrypted upload IP addresses: 90 days. On an upload that is still in progress, the encrypted address is removed when the upload finishes or expires.',
+      'Rate-limit records keyed by a hash of a network address: 90 days. Wrong-password attempts on a link: deleted 24 hours after the last attempt. Per-recipient email counters: 48 hours. Records of finished uploads: 7 days.',
+      'Database backups (account and file records, never file contents) expire after 35 days, so a deleted record can remain in a backup for up to 35 days after it is deleted. There are no backup copies of your files beyond the storage provider’s own redundancy, so keep your own copies.',
+      'Anything under a legal hold, such as material preserved for a report the law requires, is kept for as long as the law requires, and the periods above do not apply to it.',
+    ],
+    subprocessors: ['cloudflare', 'neon', 'resend', 'google', 'sentry' /* , 'microsoft' when PhotoDNA is enabled */],
+    userContent: true,
+    publicSharing: true,
+    notes:
+      'Operated by Anmol Saxena (sole operator, pre-LLC). Files are stored on Cloudflare R2 (US) and served only through Holdfast. Every upload is scanned for malware (ClamAV) before anyone else can open it; a file the scanner cannot read can be downloaded back only by its owner, with a warning. Files flagged as malicious or reported as abusive may be blocked or removed. Metadata lives in Neon Postgres (US). Transactional email via Resend; error monitoring via Sentry. No sale of personal data. Invite-only beta.',
   },
 
   // ── Coming online (auth being added) — kept here so launch is just `status: 'live'`. ──
@@ -389,7 +454,7 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
   resend: {
     id: 'resend',
     name: 'Resend',
-    role: 'Delivers contact-form email',
+    role: 'Delivers email: the site’s contact form, and Holdfast’s account, sign-in, and sharing email',
     privacy: 'https://resend.com/legal/privacy-policy',
   },
   gemini: {
@@ -407,6 +472,20 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
     role: 'Sign in with Apple in the iOS apps (Calque, Kaleidoscope), and In-App Purchase billing on iOS for Calque Plus and Kaleidoscope Plus',
     privacy: 'https://www.apple.com/legal/privacy/',
   },
+  neon: {
+    id: 'neon',
+    name: 'Neon, Inc.',
+    short: 'Neon',
+    role: 'Postgres database hosting (US) for Holdfast’s account and file records',
+    privacy: 'https://neon.com/privacy-policy',
+  },
+  sentry: {
+    id: 'sentry',
+    name: 'Functional Software, Inc. (Sentry)',
+    short: 'Sentry',
+    role: 'Error monitoring for Holdfast',
+    privacy: 'https://sentry.io/privacy/',
+  },
   lemonsqueezy: {
     id: 'lemonsqueezy',
     name: 'Lemon Squeezy',
@@ -414,6 +493,20 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
     privacy: 'https://www.lemonsqueezy.com/privacy',
   },
 };
+
+/**
+ * The DMCA designated agent (17 U.S.C. §512(c)(2)), shown on /terms. NOT REGISTERED YET —
+ * Anmol deferred the Copyright Office registration to HoldFast Gate B. Every field carries the
+ * same `TODO_` sentinel as HoldFast's src/client/features/dmca/agent.ts, so one grep finds both,
+ * and both must be filled with the details EXACTLY as registered, in the same change.
+ * Never put a guessed name, address, or phone here.
+ */
+export const DMCA_AGENT = {
+  name: 'TODO_AGENT_NAME',
+  address: 'TODO_AGENT_POSTAL_ADDRESS',
+  phone: 'TODO_AGENT_PHONE',
+  email: 'TODO_AGENT_EMAIL',
+} as const;
 
 // Provider → the affirmation block the privacy page renders for any LIVE service using it.
 export const PROVIDER_DISCLOSURES: Partial<Record<AuthProvider, { label: string; link: string; body: string }>> = {

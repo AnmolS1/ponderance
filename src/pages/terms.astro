@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { listedServices, SUBPROCESSORS, type AuthProvider, type Commercial, type Storefront } from '../data/legal-services';
+import { DMCA_AGENT, listedServices, SUBPROCESSORS, type AuthProvider, type Commercial, type Storefront } from '../data/legal-services';
 
 const listed = listedServices();
 
@@ -83,7 +83,8 @@ const thirdParties = oxford(
 
 // A light, service-specific terms note derived from the registry flags (never the raw TODO notes).
 // Two parts. The paid note (from `commercial`) comes first, then ONE content note chosen
-// most-specific-first: `e2ee` → `publicSharing` → invited self-hosted → `userContent`. FlatFold is
+// most-specific-first: `e2ee` → `publicSharing` (remix, then link sharing) → invited self-hosted →
+// `userContent`. FlatFold is
 // both `userContent` and `e2ee` — under the old order it drew the "saving grants us a licence to
 // host and show it" note, asserting a licence to display message content the server provably
 // cannot read. The paid note is composed rather than returned early because Kaleidoscope is both
@@ -92,7 +93,11 @@ const thirdParties = oxford(
 function contentNote(s: (typeof listed)[number]): string | null {
   if (s.e2ee)
     return 'Encrypted on your device before it reaches us. We hold ciphertext we cannot read, so no licence to display your content applies, and none is possible (see §03).';
-  if (s.publicSharing) return 'Public pieces may be remixed by other users; keep that in mind before you publish.';
+  if (s.publicSharing && s.remix) return 'Public pieces may be remixed by other users; keep that in mind before you publish.';
+  // Sharing without remix (Holdfast). The remix warning would be false here: a shared file is
+  // opened and downloaded, never reworked by other users.
+  if (s.publicSharing)
+    return 'You keep ownership of your files. Anyone who has a link you share can open and download what it points to, within the limits you set on that link (an expiry date, a password, a download count), so share links with care. Uploads are scanned, and a file a scan flags or a report concerns may be blocked or removed (see §05).';
   if (s.audience === 'invited' && s.hosting === 'self-hosted') return 'Shared for invited personal use; the libraries are not yours to redistribute.';
   if (s.userContent) return 'You keep ownership of what you upload; saving grants us a licence to host and show it (see §03).';
   return null;
@@ -194,67 +199,74 @@ const clauses = [
     n: '05',
     title: 'Acceptable use',
     gloss: "don't post illegal or abusive content; don't attack the services. Report anything that does.",
-    body: `You agree not to upload or share content that is illegal, infringing, hateful, harassing, sexually exploitative, or that depicts or endangers minors; not to impersonate others; and not to attack, overload, scrape, reverse-engineer, or circumvent the limits or security of any service. We may remove content and suspend access for violations, at our discretion. <strong>To report content that breaks these rules</strong>, email <a href="mailto:anmol@ponderance.dev">anmol@ponderance.dev</a> — reports get a reply, and content or accounts that break these rules are removed. Where a service supports blocking, you can also block another user yourself, without waiting on us.`,
+    body: `You agree not to upload or share content that is illegal, infringing, hateful, harassing, sexually exploitative, or that depicts or endangers minors; not to use a service to spread malware, phishing pages, or spam, or to host files for any of them; not to impersonate others; and not to attack, overload, scrape, reverse-engineer, or circumvent the limits or security of any service, including its storage, file-size, and upload limits. Services that store files scan uploads automatically — Holdfast scans every upload for malware — and may block, hide, or remove a file that a scan flags or a report concerns, while it is reviewed or for good. Apparent child sexual abuse material is reported to the National Center for Missing &amp; Exploited Children, as US law requires. We may remove content and suspend access for violations, at our discretion. <strong>To report content that breaks these rules</strong>, email <a href="mailto:anmol@ponderance.dev">anmol@ponderance.dev</a> — reports get a reply, and content or accounts that break these rules are removed. In Holdfast you can also use <strong>Report</strong> on the file or on the shared link that showed it to you. Where a service supports blocking, you can also block another user yourself, without waiting on us.`,
+  },
+  {
+    id: 'copyright',
+    n: '06',
+    title: 'Copyright complaints and repeat infringers',
+    gloss: 'copyright notices go to the designated agent; repeat infringers lose their accounts.',
+    body: `If you believe content on a service infringes your copyright, send a notice under the Digital Millennium Copyright Act (17 U.S.C. §512) to our designated agent: <strong>${DMCA_AGENT.name}</strong>, ${DMCA_AGENT.address}, ${DMCA_AGENT.phone}, <a href="mailto:${DMCA_AGENT.email}">${DMCA_AGENT.email}</a>. The notice must contain what §512(c)(3) requires: your physical or electronic signature; the work you say is infringed; the material you say infringes it and where it is (for a shared file, its link); your contact details; a statement that you believe in good faith the use is not authorised; and a statement, under penalty of perjury, that the notice is accurate and that you are the owner or are authorised to act for the owner. If your content was removed after a notice and you believe that was a mistake or a misidentification, you can send a counter-notice (§512(g)); we forward it to the person who complained and may restore the content in 10 to 14 business days unless they tell us they have filed a court action. Holdfast sets out the full process at <a href="https://holdfast.ponderance.dev/dmca">holdfast.ponderance.dev/dmca</a>. <strong>Repeat infringers.</strong> We terminate, in appropriate circumstances, the accounts of people who repeatedly infringe. On Holdfast, an account with three strikes in any 12 months — strikes are recorded for copyright takedowns, malware, and abuse, and a strike lifted on review does not count — is suspended.`,
   },
   {
     id: 'specific',
-    n: '06',
+    n: '07',
     title: 'Service-specific terms',
     gloss: 'each toy adds a little fine print of its own.',
-    body: `Some services add their own rules — for example, public Kaleidoscope pieces may be remixed by others, and Kaleidoscope Plus is an optional one-time purchase (§${SUBSCRIPTIONS_N}); Calque has an optional paid tier (§${SUBSCRIPTIONS_N}), and the events it extracts from your photo are yours and are never stored on our servers; FlatFold is end-to-end encrypted, which means that if you lose your password neither it nor the history it protected can be recovered by anyone, including us, and you add people by typing their exact username rather than browsing a directory; the self-hosted media and photo services (Jellyfin, Immich) are for invited personal use and their libraries aren't yours to redistribute. Those specifics live in the Services section and apply alongside these Terms.`,
+    body: `Some services add their own rules — for example, public Kaleidoscope pieces may be remixed by others, and Kaleidoscope Plus is an optional one-time purchase (§${SUBSCRIPTIONS_N}); Calque has an optional paid tier (§${SUBSCRIPTIONS_N}), and the events it extracts from your photo are yours and are never stored on our servers; FlatFold is end-to-end encrypted, which means that if you lose your password neither it nor the history it protected can be recovered by anyone, including us, and you add people by typing their exact username rather than browsing a directory; the self-hosted media and photo services (Jellyfin, Immich) are for invited personal use and their libraries aren't yours to redistribute; Holdfast is an invite-only beta with a storage limit per account, keeps a deleted file in Trash for 30 days before deleting it for good, keeps a deleted account recoverable for 7 days, and keeps no backup copies of your files — keep your own (the Privacy Policy gives every retention period). Those specifics live in the Services section and apply alongside these Terms.`,
   },
   {
     id: 'ip',
-    n: '07',
+    n: '08',
     title: 'Intellectual property',
     gloss: "the site's code and brand are mine; your content is yours.",
     body: `The site's design, branding, and code are owned by Anmol Saxena (the source is on GitHub under its repository licence). These Terms grant you no rights to the ponderance name or marks beyond using the services normally.`,
   },
   {
     id: 'third-party',
-    n: '08',
+    n: '09',
     title: 'Third-party services',
     gloss: 'the infrastructure, sign-in, and payment providers behind the services have their own terms.',
     body: `The services use third-party infrastructure, sign-in, and payment providers (today ${thirdParties}); your use of those is also governed by their respective terms and policies. Each one, and what it does, is listed in the Services section of the <a href="/privacy">Privacy Policy</a>.`,
   },
   {
     id: 'disclaimers',
-    n: '09',
+    n: '10',
     title: 'Disclaimers',
     gloss: 'small hobby projects, no guarantees.',
     body: `The services are provided "as is" and "as available", without warranties of any kind. We don't guarantee they'll be uninterrupted, error-free, or that saved content will be preserved indefinitely — keep your own copies of anything you care about. We may change, suspend, or discontinue any part at any time.`,
   },
   {
     id: 'liability',
-    n: '10',
+    n: '11',
     title: 'Limitation of liability',
     gloss: 'to the extent the law allows, damages are limited.',
     body: `To the fullest extent permitted by law, Anmol Saxena won't be liable for any indirect, incidental, or consequential damages, or for loss of data or content, arising from your use of the services. Total direct liability is limited to the greater of the amounts you paid for the service in question in the twelve months before the claim, or US$50.`,
   },
   {
     id: 'termination',
-    n: '11',
+    n: '12',
     title: 'Termination',
     gloss: 'either of us can walk away.',
     body: `You can stop using the services and delete your account at any time. We may suspend or terminate access if you breach these Terms or to protect the services.`,
   },
   {
     id: 'law',
-    n: '12',
+    n: '13',
     title: 'Governing law',
     gloss: 'Texas law governs.',
     body: `These Terms are governed by the laws of the State of Texas, USA, without regard to its conflict-of-law rules.`,
   },
   {
     id: 'changes',
-    n: '13',
+    n: '14',
     title: 'Changes',
     gloss: 'updated terms post here with a new date.',
     body: `We may update these Terms. The "last updated" date will change, and continued use after a change means you accept it.`,
   },
   {
     id: 'contact',
-    n: '14',
+    n: '15',
     title: 'Contact',
     gloss: 'one inbox.',
     body: `Questions: <a href="mailto:anmol@ponderance.dev">anmol@ponderance.dev</a>.`,
@@ -378,7 +390,7 @@ const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })
         <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); margin: 0 0 16px;">ponderance.dev · legal</p>
         <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(36px,4.4vw,56px); line-height: 1.04; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; max-width: 16ch;">Terms of Service</h1>
         <p style="font-family: var(--font-body); font-size: 19px; line-height: 1.6; color: var(--color-graphite-60); max-width: 40rem; margin: 18px 0 0;">The short version is in the margin. The binding version is the column.</p>
-        <span class="lg-stamp" style="display: inline-block; margin: 18px 0 0; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 4px 9px; transform: rotate(-3deg);">updated · 20 Oct 2026</span>
+        <span class="lg-stamp" style="display: inline-block; margin: 18px 0 0; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 4px 9px; transform: rotate(-3deg);">updated · 22 Oct 2026</span>
       </div>
       <div style="position: relative; border: 1px solid var(--color-crease); border-radius: 3px; overflow: hidden; background: var(--color-graph-card);">
         <div style="background: var(--color-crease); padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
@@ -387,7 +399,7 @@ const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr;">
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">doc no.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">PNDR-TERMS</p></div>
-          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">rev.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2026.10.20</p></div>
+          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">rev.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2026.10.22</p></div>
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">jurisdiction</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">TX · US</p></div>
           <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">sheet</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2 of 2</p></div>
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">medium</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">woff2 · edge</p></div>
@@ -464,7 +476,7 @@ const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })
                 <span style="font-family: var(--font-mono); font-size: 9.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 2px 7px; transform: rotate(-4deg);">{s.status}</span>
               </div>
               <p style="font-family: var(--font-body); font-size: 15.5px; line-height: 1.55; color: var(--color-graphite-60); margin: 0 0 12px;">{s.summary}</p>
-              <p style="font-family: var(--font-mono); font-size: 13px; color: var(--color-graphite-60); margin: 0 0 10px;">Sign in: <span style="color: var(--color-graphite);">{AUTH_LABEL[s.auth]}</span></p>
+              <p style="font-family: var(--font-mono); font-size: 13px; color: var(--color-graphite-60); margin: 0 0 10px;">Sign in: <span style="color: var(--color-graphite);">{s.authLabel ?? AUTH_LABEL[s.auth]}</span></p>
               <p style="font-family: var(--font-body); font-size: 14.5px; line-height: 1.55; color: var(--color-graphite); margin: 0; border-left: 2px solid var(--color-crane); padding: 2px 0 2px 12px;">{termsNote(s)}</p>
             </div>
           ))}

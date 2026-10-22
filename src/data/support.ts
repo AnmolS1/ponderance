@@ -557,6 +557,96 @@ export const SUPPORT: SupportEntry[] = [
     ],
   },
 
+  // ── Holdfast (invite-only beta) ─────────────────────────────────────────────
+  // Checked against the HoldFast `dev` branch on 2026-10-22: every button named here is a
+  // string in src/client (Account → Your data → Delete account / Cancel deletion / Export your
+  // data; Account → Security → Passkeys / Two-factor authentication; Trash; Storage; Report),
+  // and every period is the one legal-services.ts states under `retention`.
+  {
+    id: 'holdfast',
+    blurb:
+      'Keep your files somewhere private, open them in the browser, and share a file or a folder with a person or a link.',
+    platforms: ['web'],
+    requirements: [
+      'Any modern browser, at holdfast.ponderance.dev.',
+      'An invite code to sign up while Holdfast is in beta.',
+      'Passkeys need a device and browser that support them; a password works everywhere.',
+    ],
+    links: [
+      { label: 'Open Holdfast', href: 'https://holdfast.ponderance.dev' },
+      { label: 'Copyright notices (DMCA)', href: 'https://holdfast.ponderance.dev/dmca' },
+      { label: 'Source on GitHub', href: 'https://github.com/AnmolS1/HoldFast' },
+      { label: 'Privacy for Holdfast', href: 'https://ponderance.dev/privacy#svc-holdfast' },
+      { label: 'Terms for Holdfast', href: 'https://ponderance.dev/terms#svc-holdfast' },
+    ],
+    faqs: [
+      {
+        q: 'What gets scanned, and why does my file say “Scanning”?',
+        a: 'Every upload is scanned for malware before anyone else can open it, download it, or reach it through a share. Until the scan finishes the file shows <strong>Scanning</strong>. A file the scan flags stays blocked. A file the scanner cannot read (an encrypted archive, for example) shows <strong>Couldn’t scan</strong>: you can still download it yourself, with a warning, but nobody you share it with can.',
+      },
+      {
+        q: 'How much can I store, and does the trash count?',
+        a: 'Each account has 5 GB, and a single file can be up to 2 GB. Files in <strong>Trash</strong> and earlier versions of replaced files count toward your storage until they are deleted for good; <strong>Storage</strong> shows the breakdown.',
+      },
+      {
+        q: 'How long does Trash keep things?',
+        a: 'A deleted file or folder stays in <strong>Trash</strong> for 30 days and can be restored until then; after that it is deleted permanently. <strong>Empty trash</strong> deletes everything in it straight away. When you replace a file, its previous version is kept for 30 days.',
+      },
+      {
+        q: 'How do share links and link passwords work?',
+        a: 'A link lets anyone who has it open and download what it points to. You can give it an expiry date, a password, or a download limit, turn previews off, and pause or revoke it at any time. Too many wrong passwords on a link slow further tries down.',
+      },
+      {
+        q: 'Can I share with someone who has no account?',
+        a: 'Yes. Share with their email address and they get an email; the share is waiting for them when they sign up with that address. While Holdfast is in beta, signing up also needs an invite code, so ask for one at anmol@ponderance.dev, or send them a share link instead.',
+      },
+      {
+        q: 'How do I add a passkey or two-factor authentication?',
+        a: 'Go to <strong>Account → Security</strong>. Under <strong>Passkeys</strong> you can add a passkey and then sign in with your fingerprint, face, or device PIN. Under <strong>Two-factor authentication</strong> you can turn on codes from an authenticator app; keep the backup codes it gives you somewhere safe.',
+      },
+      {
+        q: 'How do I report a file?',
+        a: 'Use <strong>Report</strong> on the file, or on the shared link that showed it to you, and pick what is wrong: malware, child sexual abuse material, copyright, phishing, spam, or something else. While a report is reviewed, the file is hidden from everyone but its owner and its links are paused. Copyright owners can also send a formal notice — see <a href="https://holdfast.ponderance.dev/dmca">holdfast.ponderance.dev/dmca</a>.',
+      },
+      {
+        q: 'How do I delete my account, and can I change my mind?',
+        a: 'Go to <strong>Account → Your data → Delete account</strong>. We email you a link; open it in the same browser, where you are signed in, to confirm. Your account and files are deleted 7 days later. Until then your links are paused, and <strong>Cancel deletion</strong> — on that page or in the banner at the top — stops it. Signing in alone does not cancel it.',
+      },
+    ],
+    troubleshooting: [
+      {
+        title: 'An upload is stuck or stopped',
+        steps: [
+          'If you went offline, uploads pick up again on their own when you are back online.',
+          'If you closed or reloaded the tab, the upload ribbon says how many uploads are waiting to resume. Select the same file again and it carries on from where it stopped instead of starting over.',
+          'If the ribbon says the daily upload limit is reached, uploads resume after midnight UTC.',
+          'If it still will not move, email anmol@ponderance.dev with the file’s name and size and roughly when you uploaded it.',
+        ],
+      },
+      {
+        title: 'A download is blocked',
+        steps: [
+          'Look at the file’s status. <strong>Scanning</strong> means the malware scan has not finished yet — wait a moment and try again.',
+          '<strong>Couldn’t scan</strong> means only the owner can download it, with a warning. If you are opening someone else’s share, ask them to check the file.',
+          'A file the scan flagged, or one that has been reported, stays blocked while it is reviewed.',
+          'If the status looks wrong, email anmol@ponderance.dev with the file or link and the time.',
+        ],
+      },
+    ],
+    dataAndDeletion: [
+      '<strong>Account → Your data → Export your data</strong> downloads your profile, settings, the list of your files and folders, your shares and links, and recent sign-in activity. <strong>Download everything</strong> on the same page builds one zip of your files in the browser.',
+      'Deleting your account starts a 7-day window in which you can sign in and cancel it. After that, a nightly job permanently deletes your files and account records.',
+      'Database backups hold account and file records, never file contents, and expire after 35 days, so a deleted record can stay in a backup for up to 35 days after it is deleted. There are no backup copies of your files beyond the storage provider’s own redundancy, so keep your own copies.',
+      'Every other period, from link activity to encrypted upload IP addresses, is listed under Holdfast in the <a href="https://ponderance.dev/privacy#svc-holdfast">Privacy Policy</a>.',
+    ],
+    responseTime: REPLY_2_DAYS,
+    knownIssues: [
+      'Malware scanning uses the open-source ClamAV engine. It catches a lot, but it is not equivalent to a commercial antivirus product, so treat files from people you do not know with care.',
+      'Image matching against known child sexual abuse material (Microsoft PhotoDNA) is not switched on yet; it is pending.',
+      'Holdfast is in beta and open by invitation only.',
+    ],
+  },
+
   // ── Invited, self-hosted services ───────────────────────────────────────────
   {
     id: 'jellyfin',
@@ -665,7 +755,8 @@ export const isApp = (entry: SupportEntry): boolean =>
 
 /**
  * Hub grouping. Order is the order of a stranger's likelihood of being here:
- * the App Store apps first, then the public web toys, then the invited services.
+ * the App Store apps first, then the public web toys, then the invite-only beta, then the
+ * invited self-hosted services.
  */
 export const supportGroups = (): { id: string; title: string; blurb: string; items: SupportedProduct[] }[] => {
   const all = supportedProducts();
@@ -683,10 +774,18 @@ export const supportGroups = (): { id: string; title: string; blurb: string; ite
       items: all.filter((p) => p.service.audience !== 'invited' && !isApp(p.entry)),
     },
     {
+      // Invited but NOT self-hosted (Holdfast): the 'private' blurb says "Self-hosted", which
+      // would be false for a Cloudflare-hosted beta.
+      id: 'beta',
+      title: 'Invite-only beta',
+      blurb: 'On the web, open by invitation while in beta.',
+      items: all.filter((p) => p.service.audience === 'invited' && p.service.hosting !== 'self-hosted'),
+    },
+    {
       id: 'private',
       title: 'Private services',
       blurb: 'Self-hosted, for invited friends and family. Not open to sign up.',
-      items: all.filter((p) => p.service.audience === 'invited'),
+      items: all.filter((p) => p.service.audience === 'invited' && p.service.hosting === 'self-hosted'),
     },
   ].filter((g) => g.items.length > 0);
 };
