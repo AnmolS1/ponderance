@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run stamp && astro build",
+    "build": "npm run stamp && astro build && bash scripts/validate/no-sentinels.sh",
     "preview": "astro preview",
     "lint": "eslint src/",
     "check": "astro check",

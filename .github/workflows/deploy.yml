@@ -81,6 +81,9 @@ jobs:
       - name: Gate — wrangler route safety
         run: bash scripts/validate/wrangler-routes.sh
 
+      - name: Gate — no TODO_ sentinels in served pages
+        run: bash scripts/validate/no-sentinels.sh
+
       - name: Gate — no inline scripts in HTML
         run: |
           HITS=$(grep -rE '<script(?![^>]*src=)[^>]*>[^<]{3,}' dist/client --include='*.html' -l 2>/dev/null || true)

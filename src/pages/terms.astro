@@ -26,6 +26,15 @@ const encrypted = listed.filter((s) => s.e2ee);
 // dangling "see §04".
 const SUBSCRIPTIONS_N = '04';
 
+// Until the DMCA agent is registered every DMCA_AGENT field is a `TODO_` sentinel. The clause then
+// says registration is pending and names the working address instead, as HoldFast's /dmca does
+// ("Designated agent registration pending."); scripts/validate/no-sentinels.sh fails the build if a
+// sentinel ever reaches a page anyway.
+const agentPending = Object.values(DMCA_AGENT).some((v) => v.includes('TODO_'));
+const agentSentence = agentPending
+  ? `Our designated agent's registration with the US Copyright Office is pending. Until it is complete, send a notice under the Digital Millennium Copyright Act (17 U.S.C. §512) to <a href="mailto:anmol@ponderance.dev">anmol@ponderance.dev</a>.`
+  : `Send a notice under the Digital Millennium Copyright Act (17 U.S.C. §512) to our designated agent: <strong>${DMCA_AGENT.name}</strong>, ${DMCA_AGENT.address}, ${DMCA_AGENT.phone}, <a href="mailto:${DMCA_AGENT.email}">${DMCA_AGENT.email}</a>.`;
+
 const subscriptions = paid.filter((s) => s.commercial!.kind === 'subscription');
 const oneTime = paid.filter((s) => s.commercial!.kind === 'one-time');
 
@@ -205,8 +214,10 @@ const clauses = [
     id: 'copyright',
     n: '06',
     title: 'Copyright complaints and repeat infringers',
-    gloss: 'copyright notices go to the designated agent; repeat infringers lose their accounts.',
-    body: `If you believe content on a service infringes your copyright, send a notice under the Digital Millennium Copyright Act (17 U.S.C. §512) to our designated agent: <strong>${DMCA_AGENT.name}</strong>, ${DMCA_AGENT.address}, ${DMCA_AGENT.phone}, <a href="mailto:${DMCA_AGENT.email}">${DMCA_AGENT.email}</a>. The notice must contain what §512(c)(3) requires: your physical or electronic signature; the work you say is infringed; the material you say infringes it and where it is (for a shared file, its link); your contact details; a statement that you believe in good faith the use is not authorised; and a statement, under penalty of perjury, that the notice is accurate and that you are the owner or are authorised to act for the owner. If your content was removed after a notice and you believe that was a mistake or a misidentification, you can send a counter-notice (§512(g)); we forward it to the person who complained and may restore the content in 10 to 14 business days unless they tell us they have filed a court action. Holdfast sets out the full process at <a href="https://holdfast.ponderance.dev/dmca">holdfast.ponderance.dev/dmca</a>. <strong>Repeat infringers.</strong> We terminate, in appropriate circumstances, the accounts of people who repeatedly infringe. On Holdfast, an account with three strikes in any 12 months — strikes are recorded for copyright takedowns, malware, and abuse, and a strike lifted on review does not count — is suspended.`,
+    gloss: agentPending
+      ? 'copyright notices go to anmol@ponderance.dev while the agent registration is pending; repeat infringers lose their accounts.'
+      : 'copyright notices go to the designated agent; repeat infringers lose their accounts.',
+    body: `If you believe content on a service infringes your copyright: ${agentSentence} The notice must contain what §512(c)(3) requires: your physical or electronic signature; the work you say is infringed; the material you say infringes it and where it is (for a shared file, its link); your contact details; a statement that you believe in good faith the use is not authorised; and a statement, under penalty of perjury, that the notice is accurate and that you are the owner or are authorised to act for the owner. If your content was removed after a notice and you believe that was a mistake or a misidentification, you can send a counter-notice (§512(g)); we forward it to the person who complained and may restore the content in 10 to 14 business days unless they tell us they have filed a court action. Holdfast sets out the full process at <a href="https://holdfast.ponderance.dev/dmca">holdfast.ponderance.dev/dmca</a>. <strong>Repeat infringers.</strong> We terminate, in appropriate circumstances, the accounts of people who repeatedly infringe. On Holdfast, an account with three strikes in any 12 months — strikes are recorded for copyright takedowns, malware, and abuse, and a strike lifted on review does not count — is suspended.`,
   },
   {
     id: 'specific',
