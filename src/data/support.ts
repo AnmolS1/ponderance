@@ -558,7 +558,8 @@ export const SUPPORT: SupportEntry[] = [
   },
 
   // ── Holdfast (invite-only beta) ─────────────────────────────────────────────
-  // Checked against the HoldFast `dev` branch on 2026-10-22: every button named here is a
+  // Checked against the HoldFast `dev` branch on 2026-10-22 (deletion and links wording corrected
+  // after its R1 review, 2026-10-23): every button named here is a
   // string in src/client (Account → Your data → Delete account / Cancel deletion / Export your
   // data; Account → Security → Passkeys / Two-factor authentication; Trash; Storage; Report),
   // and every period is the one legal-services.ts states under `retention`.
@@ -594,11 +595,11 @@ export const SUPPORT: SupportEntry[] = [
       },
       {
         q: 'How do share links and link passwords work?',
-        a: 'A link lets anyone who has it open and download what it points to. You can give it an expiry date, a password, or a download limit, turn previews off, and pause or revoke it at any time. Too many wrong passwords on a link slow further tries down.',
+        a: 'A link lets anyone who has it open and download what it points to. You can give it an expiry date, a password, or a download limit, turn previews off, and pause or revoke it at any time. Too many wrong passwords on a link slow further tries down. Links are switched off during the closed test; this is how they will work when they are turned on.',
       },
       {
         q: 'Can I share with someone who has no account?',
-        a: 'Yes. Share with their email address and they get an email; the share is waiting for them when they sign up with that address. While Holdfast is in beta, signing up also needs an invite code, so ask for one at anmol@ponderance.dev, or send them a share link instead.',
+        a: 'Yes. Share with their email address and they get an email; the share is waiting for them when they sign up with that address. While Holdfast is in beta, signing up also needs an invite code, so ask for one at anmol@ponderance.dev.',
       },
       {
         q: 'How do I add a passkey or two-factor authentication?',
@@ -610,7 +611,7 @@ export const SUPPORT: SupportEntry[] = [
       },
       {
         q: 'How do I delete my account, and can I change my mind?',
-        a: 'Go to <strong>Account → Your data → Delete account</strong>. We email you a link; open it in the same browser, where you are signed in, to confirm. Your account and files are deleted 7 days later. Until then your links are paused, and <strong>Cancel deletion</strong> — on that page or in the banner at the top — stops it. Signing in alone does not cancel it.',
+        a: 'Go to <strong>Account → Your data → Delete account</strong>. We email you a link; open it in the same browser, where you are signed in, to confirm. Your account and files are deleted 7 days later. Until then your links are paused, and <strong>Cancel deletion</strong> — on that page or in the banner at the top — stops it. Signing in alone does not cancel it. If one of your files is under review after an abuse report or a copyright notice, the deletion waits until that review ends. Files you uploaded into someone else’s shared folder stay with that folder’s owner.',
       },
     ],
     troubleshooting: [
@@ -635,7 +636,7 @@ export const SUPPORT: SupportEntry[] = [
     ],
     dataAndDeletion: [
       '<strong>Account → Your data → Export your data</strong> downloads your profile, settings, the list of your files and folders, your shares and links, and recent sign-in activity. <strong>Download everything</strong> on the same page builds one zip of your files in the browser.',
-      'Deleting your account starts a 7-day window in which you can sign in and cancel it. After that, a nightly job permanently deletes your files and account records.',
+      'Deleting your account starts a 7-day window in which you can sign in and cancel it. After that, a nightly job permanently deletes your files and account records. If one of your files is under review after an abuse report or a copyright notice, the deletion waits until the review ends.',
       'Database backups hold account and file records, never file contents, and expire after 35 days, so a deleted record can stay in a backup for up to 35 days after it is deleted. There are no backup copies of your files beyond the storage provider’s own redundancy, so keep your own copies.',
       'Every other period, from link activity to encrypted upload IP addresses, is listed under Holdfast in the <a href="https://ponderance.dev/privacy#svc-holdfast">Privacy Policy</a>.',
     ],
