@@ -299,6 +299,12 @@ export const SERVICES: LegalService[] = [
       // cookie docs (developers.cloudflare.com/fundamentals/reference/policies-compliances/cloudflare-cookies/).
       'cookies Holdfast sets, all strictly necessary: your sign-in session (14 days, renewed as you use it); while you sign in, short-lived ones that carry a two-factor step (10 minutes), a Google sign-in (5 minutes), or a passkey check (5 minutes); one lasting 10 minutes that carries your age check, Terms acceptance, and invite through Google sign-up; one lasting about 70 minutes that lets the browser you signed up in finish verifying your email; if you use two-factor authentication, one lasting 90 days that marks a browser that has already passed it; if you tick “Trust this device” when you enter a code, one lasting 30 days that lets that browser sign in without the code; and, for the operator only, one that keeps the operator’s own session while viewing an account. No analytics or tracking cookies',
       'cookies Cloudflare may add: Cloudflare, which serves Holdfast, can set its own strictly necessary security cookies — __cf_bm for bot protection, which expires after 30 minutes of inactivity, and cf_clearance after a browser passes a Cloudflare challenge. The Turnstile check gives Holdfast a one-time token, not a cookie',
+      // HoldFast dev 4b9bb80 src/client/lib/prefs.ts (PREFS_KEY `hf.prefs.v1`, MODE_KEY `mui-mode`,
+      // shortcuts + panel layout "never synced"). Not listed because this app never writes them:
+      // `better-auth.message` (auth-client.ts replaces the channel with a no-op), Sentry's
+      // `sentry_previous_trace` (no browserTracingIntegration), React Router's
+      // `remix-router-transitions` (no viewTransition) — review/gateA-storage-sites.md.
+      'browser storage (not cookies): your theme, and your density and list-or-grid view, which are also saved to your account so they follow you; and two settings that stay on that device and are never sent to us — whether single-key shortcuts are turned off, and the desktop panel layout (whether the sidebar and details panel are shown, and their widths). No sign-in token, email address, or file information is kept in browser storage',
       'one third-party script: Cloudflare Turnstile, a bot check that loads on the sign-in, sign-up, password, and email-verification forms, on the report form, and when Holdfast asks you to confirm it is you',
     ],
     // Periods from HoldFast: TRASH_RETENTION_DAYS / VERSION_RETENTION_DAYS (purge job, every 6 h),

@@ -586,6 +586,12 @@ export const SUPPORT: SupportEntry[] = [
         a: 'Every upload is scanned for malware before anyone else can open it, download it, or reach it through a share. Until the scan finishes the file shows <strong>Scanning</strong>. A file the scan flags stays blocked. A file the scanner cannot read (an encrypted archive, for example) shows <strong>Couldn’t scan</strong>: you can still download it yourself, with a warning, but nobody you share it with can.',
       },
       {
+        // HoldFast dev 4b9bb80: upload/intake.ts (isSystemClutter, folderPickWasFlat, fromFileList
+        // has no empty folders, MAX_DROP_FILES), lib/shortcuts.ts uploadFolder (mod+shift+U, not global).
+        q: 'How do I upload a folder?',
+        a: 'Choose <strong>New → Upload folder…</strong> (or press ⌘⇧U on a Mac, Ctrl+Shift+U elsewhere, when you are not typing in a text field), or drag the folder into Holdfast. The folder and everything in it is recreated as it is on your computer. System files your computer adds on its own — such as <code>.DS_Store</code>, <code>Thumbs.db</code>, <code>desktop.ini</code>, and the <code>._</code> files macOS leaves on other drives — are left out, and Holdfast tells you how many it skipped. Two things the browser decides: the <strong>Upload folder</strong> button never sends <strong>empty sub-folders</strong> (drag the folder in if you need them; dragging keeps them), and Chrome and Edge first ask “Upload N files to this site?” — choose <strong>Upload</strong> to go on. If your browser hands Holdfast single files instead of a folder (some phone browsers do), nothing is uploaded and you are asked to drag the folder in or use <strong>Upload files…</strong> instead. One upload takes up to 10,000 files.',
+      },
+      {
         q: 'How much can I store, and does the trash count?',
         a: 'Each account has 5 GB, and a single file can be up to 2 GB. Files in <strong>Trash</strong> and earlier versions of replaced files count toward your storage until they are deleted for good; <strong>Storage</strong> shows the breakdown.',
       },
