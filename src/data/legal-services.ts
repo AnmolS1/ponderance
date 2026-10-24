@@ -281,20 +281,24 @@ export const SERVICES: LegalService[] = [
     authLabel: 'Google sign-in (OAuth), or an email address and password on Holdfast itself, with optional passkeys and two-factor authentication',
     // Every line below was checked against the HoldFast `dev` branch on 2026-10-22 (schema,
     // retention job, purge jobs, signed cookies) and corrected after its R1 review on 2026-10-23
-    // (Better Auth's rate-limit rows, its own cookies, Turnstile, the Google picture, the
-    // avatar). Change the code and this together.
+    // against the R1 fix branches (P4 `r1fix-p4`: hashed auth rate limits + their retention step,
+    // no Google picture, the export; P3 `r1fix-p3` 888eb08: who a takedown mails). Those branches
+    // must be LIVE in HoldFast prod before this text is. Change the code and this together.
     collects: [
-      // The Google picture link: Better Auth's Google provider maps `picture` to `user.image` and
-      // HoldFast stores it unused. To update when HoldFast R1 P4 stops storing it (and nulls the rows).
-      'account: your email address, display name, and a hash of your password — or, if you sign in with Google, the name, email, account id, and profile-picture link Google shares (no password reaches us; Holdfast does not use the picture); a profile picture, if you add one, which is stored and scanned like a file and shown to people you have a share with and to the operator; passkeys and two-factor secrets if you turn them on; and the date and version of the Terms you accepted',
+      // P4 7f69319: mapProfileToUser drops Google's `picture` (image: undefined); the uploaded avatar
+      // is a `system = 'avatar'` node, shown via GET /account/avatar-url to a share partner or an admin.
+      'account: your email address, display name, and a hash of your password — or, if you sign in with Google, the name, email, and account id Google shares (no password reaches us, and Holdfast does not keep your Google profile picture); a profile picture, if you add one, which is stored and scanned like a file and shown to people you have a share with and to the operator; passkeys and two-factor secrets if you turn them on; and the date and version of the Terms you accepted',
       'the files and folders you upload: their contents, names, sizes, types, checksums, and when they were created, changed, and last opened; and, when you replace a file, its previous version',
       'sharing: who you share with — including the email address of someone you invite who has no account yet — and your link settings (expiry, a hash of the link password, download limits)',
       'link activity: for each of your links, how often it was opened, by day and country, recorded against a keyed hash of the visitor’s network address, never the address itself',
-      'security and abuse records: sign-in and account events, with the browser family, the approximate country, and a daily-rotating keyed hash of the network address; your signed-in sessions, which hold the IP address and browser details of the device each one belongs to; the counters that limit repeated requests to the sign-in system (signing in, signing up, password resets, two-factor codes), which hold the network address itself (for IPv6, its first half); the result of the automated malware scan of every upload; and any abuse or copyright report about your content',
+      'security and abuse records: sign-in and account events, with the browser family, the approximate country, and a daily-rotating keyed hash of the network address; your signed-in sessions, which hold the IP address and browser details of the device each one belongs to; the counters that limit repeated requests to the sign-in system (signing in, signing up, password resets, two-factor codes), keyed by a keyed hash of the network address, never the address itself; the result of the automated malware scan of every upload; and any abuse or copyright report about your content',
       'for uploads only, the IP address the file was uploaded from, stored encrypted, so we can meet legal reporting duties',
       'your birth month and year, checked once at sign-up to confirm you are 13 or older and not stored — only the date the check passed is kept',
       'preferences: theme, density, view mode, time zone, and which emails you want',
-      'cookies, all strictly necessary: your sign-in session; one lasting 10 minutes that carries your age check and Terms acceptance through Google sign-up; one lasting about 70 minutes that lets the browser you signed up in finish verifying your email; short-lived ones (10 minutes or less) that carry a Google, passkey, or two-factor sign-in step; if you use two-factor authentication, one lasting 90 days that marks a browser that has already passed it; and, if you tick “Trust this device” when you enter a code, one lasting 30 days that lets that browser sign in without the code. No analytics or tracking cookies',
+      // P4 report cookie table (Better Auth 1.7.7 + signed-cookie.ts); edge cookies from Cloudflare's
+      // cookie docs (developers.cloudflare.com/fundamentals/reference/policies-compliances/cloudflare-cookies/).
+      'cookies Holdfast sets, all strictly necessary: your sign-in session (14 days, renewed as you use it); while you sign in, short-lived ones that carry a two-factor step (10 minutes), a Google sign-in (5 minutes), or a passkey check (5 minutes); one lasting 10 minutes that carries your age check, Terms acceptance, and invite through Google sign-up; one lasting about 70 minutes that lets the browser you signed up in finish verifying your email; if you use two-factor authentication, one lasting 90 days that marks a browser that has already passed it; if you tick “Trust this device” when you enter a code, one lasting 30 days that lets that browser sign in without the code; and, for the operator only, one that keeps the operator’s own session while viewing an account. No analytics or tracking cookies',
+      'cookies Cloudflare may add: Cloudflare, which serves Holdfast, can set its own strictly necessary security cookies — __cf_bm for bot protection, which expires after 30 minutes of inactivity, and cf_clearance after a browser passes a Cloudflare challenge. The Turnstile check gives Holdfast a one-time token, not a cookie',
       'one third-party script: Cloudflare Turnstile, a bot check that loads on the sign-in, sign-up, password, and email-verification forms, on the report form, and when Holdfast asks you to confirm it is you',
     ],
     // Periods from HoldFast: TRASH_RETENTION_DAYS / VERSION_RETENTION_DAYS (purge job, every 6 h),
@@ -312,11 +316,10 @@ export const SERVICES: LegalService[] = [
       'A session’s IP address and browser details are deleted when you sign out, or within 2 days after the session expires. A session expires about 14 days after you last used it.',
       'The keyed hash of a reporter’s network address on an abuse or copyright report: cleared 90 days after the report is resolved.',
       'For both of these, data tied to an account or file under a legal hold (including a child-safety report) is kept until the hold ends, and then the normal period applies.',
-      // Interim (HoldFast R1 legal-1, verified V1): Better Auth's own `rate_limit` rows key on the
-      // raw address and are pruned table-wide once older than its longest window (1 h), at the next
-      // window reset of any key — so ~1 h under traffic, longer when idle. To update when HoldFast
-      // R1 P4 hashes the address and adds its retention step.
-      'Sign-in rate-limit counters, which hold the network address itself: removed automatically once they are more than an hour old, usually about an hour after your last attempt (it can take longer when the service is quiet), and kept in database backups for up to 35 days.',
+      // P4 d92abe7: auth/rate-limit-store.ts keys `rl:<hmac>|<path>`; jobs/retention.ts deletes
+      // rate_limit rows 2 days after last_request (nightly 00:05 UTC); purgeAuthRows does not touch
+      // the table, so `2fa:<userId>…` / `account-export-*:<userId>` rows outlive the account ~3 days.
+      'Rate-limit counters, keyed by a keyed hash of a network address (never the address itself) or by an account’s internal id: deleted about 2 to 3 days after they were last used, also after the account is deleted, and kept in database backups for up to 35 days.',
       'Daily usage counters (per account, per link, or per keyed hash of a network address): 90 days. Wrong-password attempts on a link: deleted 24 hours after the last attempt. Per-recipient email counters: 48 hours. Records of finished uploads: 7 days.',
       'Abuse reports and copyright notices and counter-notices, including the names and contact details in them: kept as long as needed to handle the report or notice and any claim about it. The email address of someone you invited who has no account yet: kept as long as the share exists.',
       'Database backups (account and file records, never file contents) expire after 35 days, so a deleted record can remain in a backup for up to 35 days after it is deleted. There are no backup copies of your files beyond the storage provider’s own redundancy, so keep your own copies.',

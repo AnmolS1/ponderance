@@ -635,7 +635,7 @@ export const SUPPORT: SupportEntry[] = [
       },
     ],
     dataAndDeletion: [
-      '<strong>Account → Your data → Export your data</strong> downloads your profile, settings, the list of your files and folders, your shares and links, and recent sign-in activity. <strong>Download everything</strong> on the same page builds one zip of your files in the browser.',
+      '<strong>Account → Your data → Export your data</strong> downloads your profile, settings, the list of your files and folders, your shares and links, recent sign-in activity, your signed-in devices and passkeys, and how you sign in. <strong>Download everything</strong> on the same page builds one zip of your files in the browser.',
       'Deleting your account starts a 7-day window in which you can sign in and cancel it. After that, a nightly job permanently deletes your files and account records. If one of your files is under review after an abuse report or a copyright notice, the deletion waits until the review ends.',
       'Database backups hold account and file records, never file contents, and expire after 35 days, so a deleted record can stay in a backup for up to 35 days after it is deleted. There are no backup copies of your files beyond the storage provider’s own redundancy, so keep your own copies.',
       'Every other period, from link activity to encrypted upload IP addresses, is listed under Holdfast in the <a href="https://ponderance.dev/privacy#svc-holdfast">Privacy Policy</a>.',
