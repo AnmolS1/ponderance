@@ -10,7 +10,7 @@
 // that button exists today. App Review guideline 1.5 rejects a support page that sends a
 // reviewer to a control that isn't there.
 
-import { SERVICES, type Commercial, type LegalService } from './legal-services';
+import { isShown, SERVICES, type Commercial, type LegalService } from './legal-services';
 
 /**
  * Paid-tier facts are read from legal-services.ts, never retyped. /terms has to state the
@@ -752,7 +752,7 @@ export const supportedProducts = (): SupportedProduct[] =>
     // Deliberate hard failure: a typo'd id must break the build, not silently drop a
     // product whose Support URL is already live in App Store Connect.
     if (!service) throw new Error(`support.ts: unknown service id "${entry.id}"`);
-    if (service.status === 'planned' || service.audience === 'household') return [];
+    if (!isShown(service)) return [];
     return [{ entry, service }];
   });
 

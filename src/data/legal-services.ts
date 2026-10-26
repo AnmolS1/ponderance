@@ -1,5 +1,6 @@
 // Registry that drives /privacy and /terms. One entry per user-facing product.
-// The pages render a service only when: status !== 'planned' && audience !== 'household'.
+// The pages render a service only when isShown(): status is 'live' or 'beta' && audience !== 'household'.
+// 'paused' = taken down for now, its entry kept so a restart is a one-word edit (Holdfast, 2026-10-25).
 // Adding a product later = add an entry here (+ a SUBPROCESSORS / PROVIDER_DISCLOSURES entry if
 // it brings a new processor or sign-in provider), then flip status to 'live'. No page redesign.
 //
@@ -19,7 +20,7 @@ export type AuthProvider =
 export type Audience = 'public' | 'invited' | 'household';
 // 'device' = a native client app that runs entirely on the user's device and has no
 // backend of ours; it talks only to a server the user themselves runs.
-export type Status = 'live' | 'beta' | 'planned';
+export type Status = 'live' | 'beta' | 'paused' | 'planned';
 
 /** Where money is taken for a paid tier. Drives the per-storefront refund prose. */
 export type Storefront = 'apple' | 'lemonsqueezy';
@@ -270,7 +271,9 @@ export const SERVICES: LegalService[] = [
     id: 'holdfast',
     name: 'Holdfast',
     url: 'https://holdfast.ponderance.dev',
-    status: 'beta', // → 'live' at HoldFast Gate C
+    // Paused 2026-10-25: every Cloudflare and Neon resource deleted, no data kept. To restart: rebuild
+    // HoldFast prod, then set this back to 'beta' (→ 'live' at HoldFast Gate C).
+    status: 'paused',
     audience: 'invited', // → 'public' at HoldFast Gate C
     hosting: 'cloudflare',
     summary: 'Private file storage and sharing in the browser — upload, organise, preview, and share files and folders.',
@@ -484,7 +487,9 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
   resend: {
     id: 'resend',
     name: 'Resend',
-    role: 'Delivers email: the site’s contact form, and Holdfast’s account, sign-in, and sharing email',
+    role: isListed('holdfast')
+      ? 'Delivers email: the site’s contact form, and Holdfast’s account, sign-in, and sharing email'
+      : 'Delivers email for the site’s contact form',
     privacy: 'https://resend.com/legal/privacy-policy',
   },
   gemini: {
@@ -553,5 +558,14 @@ export const PROVIDER_DISCLOSURES: Partial<Record<AuthProvider, { label: string;
 };
 
 /** Services actually shown on /privacy and /terms. */
-export const listedServices = (): LegalService[] =>
-  SERVICES.filter((s) => s.status !== 'planned' && s.audience !== 'household');
+export const listedServices = (): LegalService[] => SERVICES.filter(isShown);
+
+/** Whether a service is shown on the pages. A function declaration: SUBPROCESSORS, above, calls it. */
+export function isShown(s: LegalService): boolean {
+  return (s.status === 'live' || s.status === 'beta') && s.audience !== 'household';
+}
+
+/** isShown() by id, for prose that names one service. */
+export function isListed(id: string): boolean {
+  return SERVICES.some((s) => s.id === id && isShown(s));
+}
