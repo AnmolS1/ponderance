@@ -473,7 +473,7 @@ export const SUPPORT: SupportEntry[] = [
         },
       ],
       refunds:
-        'App Store purchases are refunded by Apple, at reportaproblem.apple.com — Anmol genuinely cannot issue those. For a web purchase, email anmol@ponderance.dev and the refund is started through Lemon Squeezy. A refund removes Plus from the account; nothing you have already made is deleted.',
+        'App Store purchases are refunded by Apple, at reportaproblem.apple.com — Anmol genuinely cannot issue those. A web purchase is sold by Link, LLC (“Sold through Link”, an affiliate of Stripe) on Stripe’s checkout page: your receipt comes by email from Link, and your card statement shows a charge starting LINK.COM*. For a web refund, email anmol@ponderance.dev or ask Link’s support at support.link.com; either way the refund goes back through Link, which may also refund a purchase itself within 60 days of it. A refund removes Plus from the account; nothing you have already made is deleted.',
     },
     dataAndDeletion: [
       'Signing in with Google shares your name, email, profile picture, and Google account id; Sign in with Apple, in the app, shares an account identifier and whatever you chose to share at the prompt. No password ever reaches us.',

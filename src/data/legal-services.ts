@@ -23,7 +23,9 @@ export type Audience = 'public' | 'invited' | 'household';
 export type Status = 'live' | 'beta' | 'paused' | 'planned';
 
 /** Where money is taken for a paid tier. Drives the per-storefront refund prose. */
-export type Storefront = 'apple' | 'lemonsqueezy';
+// Per service: Calque sells on the web through Lemon Squeezy; Kaleidoscope through Stripe Checkout
+// with Managed Payments, where Link, LLC ("Sold through Link") is the merchant of record.
+export type Storefront = 'apple' | 'lemonsqueezy' | 'stripe';
 
 /**
  * How a paid tier is sold. The two shapes need different binding prose — a subscription has
@@ -123,22 +125,22 @@ export const SERVICES: LegalService[] = [
       'Google profile shared at sign-in: name, email, profile picture, Google account id (no password)',
       'Sign in with Apple, offered in the iOS app: the account identifier Apple issues, plus the name and email you choose to share (Apple can relay a private address instead of your real one). No password reaches us',
       'saved pieces: stroke data, a rendered image, your title, chosen visibility, timestamps',
-      'Kaleidoscope Plus, only if you buy it: the storefront’s transaction or order id (Apple’s original transaction id in the app, the Lemon Squeezy order id on the web), which storefront it came from, when Plus was granted and, if the purchase is refunded, when it was revoked — linked to your account so Plus unlocks. Your card details never reach us',
+      'Kaleidoscope Plus, only if you buy it: the storefront’s transaction or order id (Apple’s original transaction id in the app, the payment id from Stripe’s checkout on the web), which storefront it came from, when Plus was granted and, if the purchase is refunded, when it was revoked — linked to your account so Plus unlocks. Your card details never reach us',
       'if you delete your account, that purchase record is kept but detached from it (no longer linked to any account), because a refund or support question about a real payment can still need it',
     ],
-    subprocessors: ['google', 'apple', 'lemonsqueezy', 'cloudflare'],
+    subprocessors: ['google', 'apple', 'stripe', 'link', 'cloudflare'],
     userContent: true,
     publicSharing: true,
     remix: true,
-    // Non-consumable IAP `dev.ponderance.kaleidoscope.plus` on iOS; a Lemon Squeezy product on
-    // the web. Stored per kaleidoscope `entitlements` (migrations 0004 + 0005): source,
+    // Non-consumable IAP `dev.ponderance.kaleidoscope.plus` on iOS; on the web, Stripe Checkout with
+    // Managed Payments (Link, LLC is the merchant of record). Stored per kaleidoscope `entitlements` (migrations 0004 + 0005): source,
     // external_id, user_id ON DELETE SET NULL, environment, granted_at, revoked_at (tombstone).
     commercial: {
       kind: 'one-time',
       plan: 'Kaleidoscope Plus',
       price: '$4.99',
       provides: 'eight layers instead of three, and unlimited public posts (a free account shows 10 pieces on the public wall at a time)',
-      storefronts: ['apple', 'lemonsqueezy'],
+      storefronts: ['apple', 'stripe'],
     },
     notes:
       'One account and one gallery behind both front ends: the iOS app talks to the same Cloudflare backend as the website. Signing in with Apple in the app and Google on the web creates two separate accounts.',
@@ -524,8 +526,22 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
   lemonsqueezy: {
     id: 'lemonsqueezy',
     name: 'Lemon Squeezy',
-    role: 'Merchant of record and payment processor for web purchases: Calque Plus subscriptions and the Kaleidoscope Plus one-time purchase',
+    role: `Merchant of record and payment processor for web purchases of ${soldOnWebBy('lemonsqueezy')}`,
     privacy: 'https://www.lemonsqueezy.com/privacy',
+  },
+  stripe: {
+    id: 'stripe',
+    name: 'Stripe, Inc.',
+    short: 'Stripe',
+    role: `Payment processing and the hosted checkout page for web purchases of ${soldOnWebBy('stripe')}, sold through Link, LLC`,
+    privacy: 'https://stripe.com/privacy',
+  },
+  link: {
+    id: 'link',
+    name: 'Link, LLC',
+    short: 'Link',
+    role: `Merchant of record (“Sold through Link”, an affiliate of Stripe) for web purchases of ${soldOnWebBy('stripe')}: sells it to you, sends the receipt, collects sales tax or VAT, and handles payment disputes and refund requests made to it`,
+    privacy: 'https://link.com/privacy',
   },
 };
 
@@ -563,6 +579,16 @@ export const listedServices = (): LegalService[] => SERVICES.filter(isShown);
 /** Whether a service is shown on the pages. A function declaration: SUBPROCESSORS, above, calls it. */
 export function isShown(s: LegalService): boolean {
   return (s.status === 'live' || s.status === 'beta') && s.audience !== 'household';
+}
+
+/** The listed paid tiers sold through a storefront, e.g. "Calque Plus subscriptions". Drives processor roles. */
+export function soldOnWebBy(sf: Storefront): string {
+  // SERVICES directly, not listedServices(): SUBPROCESSORS calls this before that const exists.
+  const plans = SERVICES.filter(isShown)
+    .map((s) => s.commercial)
+    .filter((c): c is Commercial => !!c && c.storefronts.includes(sf))
+    .map((c) => (c.kind === 'subscription' ? `${c.plan} subscriptions` : c.plan));
+  return plans.length <= 1 ? (plans[0] ?? '') : `${plans.slice(0, -1).join(', ')} and ${plans[plans.length - 1]}`;
 }
 
 /** isShown() by id, for prose that names one service. */

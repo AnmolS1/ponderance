@@ -79,6 +79,14 @@ const STOREFRONT: Record<Storefront, { name: string; charges: string; manage: st
     manage: 'you manage and cancel it in the customer portal linked from your Account page',
     refunds: 'refunds are ours to give, so email us',
   },
+  // Stripe Checkout with Managed Payments: Link, LLC sells the purchase, and its terms let it refund
+  // within 60 days whatever ours say — so nothing here may promise less than that.
+  stripe: {
+    name: 'Web',
+    charges: 'Link, LLC (“Sold through Link”, an affiliate of Stripe) is the merchant of record and takes the payment on Stripe’s checkout page',
+    manage: 'you manage it from your order history at link.com',
+    refunds: 'refunds go back through Link: email us, or ask Link’s support at support.link.com (Link may also refund a purchase itself within 60 days of it)',
+  },
 };
 
 // Third-party providers actually in use, from the registry union — the same fix as the privacy
@@ -403,7 +411,7 @@ const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })
         <p style="font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-crease); margin: 0 0 16px;">ponderance.dev · legal</p>
         <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(36px,4.4vw,56px); line-height: 1.04; letter-spacing: -.025em; color: var(--color-graphite); margin: 0; max-width: 16ch;">Terms of Service</h1>
         <p style="font-family: var(--font-body); font-size: 19px; line-height: 1.6; color: var(--color-graphite-60); max-width: 40rem; margin: 18px 0 0;">The short version is in the margin. The binding version is the column.</p>
-        <span class="lg-stamp" style="display: inline-block; margin: 18px 0 0; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 4px 9px; transform: rotate(-3deg);">updated · 25 Oct 2026</span>
+        <span class="lg-stamp" style="display: inline-block; margin: 18px 0 0; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-crane); border: 1.5px solid var(--color-crane); border-radius: 3px; padding: 4px 9px; transform: rotate(-3deg);">updated · 27 Oct 2026</span>
       </div>
       <div style="position: relative; border: 1px solid var(--color-crease); border-radius: 3px; overflow: hidden; background: var(--color-graph-card);">
         <div style="background: var(--color-crease); padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
@@ -412,7 +420,7 @@ const indexItems = [...clauses.map((c) => ({ id: c.id, n: c.n, label: c.title })
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr;">
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">doc no.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">PNDR-TERMS</p></div>
-          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">rev.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2026.10.25</p></div>
+          <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">rev.</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2026.10.27</p></div>
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold); border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">jurisdiction</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">TX · US</p></div>
           <div style="padding: 11px 14px; border-bottom: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">sheet</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">2 of 2</p></div>
           <div style="padding: 11px 14px; border-right: 1px solid var(--color-crease-line-bold);"><p style="font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-graphite-40); margin: 0 0 3px;">medium</p><p style="font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--color-graphite); margin: 0;">woff2 · edge</p></div>
