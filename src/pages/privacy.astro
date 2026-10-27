@@ -24,7 +24,7 @@ const processorList = oxford(subKeys.map((k) => SUBPROCESSORS[k].short ?? SUBPRO
 // Kaleidoscope sell through different companies, so one hand-typed name would be wrong for one.
 const WEB_SELLER: Record<Exclude<Storefront, 'apple'>, string> = {
   lemonsqueezy: 'Lemon Squeezy',
-  stripe: 'Link, LLC through Stripe’s checkout',
+  stripe: 'Link (Sold through Link, LLC) on Stripe’s checkout',
 };
 const webSellers = oxford(
   listed

@@ -79,13 +79,15 @@ const STOREFRONT: Record<Storefront, { name: string; charges: string; manage: st
     manage: 'you manage and cancel it in the customer portal linked from your Account page',
     refunds: 'refunds are ours to give, so email us',
   },
-  // Stripe Checkout with Managed Payments: Link, LLC sells the purchase, and its terms let it refund
-  // within 60 days whatever ours say — so nothing here may promise less than that.
+  // Stripe Checkout with Managed Payments: Sold through Link, LLC sells the purchase, and its terms let
+  // it refund within 60 days whatever ours say — so nothing here may promise less than that. The
+  // 60-day and support.link.com detail lives on /support/kaleidoscope, keeping this line the App
+  // Store line's length (3.1.1 parity, above).
   stripe: {
     name: 'Web',
-    charges: 'Link, LLC (“Sold through Link”, an affiliate of Stripe) is the merchant of record and takes the payment on Stripe’s checkout page',
+    charges: 'Link (Sold through Link, LLC, an affiliate of Stripe) is the merchant of record',
     manage: 'you manage it from your order history at link.com',
-    refunds: 'refunds go back through Link: email us, or ask Link’s support at support.link.com (Link may also refund a purchase itself within 60 days of it)',
+    refunds: 'for a refund, email us or ask Link',
   },
 };
 

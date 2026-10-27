@@ -24,7 +24,8 @@ export type Status = 'live' | 'beta' | 'paused' | 'planned';
 
 /** Where money is taken for a paid tier. Drives the per-storefront refund prose. */
 // Per service: Calque sells on the web through Lemon Squeezy; Kaleidoscope through Stripe Checkout
-// with Managed Payments, where Link, LLC ("Sold through Link") is the merchant of record.
+// with Managed Payments, where Stripe's affiliate Sold through Link, LLC is the merchant of record
+// (Stripe Managed Payments Terms §1.1, stripe.com/us/legal/managed-payments, modified 2026-09-28).
 export type Storefront = 'apple' | 'lemonsqueezy' | 'stripe';
 
 /**
@@ -133,7 +134,8 @@ export const SERVICES: LegalService[] = [
     publicSharing: true,
     remix: true,
     // Non-consumable IAP `dev.ponderance.kaleidoscope.plus` on iOS; on the web, Stripe Checkout with
-    // Managed Payments (Link, LLC is the merchant of record). Stored per kaleidoscope `entitlements` (migrations 0004 + 0005): source,
+    // Managed Payments (Sold through Link, LLC is the merchant of record).
+    // Stored per kaleidoscope `entitlements` (migrations 0004 + 0005): source,
     // external_id, user_id ON DELETE SET NULL, environment, granted_at, revoked_at (tombstone).
     commercial: {
       kind: 'one-time',
@@ -531,16 +533,17 @@ export const SUBPROCESSORS: Record<string, SubProcessor> = {
   },
   stripe: {
     id: 'stripe',
-    name: 'Stripe, Inc.',
+    // The US contracting entity and payment facilitator (SSA §12 table; stripe.com/legal/acquirer-disclosure).
+    name: 'Stripe, LLC',
     short: 'Stripe',
-    role: `Payment processing and the hosted checkout page for web purchases of ${soldOnWebBy('stripe')}, sold through Link, LLC`,
+    role: `Payment processing and the hosted checkout page for web purchases of ${soldOnWebBy('stripe')}, which Link sells`,
     privacy: 'https://stripe.com/privacy',
   },
   link: {
     id: 'link',
-    name: 'Link, LLC',
+    name: 'Sold through Link, LLC',
     short: 'Link',
-    role: `Merchant of record (“Sold through Link”, an affiliate of Stripe) for web purchases of ${soldOnWebBy('stripe')}: sells it to you, sends the receipt, collects sales tax or VAT, and handles payment disputes and refund requests made to it`,
+    role: `Merchant of record (an affiliate of Stripe) for web purchases of ${soldOnWebBy('stripe')}: sells it to you, sends the receipt, collects sales tax or VAT, and handles payment disputes and refund requests made to it`,
     privacy: 'https://link.com/privacy',
   },
 };
